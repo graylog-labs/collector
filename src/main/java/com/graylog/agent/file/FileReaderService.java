@@ -129,12 +129,12 @@ public class FileReaderService extends AbstractService {
     }
 
     // default visibility for tests
-    FileObserver.Listener getChangeListener() {
+    public FileObserver.Listener getChangeListener() {
         return changeListener;
     }
 
     // default visibility for tests
-    void setChangeListener(FileObserver.Listener changeListener) {
+    public void setChangeListener(FileObserver.Listener changeListener) {
         this.changeListener = changeListener;
     }
 

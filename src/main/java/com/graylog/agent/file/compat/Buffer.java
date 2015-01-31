@@ -1,5 +1,9 @@
 package com.graylog.agent.file.compat;
 
-public interface Buffer {
-    void insertCached(Message message, MessageInput input);
+public abstract class Buffer {
+    public abstract void insertFailFast(Message message, MessageInput sourceInput);
+
+    public void insertCached(Message message, MessageInput input) {
+
+    }
 }
