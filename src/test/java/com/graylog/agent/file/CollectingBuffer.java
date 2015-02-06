@@ -7,7 +7,7 @@ import com.graylog.agent.file.compat.MessageInput;
 
 import java.util.concurrent.BlockingQueue;
 
-class CollectingBuffer extends Buffer {
+class CollectingBuffer implements Buffer {
 
     private final BlockingQueue<Message> messages = Queues.newArrayBlockingQueue(16);
     private boolean outOfCapacity = false;
