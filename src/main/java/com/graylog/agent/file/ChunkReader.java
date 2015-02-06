@@ -93,7 +93,7 @@ public class ChunkReader implements Runnable {
             final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(initialChunkSize);
             final Future<Integer> read = fileChannel.read(byteBuffer, position);
             final Integer bytesRead = read.get();
-            log.debug("[{}] Read {} bytes from position {}", new Object[]{ path, bytesRead, position});
+            log.trace("[{}] Read {} bytes from position {}", new Object[]{ path, bytesRead, position});
             if (bytesRead != -1) {
                 lastReadSize = bytesRead;
                 position += bytesRead;
