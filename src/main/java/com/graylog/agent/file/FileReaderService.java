@@ -47,7 +47,8 @@ public class FileReaderService extends AbstractService {
                              String sourceOverride,
                              ContentSplitter contentSplitter,
                              Buffer buffer) {
-        this.monitoredFile = monitoredFile;
+        // TODO needs to be an absolute path because otherwise the FileObserver does weird things. Investigate what's wrong with it.
+        this.monitoredFile = monitoredFile.toAbsolutePath();
         this.namingStrategy = namingStrategy;
         this.followMode = followMode;
         this.initialReadPosition = initialReadPosition;
