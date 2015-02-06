@@ -21,4 +21,13 @@ public class Message {
     public String getSource() {
         return source;
     }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "timestamp=" + timestamp +
+                ", message='" + message + '\'' +
+                ", source='" + source + '\'' +
+                '}';
+    }
 }
