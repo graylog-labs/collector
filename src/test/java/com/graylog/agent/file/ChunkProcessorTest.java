@@ -31,12 +31,7 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
             int messagenumber = 0;
 
             @Override
-            public void insertFailFast(Message message, MessageInput sourceInput) {
-                fail("not using fail fast");
-            }
-
-            @Override
-            public void insertCached(Message message, MessageInput sourceInput) {
+            public void insert(Message message, MessageInput sourceInput) {
                 log.debug("Received message {}", message);
                 messagenumber++;
                 assertEquals(message.getSource(), "test");
@@ -63,12 +58,7 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
             public int messageNumber = 0;
 
             @Override
-            public void insertFailFast(Message message, MessageInput sourceInput) {
-                fail("not using fail fast");
-            }
-
-            @Override
-            public void insertCached(Message message, MessageInput sourceInput) {
+            public void insert(Message message, MessageInput sourceInput) {
                 log.debug("Received message {}", message);
                 assertEquals(message.getSource(), "test");
                 messageNumber++;
@@ -97,12 +87,7 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
             public int messageNumber = 0;
 
             @Override
-            public void insertFailFast(Message message, MessageInput sourceInput) {
-                fail("not using fail fast");
-            }
-
-            @Override
-            public void insertCached(Message message, MessageInput sourceInput) {
+            public void insert(Message message, MessageInput sourceInput) {
                 messageNumber++;
                 switch (messageNumber) {
                     case 1:
@@ -131,12 +116,7 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
             public int messageNumber = 0;
 
             @Override
-            public void insertFailFast(Message message, MessageInput sourceInput) {
-                fail("not using fail fast");
-            }
-
-            @Override
-            public void insertCached(Message message, MessageInput sourceInput) {
+            public void insert(Message message, MessageInput sourceInput) {
                 log.debug(String.valueOf(message.getMessage()));
                 messageNumber++;
                 switch (messageNumber) {

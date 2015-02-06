@@ -14,12 +14,7 @@ class CollectingBuffer extends Buffer {
     private boolean processingDisabled = false;
 
     @Override
-    public void insertFailFast(Message message, MessageInput sourceInput) {
-        messages.add(message);
-    }
-
-    @Override
-    public void insertCached(Message message, MessageInput sourceInput) {
+    public void insert(Message message, MessageInput sourceInput) {
         messages.add(message);
     }
 

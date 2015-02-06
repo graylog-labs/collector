@@ -122,7 +122,7 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
             final Message message = new Message(msgSource,
                                                 Strings.isNullOrEmpty(options.first) ? hostname : options.first,
                                                 DateTime.now(DateTimeZone.UTC));
-            buffer.insertCached(message, input);
+            buffer.insert(message, input);
         }
     }
 
