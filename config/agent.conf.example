@@ -1,0 +1,17 @@
+# Graylog Agent example configuration.
+
+# inputs {
+#   local-syslog {
+#     type = file
+#     path = /var/log/syslog
+#     interval = 1 hour
+#   }
+#   apache-access {
+#     type = file
+#     path = /var/log/apache2/access.log
+#   }
+#   test-log {
+#     type = file
+#     path = logs/file.log
+#   }
+# }

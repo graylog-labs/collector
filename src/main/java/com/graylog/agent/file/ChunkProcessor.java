@@ -3,10 +3,10 @@ package com.graylog.agent.file;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
-import com.graylog.agent.file.compat.Buffer;
+import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.file.compat.Message;
-import com.graylog.agent.file.compat.MessageInput;
 import com.graylog.agent.file.splitters.ContentSplitter;
+import com.graylog.agent.inputs.Input;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.joda.time.DateTime;
@@ -26,7 +26,7 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
     private static final Logger log = LoggerFactory.getLogger(ChunkProcessor.class);
 
     private final Buffer buffer;
-    private final MessageInput input;
+    private final Input input;
     private final BlockingQueue<FileChunk> chunkQueue;
     private String hostname = "";
 
@@ -59,7 +59,7 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
     private Map<Path, ChannelBuffer> buffersPerFile = Maps.newHashMap();
     private Map<Path, ImmutablePair<String, Boolean>> pathConfig = Maps.newHashMap();
 
-    public ChunkProcessor(Buffer buffer, MessageInput input, BlockingQueue<FileChunk> chunkQueue, ContentSplitter splitter) {
+    public ChunkProcessor(Buffer buffer, Input input, BlockingQueue<FileChunk> chunkQueue, ContentSplitter splitter) {
         this.buffer = buffer;
         this.input = input;
         this.chunkQueue = chunkQueue;

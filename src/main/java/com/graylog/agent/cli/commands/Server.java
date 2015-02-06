@@ -1,16 +1,23 @@
 package com.graylog.agent.cli.commands;
 
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
-import com.typesafe.config.ConfigObject;
-import com.typesafe.config.ConfigValue;
+import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.Service;
+import com.google.common.util.concurrent.ServiceManager;
+import com.graylog.agent.buffer.BufferConsumer;
+import com.graylog.agent.buffer.BufferProcessor;
+import com.graylog.agent.config.Configuration;
+import com.graylog.agent.buffer.MessageBuffer;
+import com.graylog.agent.inputs.FileInput;
+import com.graylog.agent.inputs.FileInputConfiguration;
+import com.graylog.agent.inputs.InputConfiguration;
+import com.graylog.agent.outputs.OutputRouter;
 import io.airlift.airline.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.HashSet;
+import java.util.Set;
 
 @Command(name = "server", description = "Start the agent")
 public class Server implements Runnable {
@@ -20,21 +27,33 @@ public class Server implements Runnable {
     public void run() {
         LOG.info("Running {}", getClass().getCanonicalName());
 
-        final Config config = ConfigFactory.parseFile(new File("config/agent.conf"));
+        final Configuration configuration = Configuration.parse(new File("config/agent.conf"));
 
-        LOG.info("Config {}", config);
+        validateConfiguration(configuration);
 
-        Config files = config.getConfig("files");
+        final MessageBuffer buffer = new MessageBuffer(100);
+        final Set<Service> services = Sets.newHashSet();
+        final HashSet<BufferConsumer> consumers = Sets.<BufferConsumer>newHashSet(new OutputRouter());
 
-        for (Map.Entry<String, ConfigValue> entry : files.root().entrySet()) {
-            final Config file = ((ConfigObject) entry.getValue()).toConfig();
+        services.add(new BufferProcessor(buffer, consumers));
 
-            LOG.info("file {}", entry.getKey());
+        for (FileInputConfiguration inputConfiguration : configuration.getFileInputConfigurations()) {
+            services.add(new FileInput(inputConfiguration, buffer));
+        }
 
-            LOG.info("  path {}", file.getString("path"));
+        final ServiceManager serviceManager = new ServiceManager(services);
 
-            if (file.hasPath("interval")) {
-                LOG.info("  duration {}", file.getDuration("interval", TimeUnit.MINUTES));
+        serviceManager.startAsync().awaitHealthy();
+
+        LOG.info("Services started. {}", serviceManager.startupTimes());
+
+        serviceManager.awaitStopped();
+    }
+
+    private void validateConfiguration(Configuration configuration) {
+        if (!configuration.isValid()) {
+            for (InputConfiguration.ConfigurationError error : configuration.getErrors()) {
+                LOG.error("[ConfigurationError] {}", error.getMesssage());
             }
         }
     }

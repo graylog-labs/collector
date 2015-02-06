@@ -1,9 +1,9 @@
 package com.graylog.agent.file;
 
-import com.graylog.agent.file.compat.Buffer;
+import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.file.compat.Message;
-import com.graylog.agent.file.compat.MessageInput;
 import com.graylog.agent.file.splitters.NewlineChunkSplitter;
+import com.graylog.agent.inputs.Input;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
             int messagenumber = 0;
 
             @Override
-            public void insert(Message message, MessageInput sourceInput) {
+            public void insert(Message message, Input sourceInput) {
                 log.debug("Received message {}", message);
                 messagenumber++;
                 assertEquals(message.getSource(), "test");
@@ -43,6 +43,11 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
                         assertEquals(message.getMessage(), "another line");
                         break;
                 }
+            }
+
+            @Override
+            public Message remove() {
+                return null;
             }
         });
 
@@ -58,7 +63,7 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
             public int messageNumber = 0;
 
             @Override
-            public void insert(Message message, MessageInput sourceInput) {
+            public void insert(Message message, Input sourceInput) {
                 log.debug("Received message {}", message);
                 assertEquals(message.getSource(), "test");
                 messageNumber++;
@@ -70,6 +75,11 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
                         fail("There should be no second message! Message " + message.toString());
                         break;
                 }
+            }
+
+            @Override
+            public Message remove() {
+                return null;
             }
         });
 
@@ -87,7 +97,7 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
             public int messageNumber = 0;
 
             @Override
-            public void insert(Message message, MessageInput sourceInput) {
+            public void insert(Message message, Input sourceInput) {
                 messageNumber++;
                 switch (messageNumber) {
                     case 1:
@@ -97,6 +107,11 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
                         assertEquals(message.getMessage(), "trailing");
                         break;
                 }
+            }
+
+            @Override
+            public Message remove() {
+                return null;
             }
         });
 
@@ -116,7 +131,7 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
             public int messageNumber = 0;
 
             @Override
-            public void insert(Message message, MessageInput sourceInput) {
+            public void insert(Message message, Input sourceInput) {
                 log.debug(String.valueOf(message.getMessage()));
                 messageNumber++;
                 switch (messageNumber) {
@@ -124,6 +139,11 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
                         fail("Empty lines should not trigger any message");
                         break;
                 }
+            }
+
+            @Override
+            public Message remove() {
+                return null;
             }
         });
 
@@ -138,7 +158,7 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
     private ChunkProcessor setupProcessor(Path logFile, Buffer buffer) {
         final LinkedBlockingQueue<FileChunk> chunkQueue = new LinkedBlockingQueue<>();
 
-        MessageInput input = mock(MessageInput.class);
+        Input input = mock(Input.class);
 
         final ChunkProcessor processor = new ChunkProcessor(buffer, input, chunkQueue, new NewlineChunkSplitter());
         processor.addFileConfig(logFile, "test", true);

@@ -1,9 +1,9 @@
 package com.graylog.agent.file;
 
 import com.google.common.collect.Queues;
-import com.graylog.agent.file.compat.Buffer;
+import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.file.compat.Message;
-import com.graylog.agent.file.compat.MessageInput;
+import com.graylog.agent.inputs.Input;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -14,8 +14,13 @@ class CollectingBuffer implements Buffer {
     private boolean processingDisabled = false;
 
     @Override
-    public void insert(Message message, MessageInput sourceInput) {
+    public void insert(Message message, Input sourceInput) {
         messages.add(message);
+    }
+
+    @Override
+    public Message remove() {
+        return null;
     }
 
     public boolean isOutOfCapacity() {

@@ -1,7 +1,8 @@
 package com.graylog.agent.file;
 
 import com.google.common.base.Preconditions;
-import com.graylog.agent.file.compat.FileInput;
+import com.graylog.agent.inputs.FileInput;
+import com.graylog.agent.inputs.Input;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.slf4j.Logger;
@@ -21,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ChunkReader implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(ChunkReader.class);
 
-    private final FileInput fileInput;
+    private final Input fileInput;
     private final Path path;
     private final AsynchronousFileChannel fileChannel;
     private final BlockingQueue<FileChunk> chunks;
@@ -34,7 +35,7 @@ public class ChunkReader implements Runnable {
     private long chunkId = 0;
     private Object fileKey;
 
-    public ChunkReader(FileInput fileInput,
+    public ChunkReader(Input fileInput,
                        Path path,
                        AsynchronousFileChannel fileChannel,
                        BlockingQueue<FileChunk> chunks,
@@ -93,7 +94,7 @@ public class ChunkReader implements Runnable {
             final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(initialChunkSize);
             final Future<Integer> read = fileChannel.read(byteBuffer, position);
             final Integer bytesRead = read.get();
-            log.trace("[{}] Read {} bytes from position {}", new Object[]{ path, bytesRead, position});
+            log.trace("[{}] Read {} bytes from position {}", new Object[]{path, bytesRead, position});
             if (bytesRead != -1) {
                 lastReadSize = bytesRead;
                 position += bytesRead;

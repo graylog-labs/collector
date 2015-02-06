@@ -3,10 +3,10 @@ package com.graylog.agent.file;
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.AbstractService;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.graylog.agent.file.compat.Buffer;
-import com.graylog.agent.file.compat.FileInput;
+import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.file.naming.FileNamingStrategy;
 import com.graylog.agent.file.splitters.ContentSplitter;
+import com.graylog.agent.inputs.FileInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
