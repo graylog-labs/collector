@@ -1,7 +1,7 @@
 package com.graylog.agent.buffer;
 
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
-import com.graylog.agent.file.compat.Message;
+import com.graylog.agent.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

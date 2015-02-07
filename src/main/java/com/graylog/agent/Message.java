@@ -1,4 +1,4 @@
-package com.graylog.agent.file.compat;
+package com.graylog.agent;
 
 import org.joda.time.DateTime;
 

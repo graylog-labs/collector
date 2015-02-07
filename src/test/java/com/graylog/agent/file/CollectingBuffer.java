@@ -2,7 +2,7 @@ package com.graylog.agent.file;
 
 import com.google.common.collect.Queues;
 import com.graylog.agent.buffer.Buffer;
-import com.graylog.agent.file.compat.Message;
+import com.graylog.agent.Message;
 import com.graylog.agent.inputs.Input;
 
 import java.util.concurrent.BlockingQueue;

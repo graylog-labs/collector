@@ -1,7 +1,7 @@
 package com.graylog.agent.file;
 
 import com.google.common.util.concurrent.Service;
-import com.graylog.agent.file.compat.Message;
+import com.graylog.agent.Message;
 import com.graylog.agent.file.naming.NumberSuffixStrategy;
 import com.graylog.agent.file.splitters.NewlineChunkSplitter;
 import com.graylog.agent.inputs.FileInput;

@@ -1,7 +1,7 @@
 package com.graylog.agent.buffer;
 
 import com.google.common.collect.Queues;
-import com.graylog.agent.file.compat.Message;
+import com.graylog.agent.Message;
 import com.graylog.agent.inputs.Input;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

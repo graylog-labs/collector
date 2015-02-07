@@ -4,7 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import com.graylog.agent.buffer.Buffer;
-import com.graylog.agent.file.compat.Message;
+import com.graylog.agent.Message;
 import com.graylog.agent.file.splitters.ContentSplitter;
 import com.graylog.agent.inputs.Input;
 import org.jboss.netty.buffer.ChannelBuffer;
