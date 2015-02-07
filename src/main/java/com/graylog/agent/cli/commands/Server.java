@@ -6,10 +6,8 @@ import com.google.common.util.concurrent.ServiceManager;
 import com.graylog.agent.ConfigurationError;
 import com.graylog.agent.buffer.BufferConsumer;
 import com.graylog.agent.buffer.BufferProcessor;
-import com.graylog.agent.config.Configuration;
 import com.graylog.agent.buffer.MessageBuffer;
-import com.graylog.agent.inputs.FileInput;
-import com.graylog.agent.inputs.FileInputConfiguration;
+import com.graylog.agent.config.ConfigurationProcessor;
 import com.graylog.agent.outputs.OutputRouter;
 import io.airlift.airline.Command;
 import org.slf4j.Logger;
@@ -27,19 +25,16 @@ public class Server implements Runnable {
     public void run() {
         LOG.info("Running {}", getClass().getCanonicalName());
 
-        final Configuration configuration = Configuration.parse(new File("config/agent.conf"));
+        final MessageBuffer buffer = new MessageBuffer(100);
+        final ConfigurationProcessor configuration = ConfigurationProcessor.process(new File("config/agent.conf"), buffer);
 
         validateConfiguration(configuration);
 
-        final MessageBuffer buffer = new MessageBuffer(100);
         final Set<Service> services = Sets.newHashSet();
         final HashSet<BufferConsumer> consumers = Sets.<BufferConsumer>newHashSet(new OutputRouter());
 
         services.add(new BufferProcessor(buffer, consumers));
-
-        for (FileInputConfiguration inputConfiguration : configuration.getFileInputConfigurations()) {
-            services.add(new FileInput(inputConfiguration, buffer));
-        }
+        services.addAll(configuration.getServices());
 
         final ServiceManager serviceManager = new ServiceManager(services);
 
@@ -50,11 +45,13 @@ public class Server implements Runnable {
         serviceManager.awaitStopped();
     }
 
-    private void validateConfiguration(Configuration configuration) {
-        if (!configuration.isValid()) {
-            for (ConfigurationError error : configuration.getErrors()) {
-                LOG.error("[ConfigurationError] {}", error.getMesssage());
+    private void validateConfiguration(ConfigurationProcessor configurationProcessor) {
+        if (!configurationProcessor.isValid()) {
+            for (ConfigurationError error : configurationProcessor.getErrors()) {
+                LOG.error("Configuration Error: {}", error.getMesssage());
             }
+
+            System.exit(1);
         }
     }
 }

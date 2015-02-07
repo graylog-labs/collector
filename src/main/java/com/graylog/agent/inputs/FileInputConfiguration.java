@@ -1,26 +1,34 @@
 package com.graylog.agent.inputs;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.graylog.agent.ConfigurationError;
+import com.graylog.agent.config.Configuration;
+import com.graylog.agent.config.constraints.IsAccessible;
+import com.typesafe.config.Config;
+import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.NotNull;
 import java.io.File;
-import java.util.Collections;
-import java.util.List;
 
-public class FileInputConfiguration implements InputConfiguration {
+public class FileInputConfiguration implements Configuration {
+    @NotBlank
     private final String id;
-    private final File path;
 
-    public FileInputConfiguration(final String id, final File path) {
+    @NotNull
+    @IsAccessible
+    private File path;
+
+    public FileInputConfiguration(String id, Config config) {
         this.id = id;
-        this.path = path;
+
+        if (config.hasPath("path")) {
+            this.path = new File(config.getString("path"));
+        }
     }
 
     public File getPath() {
         return path;
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -33,18 +41,4 @@ public class FileInputConfiguration implements InputConfiguration {
                 '}';
     }
 
-    @Override
-    public List<ConfigurationError> validate() {
-        final List<ConfigurationError> errors = Lists.newArrayList();
-
-        if (Strings.isNullOrEmpty(id)) {
-            errors.add(new ConfigurationError("Name is null or empty"));
-        }
-
-        if (!path.getParentFile().exists()) {
-            errors.add(new ConfigurationError("Directory does not exist: " + path.getParentFile().toString() + " [id=" + getId() + "]"));
-        }
-
-        return Collections.unmodifiableList(errors);
-    }
 }
