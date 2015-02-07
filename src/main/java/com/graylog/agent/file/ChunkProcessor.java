@@ -114,14 +114,16 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
     }
 
     private void createMessages(ImmutablePair<String, Boolean> options, Iterable<String> messages) {
-        for (String msgSource : messages) {
-            if (msgSource.isEmpty()) {
+        for (String messageString : messages) {
+            if (messageString.isEmpty()) {
                 // skip completely empty messages, they contain no useful information
                 continue;
             }
-            final Message message = new Message(msgSource,
+            final Message message = new Message(messageString,
                                                 Strings.isNullOrEmpty(options.first) ? hostname : options.first,
-                                                DateTime.now(DateTimeZone.UTC));
+                                                DateTime.now(DateTimeZone.UTC),
+                                                input.getId(),
+                                                input.getOutputs());
             buffer.insert(message, input);
         }
     }
