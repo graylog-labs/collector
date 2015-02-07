@@ -1,7 +1,6 @@
 package com.graylog.agent.config;
 
 import com.google.common.collect.Lists;
-import com.graylog.agent.ConfigurationError;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;

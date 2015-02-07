@@ -40,5 +40,4 @@ public class FileInputConfiguration implements Configuration {
                 ", path=" + path +
                 '}';
     }
-
 }

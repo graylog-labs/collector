@@ -3,7 +3,7 @@ package com.graylog.agent.cli.commands;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.ServiceManager;
-import com.graylog.agent.ConfigurationError;
+import com.graylog.agent.config.ConfigurationError;
 import com.graylog.agent.buffer.BufferConsumer;
 import com.graylog.agent.buffer.BufferProcessor;
 import com.graylog.agent.buffer.MessageBuffer;

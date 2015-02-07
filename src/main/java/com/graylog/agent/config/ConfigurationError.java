@@ -1,4 +1,4 @@
-package com.graylog.agent;
+package com.graylog.agent.config;
 
 public class ConfigurationError {
     private final String messsage;

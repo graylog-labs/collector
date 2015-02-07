@@ -15,4 +15,10 @@ public class StdoutOutputConfiguration implements Configuration {
         return id;
     }
 
+    @Override
+    public String toString() {
+        return "StdoutOutputConfiguration{" +
+                "id='" + id + '\'' +
+                '}';
+    }
 }

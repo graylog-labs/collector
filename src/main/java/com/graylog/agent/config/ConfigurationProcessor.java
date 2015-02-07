@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Service;
-import com.graylog.agent.ConfigurationError;
 import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.inputs.FileInput;
 import com.graylog.agent.inputs.FileInputConfiguration;
