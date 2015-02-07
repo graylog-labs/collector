@@ -22,8 +22,20 @@ public class Configuration {
     private final List<InputConfiguration.ConfigurationError> errors = Lists.newArrayList();
 
     public Configuration(Config config) {
+        try {
+            processConfig(config);
+        } catch (ConfigException e) {
+            errors.add(new InputConfiguration.ConfigurationError(e.getMessage()));
+        }
+    }
+
+    private void processConfig(Config config) {
         final Config inputs = config.getConfig("inputs");
 
+        buildInputConfig(inputs);
+    }
+
+    private void buildInputConfig(Config inputs) {
         for (Map.Entry<String, ConfigValue> entry : inputs.root().entrySet()) {
             final String id = entry.getKey();
 
