@@ -1,11 +1,12 @@
 package com.graylog.agent.inputs;
 
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
+import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.file.ChunkReader;
 import com.graylog.agent.file.FileReaderService;
-import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.file.naming.NumberSuffixStrategy;
 import com.graylog.agent.file.splitters.NewlineChunkSplitter;
+import com.graylog.agent.utils.ConfigurationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,5 +64,10 @@ public class FileInput extends AbstractExecutionThreadService implements Input {
     @Override
     public void setReaderFinished(ChunkReader chunkReader) {
         // TODO Check if needed and for what it was used.
+    }
+
+    @Override
+    public String toString() {
+        return ConfigurationUtils.toString(configuration, this);
     }
 }

@@ -1,17 +1,17 @@
 package com.graylog.agent.outputs;
 
-import com.graylog.agent.config.Configuration;
+import com.graylog.agent.utils.ConfigurationUtils;
 import com.graylog.agent.config.constraints.IsOneOf;
 import com.typesafe.config.Config;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotNull;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-public class GelfOutputConfiguration implements Configuration {
-    @NotBlank
-    private final String id;
-
+public class GelfOutputConfiguration extends OutputConfiguration {
     @NotBlank
     @IsOneOf({"tcp", "udp"})
     private String protocol;
@@ -24,7 +24,7 @@ public class GelfOutputConfiguration implements Configuration {
     private int port;
 
     public GelfOutputConfiguration(String id, Config config) {
-        this.id = id;
+        super(id, config);
 
         if (config.hasPath("protocol")) {
             this.protocol = config.getString("protocol");
@@ -35,11 +35,6 @@ public class GelfOutputConfiguration implements Configuration {
         if (config.hasPath("port")) {
             this.port = config.getInt("port");
         }
-    }
-
-    @Override
-    public String getId() {
-        return id;
     }
 
     public String getProtocol() {
@@ -55,13 +50,18 @@ public class GelfOutputConfiguration implements Configuration {
     }
 
     @Override
-    public String toString() {
-        return "GelfOutputConfiguration{" +
-                "id='" + id + '\'' +
-                ", protocol='" + protocol + '\'' +
-                ", host='" + host + '\'' +
-                ", port='" + port + '\'' +
-                '}';
+    public Map<String, String> toStringValues() {
+        return Collections.unmodifiableMap(new HashMap<String, String>(super.toStringValues()) {
+            {
+                put("protocol", getProtocol());
+                put("host", getHost());
+                put("port", String.valueOf(getPort()));
+            }
+        });
     }
 
+    @Override
+    public String toString() {
+        return ConfigurationUtils.toString(this);
+    }
 }

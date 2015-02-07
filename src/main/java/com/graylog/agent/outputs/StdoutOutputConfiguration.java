@@ -1,24 +1,15 @@
 package com.graylog.agent.outputs;
 
-import com.graylog.agent.config.Configuration;
+import com.graylog.agent.utils.ConfigurationUtils;
 import com.typesafe.config.Config;
 
-public class StdoutOutputConfiguration implements Configuration {
-    private final String id;
-
+public class StdoutOutputConfiguration extends OutputConfiguration {
     public StdoutOutputConfiguration(String id, Config output) {
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return id;
+        super(id, output);
     }
 
     @Override
     public String toString() {
-        return "StdoutOutputConfiguration{" +
-                "id='" + id + '\'' +
-                '}';
+        return ConfigurationUtils.toString(this);
     }
 }

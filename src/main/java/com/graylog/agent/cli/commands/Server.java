@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Command(name = "server", description = "Start the agent")
@@ -40,7 +41,9 @@ public class Server implements Runnable {
 
         serviceManager.startAsync().awaitHealthy();
 
-        LOG.info("Services started. {}", serviceManager.startupTimes());
+        for (Map.Entry<Service.State, Service> entry : serviceManager.servicesByState().entries()) {
+            LOG.info("Service {}: {}", entry.getKey().toString(), entry.getValue().toString());
+        }
 
         serviceManager.awaitStopped();
     }
