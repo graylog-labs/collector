@@ -2,6 +2,7 @@ package com.graylog.agent.inputs;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.graylog.agent.ConfigurationError;
 
 import java.io.File;
 import java.util.Collections;

@@ -3,8 +3,8 @@ package com.graylog.agent.config;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.graylog.agent.ConfigurationError;
 import com.graylog.agent.inputs.FileInputConfiguration;
-import com.graylog.agent.inputs.InputConfiguration;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
@@ -19,13 +19,13 @@ import java.util.Set;
 
 public class Configuration {
     private final Set<FileInputConfiguration> fileInputConfigurations = Sets.newHashSet();
-    private final List<InputConfiguration.ConfigurationError> errors = Lists.newArrayList();
+    private final List<ConfigurationError> errors = Lists.newArrayList();
 
     public Configuration(Config config) {
         try {
             processConfig(config);
         } catch (ConfigException e) {
-            errors.add(new InputConfiguration.ConfigurationError(e.getMessage()));
+            errors.add(new ConfigurationError(e.getMessage()));
         }
     }
 
@@ -44,7 +44,7 @@ public class Configuration {
                 final String type = input.getString("type");
 
                 if (Strings.isNullOrEmpty(type)) {
-                    errors.add(new InputConfiguration.ConfigurationError("Missing type field for " + id + " (" + input + ")"));
+                    errors.add(new ConfigurationError("Missing type field for " + id + " (" + input + ")"));
                     continue;
                 }
 
@@ -53,18 +53,18 @@ public class Configuration {
                         buildFileInputConfig(id, input);
                         break;
                     default:
-                        errors.add(new InputConfiguration.ConfigurationError("Unknown input type \"" + type + "\" for " + id));
+                        errors.add(new ConfigurationError("Unknown input type \"" + type + "\" for " + id));
                         break;
                 }
             } catch (ConfigException e) {
-                errors.add(new InputConfiguration.ConfigurationError("[" + id + "] " + e.getMessage()));
+                errors.add(new ConfigurationError("[" + id + "] " + e.getMessage()));
             }
         }
     }
 
     private void buildFileInputConfig(String id, Config input) {
         final FileInputConfiguration config = new FileInputConfiguration(id, new File(input.getString("path")));
-        final List<InputConfiguration.ConfigurationError> inputErrors = config.validate();
+        final List<ConfigurationError> inputErrors = config.validate();
 
         if (inputErrors.isEmpty()) {
             fileInputConfigurations.add(config);
@@ -77,7 +77,7 @@ public class Configuration {
         return errors.isEmpty();
     }
 
-    public List<InputConfiguration.ConfigurationError> getErrors() {
+    public List<ConfigurationError> getErrors() {
         return errors;
     }
 

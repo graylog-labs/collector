@@ -3,13 +3,13 @@ package com.graylog.agent.cli.commands;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.ServiceManager;
+import com.graylog.agent.ConfigurationError;
 import com.graylog.agent.buffer.BufferConsumer;
 import com.graylog.agent.buffer.BufferProcessor;
 import com.graylog.agent.config.Configuration;
 import com.graylog.agent.buffer.MessageBuffer;
 import com.graylog.agent.inputs.FileInput;
 import com.graylog.agent.inputs.FileInputConfiguration;
-import com.graylog.agent.inputs.InputConfiguration;
 import com.graylog.agent.outputs.OutputRouter;
 import io.airlift.airline.Command;
 import org.slf4j.Logger;
@@ -52,7 +52,7 @@ public class Server implements Runnable {
 
     private void validateConfiguration(Configuration configuration) {
         if (!configuration.isValid()) {
-            for (InputConfiguration.ConfigurationError error : configuration.getErrors()) {
+            for (ConfigurationError error : configuration.getErrors()) {
                 LOG.error("[ConfigurationError] {}", error.getMesssage());
             }
         }
