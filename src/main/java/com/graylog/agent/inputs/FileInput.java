@@ -41,7 +41,7 @@ public class FileInput extends AbstractExecutionThreadService implements Input {
                 path,
                 new NumberSuffixStrategy(path),
                 true,
-                InitialReadPosition.START,
+                InitialReadPosition.END,
                 this,
                 null,
                 new NewlineChunkSplitter(),
