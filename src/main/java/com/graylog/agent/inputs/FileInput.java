@@ -36,8 +36,6 @@ public class FileInput extends AbstractExecutionThreadService implements Input {
 
     @Override
     protected void run() throws Exception {
-        LOG.info("Starting input [{}]", configuration);
-
         final Path path = configuration.getPath().toPath();
         final FileReaderService readerService = new FileReaderService(
                 path,
