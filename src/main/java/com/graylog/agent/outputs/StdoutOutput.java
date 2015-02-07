@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.utils.ConfigurationUtils;
 
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 public class StdoutOutput extends AbstractExecutionThreadService implements Output {
@@ -30,5 +31,15 @@ public class StdoutOutput extends AbstractExecutionThreadService implements Outp
     @Override
     public String toString() {
         return ConfigurationUtils.toString(configuration, this);
+    }
+
+    @Override
+    public String getId() {
+        return configuration.getId();
+    }
+
+    @Override
+    public Set<String> getInputs() {
+        return configuration.getInputs();
     }
 }

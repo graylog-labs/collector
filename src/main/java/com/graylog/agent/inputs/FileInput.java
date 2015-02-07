@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 public class FileInput extends AbstractExecutionThreadService implements Input {
@@ -30,8 +31,14 @@ public class FileInput extends AbstractExecutionThreadService implements Input {
         this.buffer = buffer;
     }
 
+    @Override
     public String getId() {
         return configuration.getId();
+    }
+
+    @Override
+    public Set<String> getOutputs() {
+        return configuration.getOutputs();
     }
 
     @Override
