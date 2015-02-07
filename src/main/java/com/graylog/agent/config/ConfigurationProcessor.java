@@ -29,14 +29,24 @@ public class ConfigurationProcessor {
     private final ConfigurationValidator validator;
     private final Buffer buffer;
 
-    public ConfigurationProcessor(Config config, Buffer buffer) {
+    public ConfigurationProcessor(File configFile, Buffer buffer) {
         this.buffer = buffer;
         this.validator = new ConfigurationValidator();
 
-        try {
-            processConfig(config);
-        } catch (ConfigException e) {
-            errors.add(new ConfigurationError(e.getMessage()));
+        if (configFile.exists() && configFile.canRead()) {
+            final Config config = ConfigFactory.parseFile(configFile);
+
+            if (!config.isEmpty()) {
+                try {
+                    processConfig(config);
+                } catch (ConfigException e) {
+                    errors.add(new ConfigurationError(e.getMessage()));
+                }
+            } else {
+                errors.add(new ConfigurationError("Configuration is empty!"));
+            }
+        } else {
+            errors.add(new ConfigurationError("Configuration file " + configFile + " does not exist or is not readable!"));
         }
     }
 
@@ -124,12 +134,6 @@ public class ConfigurationProcessor {
 
     public Set<Service> getServices() {
         return services;
-    }
-
-    public static ConfigurationProcessor process(File configFile, Buffer buffer) {
-        final Config config = ConfigFactory.parseFile(configFile);
-
-        return new ConfigurationProcessor(config, buffer);
     }
 
     private interface ConfigCallback {

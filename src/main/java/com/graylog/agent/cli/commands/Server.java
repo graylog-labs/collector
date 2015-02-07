@@ -10,6 +10,7 @@ import com.graylog.agent.buffer.MessageBuffer;
 import com.graylog.agent.config.ConfigurationProcessor;
 import com.graylog.agent.outputs.OutputRouter;
 import io.airlift.airline.Command;
+import io.airlift.airline.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,12 +23,15 @@ import java.util.Set;
 public class Server implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(Server.class);
 
+    @Option(name = "-f", description = "Path to configuration file.", required = true)
+    private final File configFile = null;
+
     @Override
     public void run() {
         LOG.info("Running {}", getClass().getCanonicalName());
 
         final MessageBuffer buffer = new MessageBuffer(100);
-        final ConfigurationProcessor configuration = ConfigurationProcessor.process(new File("config/agent.conf"), buffer);
+        final ConfigurationProcessor configuration = new ConfigurationProcessor(configFile, buffer);
 
         validateConfiguration(configuration);
 
@@ -54,6 +58,7 @@ public class Server implements Runnable {
                 LOG.error("Configuration Error: {}", error.getMesssage());
             }
 
+            LOG.info("Exit");
             System.exit(1);
         }
     }
