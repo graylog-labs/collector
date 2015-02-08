@@ -3,11 +3,16 @@ package com.graylog.agent.cli.commands;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.ServiceManager;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.graylog.agent.buffer.BufferModule;
 import com.graylog.agent.config.ConfigurationError;
 import com.graylog.agent.buffer.BufferConsumer;
 import com.graylog.agent.buffer.BufferProcessor;
 import com.graylog.agent.buffer.MessageBuffer;
+import com.graylog.agent.config.ConfigurationModule;
 import com.graylog.agent.config.ConfigurationProcessor;
+import com.graylog.agent.inputs.InputsModule;
 import com.graylog.agent.outputs.OutputRouter;
 import io.airlift.airline.Command;
 import io.airlift.airline.Option;
@@ -30,8 +35,12 @@ public class Server implements Runnable {
     public void run() {
         LOG.info("Running {}", getClass().getCanonicalName());
 
+        final Injector injector = Guice.createInjector(new ConfigurationModule(configFile),
+                new BufferModule(),
+                new InputsModule());
+
         final MessageBuffer buffer = new MessageBuffer(100);
-        final ConfigurationProcessor configuration = new ConfigurationProcessor(configFile, buffer);
+        final ConfigurationProcessor configuration = injector.getInstance(ConfigurationProcessor.class);
 
         validateConfiguration(configuration);
 

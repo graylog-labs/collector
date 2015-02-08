@@ -1,26 +1,49 @@
 package com.graylog.agent.inputs;
 
-import com.graylog.agent.utils.ConfigurationUtils;
+import com.google.inject.assistedinject.Assisted;
+import com.graylog.agent.annotations.AgentConfigurationFactory;
+import com.graylog.agent.annotations.AgentInputConfiguration;
 import com.graylog.agent.config.constraints.IsAccessible;
+import com.graylog.agent.utils.ConfigurationUtils;
 import com.typesafe.config.Config;
 
+import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+@AgentInputConfiguration(type = "file")
 public class FileInputConfiguration extends InputConfiguration {
+
+    @AgentConfigurationFactory
+    public interface Factory extends InputConfiguration.Factory<FileInputConfiguration> {
+        @Override
+        FileInputConfiguration create(String id, Config config);
+    }
+
     @NotNull
     @IsAccessible
     private File path;
 
-    public FileInputConfiguration(String id, Config config) {
+    private final FileInput.Factory inputFactory;
+
+    @Inject
+    public FileInputConfiguration(@Assisted String id,
+                                  @Assisted Config config,
+                                  FileInput.Factory inputFactory) {
         super(id, config);
+        this.inputFactory = inputFactory;
 
         if (config.hasPath("path")) {
             this.path = new File(config.getString("path"));
         }
+    }
+
+    @Override
+    public FileInput createInput() {
+        return inputFactory.create(this);
     }
 
     public File getPath() {

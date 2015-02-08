@@ -14,6 +14,10 @@ import java.util.Map;
 import java.util.Set;
 
 public abstract class InputConfiguration implements Configuration {
+    public interface Factory<C extends InputConfiguration> {
+        C create(String id, Config config);
+    }
+
     @NotBlank
     private final String id;
 
@@ -27,6 +31,8 @@ public abstract class InputConfiguration implements Configuration {
             this.outputs = Sets.newHashSet(Splitter.on(",").omitEmptyStrings().trimResults().split(config.getString("outputs")));
         }
     }
+
+    public abstract InputService createInput();
 
     @Override
     public String getId() {

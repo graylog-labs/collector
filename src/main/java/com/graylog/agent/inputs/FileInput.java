@@ -1,6 +1,7 @@
 package com.graylog.agent.inputs;
 
-import com.google.common.util.concurrent.AbstractExecutionThreadService;
+import com.google.inject.assistedinject.Assisted;
+import com.graylog.agent.annotations.AgentInputFactory;
 import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.file.ChunkReader;
 import com.graylog.agent.file.FileReaderService;
@@ -10,14 +11,20 @@ import com.graylog.agent.utils.ConfigurationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.nio.file.Path;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
-public class FileInput extends AbstractExecutionThreadService implements Input {
+public class FileInput extends InputService {
     public enum InitialReadPosition {
         START,
         END;
+    }
+
+    @AgentInputFactory
+    public interface Factory extends InputService.Factory<FileInput, FileInputConfiguration> {
+        FileInput create(FileInputConfiguration configuration);
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(FileInput.class);
@@ -26,7 +33,8 @@ public class FileInput extends AbstractExecutionThreadService implements Input {
     private final Buffer buffer;
     private final CountDownLatch stopLatch = new CountDownLatch(0);
 
-    public FileInput(FileInputConfiguration inputConfiguration, Buffer buffer) {
+    @Inject
+    public FileInput(@Assisted FileInputConfiguration inputConfiguration, Buffer buffer) {
         this.configuration = inputConfiguration;
         this.buffer = buffer;
     }
