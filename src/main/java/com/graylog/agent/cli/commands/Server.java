@@ -14,6 +14,7 @@ import com.graylog.agent.config.ConfigurationModule;
 import com.graylog.agent.config.ConfigurationProcessor;
 import com.graylog.agent.inputs.InputsModule;
 import com.graylog.agent.outputs.OutputRouter;
+import com.graylog.agent.outputs.OutputsModule;
 import io.airlift.airline.Command;
 import io.airlift.airline.Option;
 import org.slf4j.Logger;
@@ -37,7 +38,8 @@ public class Server implements Runnable {
 
         final Injector injector = Guice.createInjector(new ConfigurationModule(configFile),
                 new BufferModule(),
-                new InputsModule());
+                new InputsModule(),
+                new OutputsModule());
 
         final MessageBuffer buffer = new MessageBuffer(100);
         final ConfigurationProcessor configuration = injector.getInstance(ConfigurationProcessor.class);

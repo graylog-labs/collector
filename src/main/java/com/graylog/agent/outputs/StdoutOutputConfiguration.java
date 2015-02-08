@@ -1,11 +1,34 @@
 package com.graylog.agent.outputs;
 
+import com.google.inject.assistedinject.Assisted;
+import com.graylog.agent.annotations.AgentConfigurationFactory;
+import com.graylog.agent.annotations.AgentOutputConfiguration;
 import com.graylog.agent.utils.ConfigurationUtils;
 import com.typesafe.config.Config;
 
+import javax.inject.Inject;
+
+@AgentOutputConfiguration(type = "stdout")
 public class StdoutOutputConfiguration extends OutputConfiguration {
-    public StdoutOutputConfiguration(String id, Config output) {
+    private final StdoutOutput.Factory outputFactory;
+
+    @AgentConfigurationFactory
+    public interface Factory extends OutputConfiguration.Factory<StdoutOutputConfiguration> {
+        @Override
+        StdoutOutputConfiguration create(String id, Config config);
+    }
+
+    @Inject
+    public StdoutOutputConfiguration(@Assisted String id,
+                                     @Assisted Config output,
+                                     StdoutOutput.Factory outputFactory) {
         super(id, output);
+        this.outputFactory = outputFactory;
+    }
+
+    @Override
+    public StdoutOutput createOutput() {
+        return outputFactory.create(this);
     }
 
     @Override

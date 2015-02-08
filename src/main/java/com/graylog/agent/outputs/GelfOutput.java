@@ -1,19 +1,27 @@
 package com.graylog.agent.outputs;
 
-import com.google.common.util.concurrent.AbstractExecutionThreadService;
+import com.google.inject.assistedinject.Assisted;
+import com.graylog.agent.annotations.AgentOutputFactory;
 import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.utils.ConfigurationUtils;
 
+import javax.inject.Inject;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
-public class GelfOutput extends AbstractExecutionThreadService implements Output {
+public class GelfOutput extends OutputService {
+    @AgentOutputFactory
+    public interface Factory extends OutputService.Factory<GelfOutput, GelfOutputConfiguration> {
+        GelfOutput create(GelfOutputConfiguration configuration);
+    }
+
     private final GelfOutputConfiguration configuration;
     private final Buffer buffer;
 
     private final CountDownLatch stopLatch = new CountDownLatch(1);
 
-    public GelfOutput(GelfOutputConfiguration configuration, Buffer buffer) {
+    @Inject
+    public GelfOutput(@Assisted GelfOutputConfiguration configuration, Buffer buffer) {
         this.configuration = configuration;
         this.buffer = buffer;
     }
