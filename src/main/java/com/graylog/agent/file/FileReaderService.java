@@ -6,7 +6,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.file.naming.FileNamingStrategy;
 import com.graylog.agent.file.splitters.ContentSplitter;
-import com.graylog.agent.inputs.FileInput;
+import com.graylog.agent.inputs.file.FileInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

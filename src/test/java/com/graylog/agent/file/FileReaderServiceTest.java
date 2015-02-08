@@ -4,7 +4,7 @@ import com.google.common.util.concurrent.Service;
 import com.graylog.agent.Message;
 import com.graylog.agent.file.naming.NumberSuffixStrategy;
 import com.graylog.agent.file.splitters.NewlineChunkSplitter;
-import com.graylog.agent.inputs.FileInput;
+import com.graylog.agent.inputs.file.FileInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;

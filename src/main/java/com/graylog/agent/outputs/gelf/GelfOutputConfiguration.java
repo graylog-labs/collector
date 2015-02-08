@@ -1,9 +1,10 @@
-package com.graylog.agent.outputs;
+package com.graylog.agent.outputs.gelf;
 
 import com.google.inject.assistedinject.Assisted;
 import com.graylog.agent.annotations.AgentConfigurationFactory;
 import com.graylog.agent.annotations.AgentOutputConfiguration;
 import com.graylog.agent.config.constraints.IsOneOf;
+import com.graylog.agent.outputs.OutputConfiguration;
 import com.graylog.agent.utils.ConfigurationUtils;
 import com.typesafe.config.Config;
 import org.hibernate.validator.constraints.NotBlank;

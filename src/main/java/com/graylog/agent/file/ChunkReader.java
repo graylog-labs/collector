@@ -1,7 +1,7 @@
 package com.graylog.agent.file;
 
 import com.google.common.base.Preconditions;
-import com.graylog.agent.inputs.FileInput;
+import com.graylog.agent.inputs.file.FileInput;
 import com.graylog.agent.inputs.Input;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;

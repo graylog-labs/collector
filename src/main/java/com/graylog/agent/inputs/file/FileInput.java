@@ -1,4 +1,4 @@
-package com.graylog.agent.inputs;
+package com.graylog.agent.inputs.file;
 
 import com.google.inject.assistedinject.Assisted;
 import com.graylog.agent.annotations.AgentInputFactory;
@@ -7,6 +7,7 @@ import com.graylog.agent.file.ChunkReader;
 import com.graylog.agent.file.FileReaderService;
 import com.graylog.agent.file.naming.NumberSuffixStrategy;
 import com.graylog.agent.file.splitters.NewlineChunkSplitter;
+import com.graylog.agent.inputs.InputService;
 import com.graylog.agent.utils.ConfigurationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

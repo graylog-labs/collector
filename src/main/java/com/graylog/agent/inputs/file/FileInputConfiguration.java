@@ -1,9 +1,10 @@
-package com.graylog.agent.inputs;
+package com.graylog.agent.inputs.file;
 
 import com.google.inject.assistedinject.Assisted;
 import com.graylog.agent.annotations.AgentConfigurationFactory;
 import com.graylog.agent.annotations.AgentInputConfiguration;
 import com.graylog.agent.config.constraints.IsAccessible;
+import com.graylog.agent.inputs.InputConfiguration;
 import com.graylog.agent.utils.ConfigurationUtils;
 import com.typesafe.config.Config;
 
