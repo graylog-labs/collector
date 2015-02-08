@@ -26,7 +26,9 @@ public abstract class AgentModule extends AbstractModule {
     private MapBinder<String, InputConfiguration.Factory<? extends InputConfiguration>> inputsMapBinder = null;
     private MapBinder<String, OutputConfiguration.Factory<? extends OutputConfiguration>> outputsMapBinder = null;
 
-    public void registerInput(Class<? extends Input> inputClass) {
+    public void registerInput(Class<? extends Input> inputClass, Class<? extends InputConfiguration> configClass) {
+        registerInputConfiguration(configClass);
+
         @SuppressWarnings("unchecked")
         final Class<? extends Input.Factory<? extends Input, ? extends InputConfiguration>> factoryClass =
                 (Class<? extends Input.Factory<? extends Input, ? extends InputConfiguration>>)
@@ -34,6 +36,19 @@ public abstract class AgentModule extends AbstractModule {
 
         if (factoryClass != null) {
             install(new FactoryModuleBuilder().implement(Input.class, inputClass).build(factoryClass));
+        }
+    }
+
+    public void registerOutput(Class<? extends Output> outputClass, Class<? extends OutputConfiguration> configClass) {
+        registerOutputConfiguration(configClass);
+
+        @SuppressWarnings("unchecked")
+        final Class<? extends Output.Factory<? extends Output, ? extends OutputConfiguration>> factoryClass =
+                (Class<? extends Output.Factory<? extends Output, ? extends OutputConfiguration>>)
+                        findInnerClassAnnotatedWith(AgentOutputFactory.class, outputClass, Output.Factory.class);
+
+        if (factoryClass != null) {
+            install(new FactoryModuleBuilder().implement(Output.class, outputClass).build(factoryClass));
         }
     }
 
@@ -70,18 +85,7 @@ public abstract class AgentModule extends AbstractModule {
         inputsMapBinder.addBinding(type).to(factoryClass);
     }
 
-    public void registerOutput(Class<? extends Output> outputClass) {
-        @SuppressWarnings("unchecked")
-        final Class<? extends Output.Factory<? extends Output, ? extends OutputConfiguration>> factoryClass =
-                (Class<? extends Output.Factory<? extends Output, ? extends OutputConfiguration>>)
-                        findInnerClassAnnotatedWith(AgentOutputFactory.class, outputClass, Output.Factory.class);
-
-        if (factoryClass != null) {
-            install(new FactoryModuleBuilder().implement(Output.class, outputClass).build(factoryClass));
-        }
-    }
-
-    public void registerOutputConfiguration(Class<? extends OutputConfiguration> configClass) {
+    private void registerOutputConfiguration(Class<? extends OutputConfiguration> configClass) {
         if (configClass.isAnnotationPresent(AgentOutputConfiguration.class)) {
             final AgentOutputConfiguration annotation = configClass.getAnnotation(AgentOutputConfiguration.class);
             registerOutputConfiguration(annotation.type(), configClass);

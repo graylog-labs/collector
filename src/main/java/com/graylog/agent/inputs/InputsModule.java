@@ -7,7 +7,6 @@ import com.graylog.agent.inputs.file.FileInputConfiguration;
 public class InputsModule extends AgentModule {
     @Override
     protected void configure() {
-        registerInputConfiguration(FileInputConfiguration.class);
-        registerInput(FileInput.class);
+        registerInput(FileInput.class, FileInputConfiguration.class);
     }
 }
