@@ -1,4 +1,4 @@
-package com.graylog.agent.utils;
+package com.graylog.agent.config;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;

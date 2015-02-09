@@ -4,7 +4,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.graylog.agent.annotations.AgentConfigurationFactory;
 import com.graylog.agent.annotations.AgentOutputConfiguration;
 import com.graylog.agent.outputs.OutputConfiguration;
-import com.graylog.agent.utils.ConfigurationUtils;
+import com.graylog.agent.config.ConfigurationUtils;
 import com.typesafe.config.Config;
 
 import javax.inject.Inject;

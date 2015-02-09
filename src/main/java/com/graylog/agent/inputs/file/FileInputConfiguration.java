@@ -5,7 +5,7 @@ import com.graylog.agent.annotations.AgentConfigurationFactory;
 import com.graylog.agent.annotations.AgentInputConfiguration;
 import com.graylog.agent.config.constraints.IsAccessible;
 import com.graylog.agent.inputs.InputConfiguration;
-import com.graylog.agent.utils.ConfigurationUtils;
+import com.graylog.agent.config.ConfigurationUtils;
 import com.typesafe.config.Config;
 
 import javax.inject.Inject;
