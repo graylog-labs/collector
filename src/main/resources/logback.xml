@@ -8,6 +8,7 @@
 
     <logger name="org.hibernate.validator" level="WARN"/>
     <logger name="org.jboss.logging" level="WARN"/>
+    <logger name="io.netty" level="WARN"/>
 
     <root level="debug">
         <appender-ref ref="STDOUT" />

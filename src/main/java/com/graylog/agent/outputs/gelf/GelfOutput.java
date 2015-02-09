@@ -1,11 +1,17 @@
 package com.graylog.agent.outputs.gelf;
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import com.google.inject.assistedinject.Assisted;
 import com.graylog.agent.Message;
 import com.graylog.agent.annotations.AgentOutputFactory;
 import com.graylog.agent.buffer.Buffer;
-import com.graylog.agent.outputs.OutputService;
 import com.graylog.agent.config.ConfigurationUtils;
+import com.graylog.agent.outputs.OutputService;
+import org.graylog2.gelfclient.GelfConfiguration;
+import org.graylog2.gelfclient.GelfMessageBuilder;
+import org.graylog2.gelfclient.GelfMessageLevel;
+import org.graylog2.gelfclient.GelfTransports;
+import org.graylog2.gelfclient.transport.GelfTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,8 +29,10 @@ public class GelfOutput extends OutputService {
 
     private final GelfOutputConfiguration configuration;
     private final Buffer buffer;
+    private GelfTransport transport;
 
     private final CountDownLatch stopLatch = new CountDownLatch(1);
+    private final CountDownLatch transportInitialized = new CountDownLatch(1);
 
     @Inject
     public GelfOutput(@Assisted GelfOutputConfiguration configuration, Buffer buffer) {
@@ -39,12 +47,38 @@ public class GelfOutput extends OutputService {
 
     @Override
     protected void run() throws Exception {
+        final GelfConfiguration clientConfig = new GelfConfiguration(configuration.getHost(), configuration.getPort())
+                .transport(GelfTransports.TCP)
+                .queueSize(500)
+                .connectTimeout(5000)
+                .reconnectDelay(1000)
+                .tcpNoDelay(true)
+                .sendBufferSize(32768);
+
+        LOG.info("Starting GELF transport: {}", clientConfig);
+        this.transport = GelfTransports.create(clientConfig);
+
+        transportInitialized.countDown();
         stopLatch.await();
+
+        LOG.debug("Stopping transport {}", transport);
+        transport.stop();
     }
 
     @Override
     public void write(Message message) {
-        LOG.info("[{}] Writing {}", getClass().getSimpleName(), message);
+        Uninterruptibles.awaitUninterruptibly(transportInitialized);
+
+        LOG.debug("Sending message: {}", message);
+
+        try {
+            final GelfMessageBuilder messageBuilder = new GelfMessageBuilder(message.getMessage(), message.getSource())
+                    .level(GelfMessageLevel.INFO);
+
+            transport.send(messageBuilder.build());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
