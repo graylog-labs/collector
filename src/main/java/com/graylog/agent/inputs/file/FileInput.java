@@ -1,6 +1,7 @@
 package com.graylog.agent.inputs.file;
 
 import com.google.inject.assistedinject.Assisted;
+import com.graylog.agent.MessageBuilder;
 import com.graylog.agent.annotations.AgentInputFactory;
 import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.file.ChunkReader;
@@ -9,6 +10,7 @@ import com.graylog.agent.file.naming.NumberSuffixStrategy;
 import com.graylog.agent.file.splitters.NewlineChunkSplitter;
 import com.graylog.agent.inputs.InputService;
 import com.graylog.agent.config.ConfigurationUtils;
+import com.graylog.agent.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,13 +55,14 @@ public class FileInput extends InputService {
     @Override
     protected void run() throws Exception {
         final Path path = configuration.getPath().toPath();
+        final MessageBuilder messageBuilder = new MessageBuilder().input(getId()).outputs(getOutputs()).source(Utils.getHostname());
         final FileReaderService readerService = new FileReaderService(
                 path,
                 new NumberSuffixStrategy(path),
                 true,
                 InitialReadPosition.END,
                 this,
-                null,
+                messageBuilder,
                 new NewlineChunkSplitter(),
                 buffer
         );

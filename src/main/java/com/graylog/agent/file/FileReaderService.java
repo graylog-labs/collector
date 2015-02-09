@@ -3,6 +3,7 @@ package com.graylog.agent.file;
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.AbstractService;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.graylog.agent.MessageBuilder;
 import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.file.naming.FileNamingStrategy;
 import com.graylog.agent.file.splitters.ContentSplitter;
@@ -28,6 +29,7 @@ public class FileReaderService extends AbstractService {
     private final boolean followMode;
     private final FileInput.InitialReadPosition initialReadPosition;
     private final FileInput input;
+    private final MessageBuilder messageBuilder;
     private final ContentSplitter contentSplitter;
     private final Buffer buffer;
     private FileObserver fileObserver;
@@ -44,7 +46,7 @@ public class FileReaderService extends AbstractService {
                              boolean followMode,
                              FileInput.InitialReadPosition initialReadPosition,
                              FileInput input,
-                             String sourceOverride,
+                             MessageBuilder messageBuilder,
                              ContentSplitter contentSplitter,
                              Buffer buffer) {
         // TODO needs to be an absolute path because otherwise the FileObserver does weird things. Investigate what's wrong with it.
@@ -53,6 +55,7 @@ public class FileReaderService extends AbstractService {
         this.followMode = followMode;
         this.initialReadPosition = initialReadPosition;
         this.input = input;
+        this.messageBuilder = messageBuilder;
         this.contentSplitter = contentSplitter;
         this.buffer = buffer;
         scheduler = Executors.newSingleThreadScheduledExecutor(
@@ -73,7 +76,7 @@ public class FileReaderService extends AbstractService {
             notifyFailed(new IllegalStateException(msg));
             return;
         }
-        chunkProcessor = new ChunkProcessor(buffer, input, chunkQueue, contentSplitter);
+        chunkProcessor = new ChunkProcessor(buffer, messageBuilder, chunkQueue, contentSplitter);
         chunkProcessor.addFileConfig(monitoredFile, "source", false);
         chunkProcessor.startAsync();
         chunkProcessor.awaitRunning();

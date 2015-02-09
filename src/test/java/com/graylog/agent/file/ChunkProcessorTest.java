@@ -1,9 +1,9 @@
 package com.graylog.agent.file;
 
-import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.Message;
+import com.graylog.agent.MessageBuilder;
+import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.file.splitters.NewlineChunkSplitter;
-import com.graylog.agent.inputs.Input;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.slf4j.Logger;
@@ -15,7 +15,6 @@ import java.nio.file.Paths;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static com.google.common.base.Charsets.UTF_8;
-import static org.mockito.Mockito.mock;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
@@ -158,9 +157,7 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
     private ChunkProcessor setupProcessor(Path logFile, Buffer buffer) {
         final LinkedBlockingQueue<FileChunk> chunkQueue = new LinkedBlockingQueue<>();
 
-        Input input = mock(Input.class);
-
-        final ChunkProcessor processor = new ChunkProcessor(buffer, input, chunkQueue, new NewlineChunkSplitter());
+        final ChunkProcessor processor = new ChunkProcessor(buffer, new MessageBuilder(), chunkQueue, new NewlineChunkSplitter());
         processor.addFileConfig(logFile, "test", true);
 
         return processor;

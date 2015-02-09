@@ -9,16 +9,21 @@ public class Message {
     private final DateTime timestamp;
     private final String input;
     private final Set<String> outputs;
-    private final MessageFields fields = new MessageFields();
+    private final MessageFields fields;
     private String message;
     private String source;
 
     public Message(String message, String source, DateTime timestamp, String input, Set<String> outputs) {
+        this(message, source, timestamp, input, outputs, new MessageFields());
+    }
+
+    public Message(String message, String source, DateTime timestamp, String input, Set<String> outputs, MessageFields fields) {
         this.source = source;
         this.message = message;
         this.timestamp = timestamp;
         this.input = input;
         this.outputs = outputs;
+        this.fields = fields;
     }
 
     public DateTime getTimestamp() {

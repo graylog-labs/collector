@@ -1,13 +1,11 @@
 package com.graylog.agent.file;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import com.graylog.agent.Message;
+import com.graylog.agent.MessageBuilder;
 import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.file.splitters.ContentSplitter;
-import com.graylog.agent.inputs.Input;
-import com.graylog.agent.utils.Utils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.joda.time.DateTime;
@@ -25,9 +23,8 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
     private static final Logger log = LoggerFactory.getLogger(ChunkProcessor.class);
 
     private final Buffer buffer;
-    private final Input input;
+    private final MessageBuilder messageBuilder;
     private final BlockingQueue<FileChunk> chunkQueue;
-    private String hostname = "";
 
     private final ContentSplitter splitter;
 
@@ -58,12 +55,11 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
     private Map<Path, ChannelBuffer> buffersPerFile = Maps.newHashMap();
     private Map<Path, ImmutablePair<String, Boolean>> pathConfig = Maps.newHashMap();
 
-    public ChunkProcessor(Buffer buffer, Input input, BlockingQueue<FileChunk> chunkQueue, ContentSplitter splitter) {
+    public ChunkProcessor(Buffer buffer, MessageBuilder messageBuilder, BlockingQueue<FileChunk> chunkQueue, ContentSplitter splitter) {
         this.buffer = buffer;
-        this.input = input;
+        this.messageBuilder = messageBuilder;
         this.chunkQueue = chunkQueue;
         this.splitter = splitter;
-        this.hostname = Utils.getHostname();
     }
 
     public void addFileConfig(Path path, String source, boolean overrideTimestamp) {
@@ -80,7 +76,7 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
             final ChannelBuffer channelBuffer = buffersPerFile.get(path);
             final Iterable<String> messages = splitter.splitRemaining(channelBuffer);
 
-            createMessages(options, messages);
+            createMessages(path, messages);
 
             // nothing more to do.
             stopAsync();
@@ -98,20 +94,23 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
         buffersPerFile.put(path, combinedBuffer);
         Iterable<String> messages = splitter.split(combinedBuffer);
 
-        createMessages(options, messages);
+        createMessages(path, messages);
     }
 
-    private void createMessages(ImmutablePair<String, Boolean> options, Iterable<String> messages) {
+    private void createMessages(Path path, Iterable<String> messages) {
         for (String messageString : messages) {
             if (messageString.isEmpty()) {
                 // skip completely empty messages, they contain no useful information
                 continue;
             }
-            final Message message = new Message(messageString,
-                                                Strings.isNullOrEmpty(options.first) ? hostname : options.first,
-                                                DateTime.now(DateTimeZone.UTC),
-                                                input.getId(),
-                                                input.getOutputs());
+
+            final Message message = messageBuilder.copy()
+                    .message(messageString)
+                    .timestamp(DateTime.now(DateTimeZone.UTC))
+                    .build();
+
+            message.getFields().put("source_file", path.toFile().getAbsolutePath());
+
             buffer.insert(message);
         }
     }
