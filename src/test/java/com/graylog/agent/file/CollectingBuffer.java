@@ -1,8 +1,8 @@
 package com.graylog.agent.file;
 
 import com.google.common.collect.Queues;
-import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.Message;
+import com.graylog.agent.buffer.Buffer;
 
 import java.util.concurrent.BlockingQueue;
 

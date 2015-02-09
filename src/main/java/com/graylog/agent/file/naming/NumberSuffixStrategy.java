@@ -15,7 +15,7 @@ public class NumberSuffixStrategy implements FileNamingStrategy {
         path = path.normalize();
         path = basePath.getParent().resolve(path);
         // only allow files in the same directory
-        if (! basePath.getParent().equals(path.getParent())) {
+        if (!basePath.getParent().equals(path.getParent())) {
             return false;
         }
         final String filename = path.getFileName().toString();
@@ -27,7 +27,7 @@ public class NumberSuffixStrategy implements FileNamingStrategy {
         }
 
         // do the files have a common beginning? if not, they aren't related.
-        if (! filename.startsWith(baseFilename)) {
+        if (!filename.startsWith(baseFilename)) {
             return false;
         }
 

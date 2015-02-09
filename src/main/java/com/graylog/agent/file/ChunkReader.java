@@ -55,7 +55,7 @@ public class ChunkReader implements Runnable {
                 final BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
                 fileKey = attr.fileKey();
                 if (initialReadPosition == FileInput.InitialReadPosition.END) {
-                        position = attr.size();
+                    position = attr.size();
                 }
             } catch (IOException e) {
                 log.error("Cannot access file metadata", e);
@@ -106,7 +106,7 @@ public class ChunkReader implements Runnable {
                     // the buffer could not be added to the queue, we'll buffer it in this chunkreader until we can get rid of it
                     queuedChunk = chunk;
                     log.debug("[{}] Unable to queue chunk, buffering it until next execution, not reading more chunks.",
-                              path);
+                            path);
                     return;
                 }
                 log.debug("[{}] Queued chunk of {} bytes, chunk number {}", new Object[]{path, bytesRead, chunkId});

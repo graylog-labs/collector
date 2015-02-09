@@ -93,7 +93,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
 
         final boolean newFile = file.createNewFile();
         log.debug("Created new file {} with key {}", file.getPath(),
-                  Files.readAttributes(path, BasicFileAttributes.class).fileKey());
+                Files.readAttributes(path, BasicFileAttributes.class).fileKey());
         assertTrue(newFile, "Created monitored file");
 
         // OS X is using a poll service here, the default poll frequency is 10s (we set it to 2, but that's platform specific)

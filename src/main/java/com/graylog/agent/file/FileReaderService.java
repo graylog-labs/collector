@@ -88,14 +88,14 @@ public class FileReaderService extends AbstractService {
             // for a previously existing file, we would not get a watcher callback, so we initialize the chunkreader here
             if (monitoredFile.toFile().exists()) {
                 AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(monitoredFile,
-                                                                                   StandardOpenOption.READ);
+                        StandardOpenOption.READ);
                 chunkReader = new ChunkReader(input,
-                                              monitoredFile,
-                                              fileChannel,
-                                              chunkQueue,
-                                              1024,
-                                              followMode,
-                                              initialReadPosition);
+                        monitoredFile,
+                        fileChannel,
+                        chunkQueue,
+                        1024,
+                        followMode,
+                        initialReadPosition);
                 chunkReaderFuture = scheduler.scheduleAtFixedRate(chunkReader, 0, 250, TimeUnit.MILLISECONDS);
             }
         } catch (Exception e) {
@@ -139,14 +139,14 @@ public class FileReaderService extends AbstractService {
                 try {
                     if (monitoredFile.toFile().exists()) {
                         AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(monitoredFile,
-                                                                                           StandardOpenOption.READ);
+                                StandardOpenOption.READ);
                         chunkReader = new ChunkReader(input,
-                                                      monitoredFile,
-                                                      fileChannel,
-                                                      chunkQueue,
-                                                      1024,
-                                                      followMode,
-                                                      initialReadPosition);
+                                monitoredFile,
+                                fileChannel,
+                                chunkQueue,
+                                1024,
+                                followMode,
+                                initialReadPosition);
                         chunkReaderFuture = scheduler.scheduleAtFixedRate(chunkReader, 0, 250, TimeUnit.MILLISECONDS);
                     }
                 } catch (IOException e) {

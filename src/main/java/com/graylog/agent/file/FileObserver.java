@@ -63,8 +63,8 @@ public class FileObserver extends AbstractExecutionThreadService {
         if (!Files.isDirectory(directory, LinkOption.NOFOLLOW_LINKS)) {
             directory = path.getParent();
         }
-        final WatchKey key = directory.register(watcher, new WatchEvent.Kind[] {ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY},
-                                                SensitivityWatchEventModifier.HIGH);
+        final WatchKey key = directory.register(watcher, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY},
+                SensitivityWatchEventModifier.HIGH);
         log.debug("Watching directory {} for file {}", directory, path);
         keys.put(key, new WatchEntry(path, namingStrategy, listener));
     }
@@ -95,7 +95,7 @@ public class FileObserver extends AbstractExecutionThreadService {
                 path = path.resolve(watchEntry.path);
                 log.debug("Event {} for path {} received", ev.kind(), path);
 
-                if (! watchEntry.namingStrategy.pathMatches(path)) {
+                if (!watchEntry.namingStrategy.pathMatches(path)) {
                     // this file path does not belong to the set of files we are interested in
                     log.trace("Ignoring change [] to path []. Does not fit naming scheme.", ev.kind().name(), path.toString());
                 }
@@ -119,8 +119,11 @@ public class FileObserver extends AbstractExecutionThreadService {
 
     public interface Listener {
         void pathCreated(Path path);
+
         void pathRemoved(Path path);
+
         void pathModified(Path path);
+
         void cannotObservePath(Path path);
     }
 }

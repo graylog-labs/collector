@@ -38,7 +38,7 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
         }
     }
 
-    private static class ImmutablePair<K,V> {
+    private static class ImmutablePair<K, V> {
         final K first;
         final V second;
 
@@ -47,7 +47,7 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
             this.second = second;
         }
 
-        public static <K, V> ImmutablePair<K,V> of(K first, V second) {
+        public static <K, V> ImmutablePair<K, V> of(K first, V second) {
             return new ImmutablePair<>(first, second);
         }
     }
@@ -82,7 +82,7 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
             stopAsync();
             return;
         }
-        log.debug("[{}] Processing {} bytes chunk (pos {})", new Object[] {path, chunk.getChunkBuffer().readableBytes(), chunk.getId()});
+        log.debug("[{}] Processing {} bytes chunk (pos {})", new Object[]{path, chunk.getChunkBuffer().readableBytes(), chunk.getId()});
 
         final ByteBuf byteBuf = buffersPerFile.get(path);
         ByteBuf combinedBuffer;

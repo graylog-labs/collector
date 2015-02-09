@@ -1,7 +1,7 @@
 package com.graylog.agent.outputs;
 
-import com.graylog.agent.buffer.BufferConsumer;
 import com.graylog.agent.Message;
+import com.graylog.agent.buffer.BufferConsumer;
 import com.graylog.agent.config.ConfigurationRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

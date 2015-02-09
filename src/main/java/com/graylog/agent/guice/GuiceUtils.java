@@ -11,8 +11,8 @@ public class GuiceUtils {
 
     @Nullable
     public static Class<?> findInnerClassAnnotatedWith(Class<? extends Annotation> annotationClass,
-                                                   Class<?> containingClass,
-                                                   Class<?> targetClass) {
+                                                       Class<?> containingClass,
+                                                       Class<?> targetClass) {
         final Class<?>[] declaredClasses = containingClass.getDeclaredClasses();
         Class<?> annotatedClass = null;
         for (final Class<?> declaredClass : declaredClasses) {

@@ -41,7 +41,7 @@ public class ChunkReaderTest implements Thread.UncaughtExceptionHandler {
         final CountingAsyncFileChannel spy = new CountingAsyncFileChannel(channel);
 
         final ChunkReader chunkReader = new ChunkReader(mock(FileInput.class), tempFile, spy, chunkQueue, 10 * 1024, false,
-                                                        FileInput.InitialReadPosition.START);
+                FileInput.InitialReadPosition.START);
 
         final ScheduledExecutorService chunkReaderExecutor = Executors.newSingleThreadScheduledExecutor(
                 new ThreadFactoryBuilder()
@@ -83,7 +83,7 @@ public class ChunkReaderTest implements Thread.UncaughtExceptionHandler {
         final CountingAsyncFileChannel spy = new CountingAsyncFileChannel(channel);
 
         final ChunkReader chunkReader = new ChunkReader(mock(FileInput.class), logFile.getPath(), spy, chunkQueue, 10 * 1024, true,
-                                                        FileInput.InitialReadPosition.END);
+                FileInput.InitialReadPosition.END);
 
         final ScheduledExecutorService chunkReaderExecutor = Executors.newSingleThreadScheduledExecutor(
                 new ThreadFactoryBuilder()
@@ -99,8 +99,9 @@ public class ChunkReaderTest implements Thread.UncaughtExceptionHandler {
                 try {
                     final FileChunk chunk = chunkQueue.poll(2, TimeUnit.SECONDS);
                     assertNull(chunk,
-                               "Reading from the end of the file must not produce a chunk for a non-changing file.");
-                } catch (InterruptedException ignore) {}
+                            "Reading from the end of the file must not produce a chunk for a non-changing file.");
+                } catch (InterruptedException ignore) {
+                }
             }
         };
         consumer.start();
@@ -120,7 +121,7 @@ public class ChunkReaderTest implements Thread.UncaughtExceptionHandler {
         final CountingAsyncFileChannel spy = new CountingAsyncFileChannel(channel);
 
         final ChunkReader chunkReader = new ChunkReader(mock(FileInput.class), logFile.getPath(), spy, chunkQueue, 10 * 1024, true,
-                                                        FileInput.InitialReadPosition.END);
+                FileInput.InitialReadPosition.END);
 
         final ScheduledExecutorService chunkReaderExecutor = Executors.newSingleThreadScheduledExecutor(
                 new ThreadFactoryBuilder()
@@ -154,7 +155,7 @@ public class ChunkReaderTest implements Thread.UncaughtExceptionHandler {
                 try {
                     final FileChunk chunk = chunkQueue.poll(2, TimeUnit.SECONDS);
                     assertNull(chunk,
-                               "Reading from the end of the file must not produce a chunk for a non-changing file.");
+                            "Reading from the end of the file must not produce a chunk for a non-changing file.");
                     produceLatch.countDown();
                     // this assumes that we will read the entire line we've written above.
                     // might be brittle and can break if we happen to read only part of the strings, but given the
@@ -162,7 +163,8 @@ public class ChunkReaderTest implements Thread.UncaughtExceptionHandler {
                     final FileChunk nextChunk = chunkQueue.poll(2, TimeUnit.SECONDS);
                     assertNotNull(nextChunk, "the next chunk should be filled");
                     assertEquals(nextChunk.getChunkBuffer().toString(Charsets.UTF_8), appendedLine + "\n", "line should match");
-                } catch (InterruptedException ignore) {}
+                } catch (InterruptedException ignore) {
+                }
             }
         };
         consumer.start();

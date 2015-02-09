@@ -83,7 +83,8 @@ public abstract class AgentModule extends AbstractModule {
         if (inputsMapBinder == null) {
             this.inputsMapBinder = MapBinder.newMapBinder(binder(),
                     TypeLiteral.get(String.class),
-                    new TypeLiteral<InputConfiguration.Factory<? extends InputConfiguration>>() {});
+                    new TypeLiteral<InputConfiguration.Factory<? extends InputConfiguration>>() {
+                    });
         }
 
         @SuppressWarnings("unchecked")
@@ -116,7 +117,8 @@ public abstract class AgentModule extends AbstractModule {
         if (inputsMapBinder == null) {
             this.outputsMapBinder = MapBinder.newMapBinder(binder(),
                     TypeLiteral.get(String.class),
-                    new TypeLiteral<OutputConfiguration.Factory<? extends OutputConfiguration>>() {});
+                    new TypeLiteral<OutputConfiguration.Factory<? extends OutputConfiguration>>() {
+                    });
         }
 
         @SuppressWarnings("unchecked")

@@ -3,7 +3,6 @@ package com.graylog.agent.config;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
-import com.graylog.agent.config.Configuration;
 
 import javax.annotation.Nullable;
 import java.util.Map;
