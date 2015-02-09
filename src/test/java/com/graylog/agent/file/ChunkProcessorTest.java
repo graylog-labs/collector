@@ -31,7 +31,7 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
             int messagenumber = 0;
 
             @Override
-            public void insert(Message message, Input sourceInput) {
+            public void insert(Message message) {
                 log.debug("Received message {}", message);
                 messagenumber++;
                 assertEquals(message.getSource(), "test");
@@ -63,7 +63,7 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
             public int messageNumber = 0;
 
             @Override
-            public void insert(Message message, Input sourceInput) {
+            public void insert(Message message) {
                 log.debug("Received message {}", message);
                 assertEquals(message.getSource(), "test");
                 messageNumber++;
@@ -97,7 +97,7 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
             public int messageNumber = 0;
 
             @Override
-            public void insert(Message message, Input sourceInput) {
+            public void insert(Message message) {
                 messageNumber++;
                 switch (messageNumber) {
                     case 1:
@@ -131,7 +131,7 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
             public int messageNumber = 0;
 
             @Override
-            public void insert(Message message, Input sourceInput) {
+            public void insert(Message message) {
                 log.debug(String.valueOf(message.getMessage()));
                 messageNumber++;
                 switch (messageNumber) {

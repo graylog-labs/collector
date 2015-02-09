@@ -2,7 +2,6 @@ package com.graylog.agent.buffer;
 
 import com.google.common.collect.Queues;
 import com.graylog.agent.Message;
-import com.graylog.agent.inputs.Input;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +18,7 @@ public class MessageBuffer implements Buffer {
         this.queue = Queues.newLinkedBlockingQueue(config.getSize());
     }
 
-    public void insert(Message message, Input input) {
+    public void insert(Message message) {
         LOG.debug("Adding message to queue: {}", message);
 
         try {

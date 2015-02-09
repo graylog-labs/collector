@@ -3,7 +3,6 @@ package com.graylog.agent.file;
 import com.google.common.collect.Queues;
 import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.Message;
-import com.graylog.agent.inputs.Input;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -14,7 +13,7 @@ class CollectingBuffer implements Buffer {
     private boolean processingDisabled = false;
 
     @Override
-    public void insert(Message message, Input sourceInput) {
+    public void insert(Message message) {
         messages.add(message);
     }
 

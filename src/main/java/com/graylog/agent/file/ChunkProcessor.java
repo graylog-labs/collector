@@ -112,7 +112,7 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
                                                 DateTime.now(DateTimeZone.UTC),
                                                 input.getId(),
                                                 input.getOutputs());
-            buffer.insert(message, input);
+            buffer.insert(message);
         }
     }
 
