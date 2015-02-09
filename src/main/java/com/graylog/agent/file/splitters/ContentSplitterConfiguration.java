@@ -1,11 +1,11 @@
-package com.graylog.agent.file.compat;
+package com.graylog.agent.file.splitters;
 
 import java.util.Map;
 
-public class Configuration {
+public class ContentSplitterConfiguration {
     private final Map<String, Object> values;
 
-    public Configuration(Map<String, Object> values) {
+    public ContentSplitterConfiguration(Map<String, Object> values) {
         this.values = values;
     }
 

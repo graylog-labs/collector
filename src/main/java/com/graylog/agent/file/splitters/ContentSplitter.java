@@ -1,14 +1,13 @@
 package com.graylog.agent.file.splitters;
 
 import com.google.common.base.Charsets;
-import com.graylog.agent.file.compat.Configuration;
 import org.jboss.netty.buffer.ChannelBuffer;
 
 import java.nio.charset.Charset;
 
 public abstract class ContentSplitter {
 
-    public abstract void configure(Configuration configuration);
+    public abstract void configure(ContentSplitterConfiguration configuration);
 
     public abstract Iterable<String> split(ChannelBuffer buffer, Charset charset, boolean includeRemainingData);
 

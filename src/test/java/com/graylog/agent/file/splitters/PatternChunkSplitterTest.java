@@ -2,7 +2,6 @@ package com.graylog.agent.file.splitters;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
-import com.graylog.agent.file.compat.Configuration;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.testng.annotations.Test;
@@ -19,7 +18,7 @@ public class PatternChunkSplitterTest {
         final PatternChunkSplitter splitter = new PatternChunkSplitter();
         Map<String, Object> values = Maps.newHashMap();
         values.put(PatternChunkSplitter.CK_SPLITTER_PATTERN, "^(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)");
-        splitter.configure(new Configuration(values));
+        splitter.configure(new ContentSplitterConfiguration(values));
 
         String logLines = "Feb 20 17:05:18 otter kernel[0]: CODE SIGNING: cs_invalid_page(0x1000): p=32696[GoogleSoftwareUp] final status 0x0, allow (remove VALID)ing page\n" +
                 "Feb 20 17:05:18 otter GoogleSoftwareUpdateDaemon[32697]: -[KeystoneDaemon logServiceState] GoogleSoftwareUpdate daemon (1.1.0.3659) vending:\n" +

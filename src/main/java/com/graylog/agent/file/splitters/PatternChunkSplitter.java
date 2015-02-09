@@ -1,7 +1,6 @@
 package com.graylog.agent.file.splitters;
 
 import com.google.common.collect.AbstractIterator;
-import com.graylog.agent.file.compat.Configuration;
 import org.jboss.netty.buffer.ChannelBuffer;
 
 import java.nio.charset.Charset;
@@ -18,7 +17,7 @@ public class PatternChunkSplitter extends ContentSplitter {
     private Pattern pattern;
 
     @Override
-    public void configure(Configuration configuration) {
+    public void configure(ContentSplitterConfiguration configuration) {
         final String regex = configuration.getString(CK_SPLITTER_PATTERN);
         pattern = Pattern.compile(regex, Pattern.MULTILINE);
     }

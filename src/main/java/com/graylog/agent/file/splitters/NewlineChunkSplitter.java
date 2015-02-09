@@ -1,7 +1,6 @@
 package com.graylog.agent.file.splitters;
 
 import com.google.common.collect.AbstractIterator;
-import com.graylog.agent.file.compat.Configuration;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferIndexFinder;
 
@@ -10,7 +9,7 @@ import java.util.Iterator;
 
 public class NewlineChunkSplitter extends ContentSplitter {
     @Override
-    public void configure(Configuration configuration) {
+    public void configure(ContentSplitterConfiguration configuration) {
     }
 
     @Override
