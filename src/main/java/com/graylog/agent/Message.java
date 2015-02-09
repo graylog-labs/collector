@@ -9,6 +9,7 @@ public class Message {
     private final DateTime timestamp;
     private final String input;
     private final Set<String> outputs;
+    private final MessageFields fields = new MessageFields();
     private String message;
     private String source;
 
@@ -40,6 +41,10 @@ public class Message {
         return outputs;
     }
 
+    public MessageFields getFields() {
+        return fields;
+    }
+
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("Message{");
@@ -48,6 +53,7 @@ public class Message {
         sb.append(", source='").append(getSource()).append('\'');
         sb.append(", input='").append(getInput()).append('\'');
         sb.append(", outputs=").append(Joiner.on(",").join(getOutputs()));
+        sb.append(", fields=").append(getFields().asMap());
         sb.append('}');
         return sb.toString();
     }
