@@ -12,6 +12,7 @@ import org.testng.annotations.Test;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static com.google.common.base.Charsets.UTF_8;
@@ -157,7 +158,8 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
     private ChunkProcessor setupProcessor(Path logFile, Buffer buffer) {
         final LinkedBlockingQueue<FileChunk> chunkQueue = new LinkedBlockingQueue<>();
 
-        final ChunkProcessor processor = new ChunkProcessor(buffer, new MessageBuilder(), chunkQueue, new NewlineChunkSplitter());
+        final MessageBuilder messageBuilder = new MessageBuilder().input("input-id").outputs(new HashSet<String>()).source("test");
+        final ChunkProcessor processor = new ChunkProcessor(buffer, messageBuilder, chunkQueue, new NewlineChunkSplitter());
         processor.addFileConfig(logFile, "test", true);
 
         return processor;

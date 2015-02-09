@@ -2,6 +2,7 @@ package com.graylog.agent.file;
 
 import com.google.common.util.concurrent.Service;
 import com.graylog.agent.Message;
+import com.graylog.agent.MessageBuilder;
 import com.graylog.agent.file.naming.NumberSuffixStrategy;
 import com.graylog.agent.file.splitters.NewlineChunkSplitter;
 import com.graylog.agent.inputs.file.FileInput;
@@ -17,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -122,13 +124,14 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         final FileInput mockInput = mockFileInput();
 
         final CollectingBuffer buffer = new CollectingBuffer();
+        final MessageBuilder messageBuilder = new MessageBuilder().input("input-id").outputs(new HashSet<String>()).source("test");
         final FileReaderService readerService = new FileReaderService(
                 path,
                 new NumberSuffixStrategy(path),
                 true,
                 FileInput.InitialReadPosition.START,
                 mockInput,
-                null,
+                messageBuilder,
                 new NewlineChunkSplitter(),
                 buffer);
 
