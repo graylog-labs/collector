@@ -4,8 +4,12 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Service;
+import com.graylog.agent.inputs.Input;
 import com.graylog.agent.inputs.InputConfiguration;
+import com.graylog.agent.inputs.InputService;
+import com.graylog.agent.outputs.Output;
 import com.graylog.agent.outputs.OutputConfiguration;
+import com.graylog.agent.outputs.OutputService;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigObject;
@@ -18,6 +22,8 @@ import java.util.Set;
 
 public class ConfigurationRegistry {
     private final Set<Service> services = Sets.newHashSet();
+    private final Set<Input> inputs = Sets.newHashSet();
+    private final Set<Output> outputs = Sets.newHashSet();
 
     private final Map<String, InputConfiguration.Factory<? extends InputConfiguration>> inputConfigFactories;
     private final Map<String, OutputConfiguration.Factory<? extends OutputConfiguration>> outputConfigFactories;
@@ -58,7 +64,9 @@ public class ConfigurationRegistry {
             public void call(String type, String id, Config config) {
                 if (factories.containsKey(type)) {
                     final InputConfiguration cfg = factories.get(type).create(id, config);
-                    services.add(cfg.createInput());
+                    final InputService input = cfg.createInput();
+                    services.add(input);
+                    inputs.add(input);
                 } else {
                     errors.add(new ConfigurationError("Unknown input type \"" + type + "\" for " + id));
                 }
@@ -74,7 +82,9 @@ public class ConfigurationRegistry {
             public void call(String type, String id, Config config) {
                 if (factories.containsKey(type)) {
                     final OutputConfiguration cfg = factories.get(type).create(id, config);
-                    services.add(cfg.createOutput());
+                    final OutputService output = cfg.createOutput();
+                    services.add(output);
+                    outputs.add(output);
                 } else {
                     errors.add(new ConfigurationError("Unknown output type \"" + type + "\" for " + id));
                 }
@@ -112,6 +122,14 @@ public class ConfigurationRegistry {
 
     public Set<Service> getServices() {
         return services;
+    }
+
+    public Set<Input> getInputs() {
+        return inputs;
+    }
+
+    public Set<Output> getOutputs() {
+        return outputs;
     }
 
     private interface ConfigCallback {

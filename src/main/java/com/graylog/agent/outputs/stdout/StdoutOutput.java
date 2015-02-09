@@ -1,16 +1,21 @@
 package com.graylog.agent.outputs.stdout;
 
 import com.google.inject.assistedinject.Assisted;
+import com.graylog.agent.Message;
 import com.graylog.agent.annotations.AgentOutputFactory;
 import com.graylog.agent.buffer.Buffer;
-import com.graylog.agent.outputs.OutputService;
 import com.graylog.agent.config.ConfigurationUtils;
+import com.graylog.agent.outputs.OutputService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 public class StdoutOutput extends OutputService {
+    private static final Logger LOG = LoggerFactory.getLogger(StdoutOutput.class);
+
     @AgentOutputFactory
     public interface Factory extends OutputService.Factory<StdoutOutput, StdoutOutputConfiguration> {
         StdoutOutput create(StdoutOutputConfiguration configuration);
@@ -35,6 +40,11 @@ public class StdoutOutput extends OutputService {
     @Override
     protected void run() throws Exception {
         stopLatch.await();
+    }
+
+    @Override
+    public void write(Message message) {
+        LOG.info("[{}] Writing {}", getClass().getSimpleName(), message);
     }
 
     @Override
