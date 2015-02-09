@@ -48,12 +48,12 @@ public class GelfOutput extends OutputService {
     @Override
     protected void run() throws Exception {
         final GelfConfiguration clientConfig = new GelfConfiguration(configuration.getHost(), configuration.getPort())
-                .transport(GelfTransports.TCP)
-                .queueSize(500)
-                .connectTimeout(5000)
-                .reconnectDelay(1000)
-                .tcpNoDelay(true)
-                .sendBufferSize(32768);
+                .transport(GelfTransports.valueOf(configuration.getProtocol().toUpperCase()))
+                .queueSize(configuration.getClientQueueSize())
+                .connectTimeout(configuration.getClientConnectTimeout())
+                .reconnectDelay(configuration.getClientReconnectDelay())
+                .tcpNoDelay(configuration.isClientTcpNoDelay())
+                .sendBufferSize(configuration.getClientSendBufferSize());
 
         LOG.info("Starting GELF transport: {}", clientConfig);
         this.transport = GelfTransports.create(clientConfig);

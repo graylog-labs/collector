@@ -37,6 +37,25 @@ public class GelfOutputConfiguration extends OutputConfiguration {
     @Range(min = 1024, max = 65535)
     private int port;
 
+    @NotNull
+    @Range(min = 1, max = Integer.MAX_VALUE)
+    private int clientQueueSize = 512;
+
+    @NotNull
+    @Range(min = 1, max = Integer.MAX_VALUE)
+    private int clientConnectTimeout = 5000;
+
+    @NotNull
+    @Range(min = 1, max = Integer.MAX_VALUE)
+    private int clientReconnectDelay = 1000;
+
+    @NotNull
+    private boolean clientTcpNoDelay = true;
+
+    @NotNull
+    @Range(min = -1, max = Integer.MAX_VALUE)
+    private int clientSendBufferSize = -1;
+
     @Inject
     public GelfOutputConfiguration(@Assisted String id,
                                    @Assisted Config config,
@@ -52,6 +71,21 @@ public class GelfOutputConfiguration extends OutputConfiguration {
         }
         if (config.hasPath("port")) {
             this.port = config.getInt("port");
+        }
+        if (config.hasPath("client-queue-size")) {
+            this.clientQueueSize = config.getInt("client-queue-size");
+        }
+        if (config.hasPath("client-connect-timeout")) {
+            this.clientConnectTimeout = config.getInt("client-connect-timeout");
+        }
+        if (config.hasPath("client-reconnect-delay")) {
+            this.clientReconnectDelay = config.getInt("client-reconnect-delay");
+        }
+        if (config.hasPath("client-tcp-no-delay")) {
+            this.clientTcpNoDelay = config.getBoolean("client-tcp-no-delay");
+        }
+        if (config.hasPath("client-send-buffer-size")) {
+            this.clientSendBufferSize = config.getInt("client-send-buffer-size");
         }
     }
 
@@ -72,6 +106,26 @@ public class GelfOutputConfiguration extends OutputConfiguration {
         return port;
     }
 
+    public int getClientQueueSize() {
+        return clientQueueSize;
+    }
+
+    public int getClientConnectTimeout() {
+        return clientConnectTimeout;
+    }
+
+    public int getClientReconnectDelay() {
+        return clientReconnectDelay;
+    }
+
+    public boolean isClientTcpNoDelay() {
+        return clientTcpNoDelay;
+    }
+
+    public int getClientSendBufferSize() {
+        return clientSendBufferSize;
+    }
+
     @Override
     public Map<String, String> toStringValues() {
         return Collections.unmodifiableMap(new HashMap<String, String>(super.toStringValues()) {
@@ -79,6 +133,11 @@ public class GelfOutputConfiguration extends OutputConfiguration {
                 put("protocol", getProtocol());
                 put("host", getHost());
                 put("port", String.valueOf(getPort()));
+                put("client-queue-size", String.valueOf(getClientQueueSize()));
+                put("client-connect-timeout", String.valueOf(getClientConnectTimeout()));
+                put("client-reconnect-delay", String.valueOf(getClientReconnectDelay()));
+                put("client-tcp-no-delay", String.valueOf(isClientTcpNoDelay()));
+                put("client-send-buffer-size", String.valueOf(getClientSendBufferSize()));
             }
         });
     }
