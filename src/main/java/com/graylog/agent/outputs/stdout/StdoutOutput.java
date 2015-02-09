@@ -44,7 +44,7 @@ public class StdoutOutput extends OutputService {
 
     @Override
     public void write(Message message) {
-        LOG.info("[{}] MESSAGE: {}", getClass().getSimpleName(), message);
+        LOG.info("MESSAGE: {}", message);
     }
 
     @Override
