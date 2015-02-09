@@ -1,16 +1,16 @@
 package com.graylog.agent.file;
 
-import org.jboss.netty.buffer.ChannelBuffer;
+import io.netty.buffer.ByteBuf;
 
 import java.nio.file.Path;
 
 public class FileChunk {
 
     private final Path path;
-    private final ChannelBuffer chunkBuffer;
+    private final ByteBuf chunkBuffer;
     private final long id;
 
-    public FileChunk(Path path, ChannelBuffer chunkBuffer, long id) {
+    public FileChunk(Path path, ByteBuf chunkBuffer, long id) {
         this.path = path;
         this.chunkBuffer = chunkBuffer;
         this.id = id;
@@ -24,7 +24,7 @@ public class FileChunk {
         return path;
     }
 
-    public ChannelBuffer getChunkBuffer() {
+    public ByteBuf getChunkBuffer() {
         return chunkBuffer;
     }
 

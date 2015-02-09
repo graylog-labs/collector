@@ -1,7 +1,7 @@
 package com.graylog.agent.file.splitters;
 
 import com.google.common.collect.AbstractIterator;
-import org.jboss.netty.buffer.ChannelBuffer;
+import io.netty.buffer.ByteBuf;
 
 import java.nio.charset.Charset;
 import java.util.Iterator;
@@ -23,7 +23,7 @@ public class PatternChunkSplitter extends ContentSplitter {
     }
 
     @Override
-    public Iterable<String> split(final ChannelBuffer buffer, final Charset charset, final boolean includeRemainingData) {
+    public Iterable<String> split(final ByteBuf buffer, final Charset charset, final boolean includeRemainingData) {
         return new Iterable<String>() {
             @Override
             public Iterator<String> iterator() {
@@ -35,7 +35,7 @@ public class PatternChunkSplitter extends ContentSplitter {
                     @Override
                     protected String computeNext() {
                         try {
-                            if (!buffer.readable()) {
+                            if (!buffer.isReadable()) {
                                 return endOfData();
                             }
                             if (matcher.find()) {
@@ -80,7 +80,7 @@ public class PatternChunkSplitter extends ContentSplitter {
                     }
 
                     private String getRemainingContent() {
-                        final ChannelBuffer channelBuffer = buffer.readBytes(buffer.readableBytes());
+                        final ByteBuf channelBuffer = buffer.readBytes(buffer.readableBytes());
                         return channelBuffer.toString(charset);
                     }
                 };

@@ -1,7 +1,7 @@
 package com.graylog.agent.file.splitters;
 
 import com.google.common.base.Charsets;
-import org.jboss.netty.buffer.ChannelBuffer;
+import io.netty.buffer.ByteBuf;
 
 import java.nio.charset.Charset;
 
@@ -9,7 +9,7 @@ public abstract class ContentSplitter {
 
     public abstract void configure(ContentSplitterConfiguration configuration);
 
-    public abstract Iterable<String> split(ChannelBuffer buffer, Charset charset, boolean includeRemainingData);
+    public abstract Iterable<String> split(ByteBuf buffer, Charset charset, boolean includeRemainingData);
 
     /**
      * Convenience method for {@link ContentSplitter#split(org.jboss.netty.buffer.ChannelBuffer, java.nio.charset.Charset, boolean)} with the character set UTF-8.
@@ -17,11 +17,11 @@ public abstract class ContentSplitter {
      * @param buffer
      * @return
      */
-    public Iterable<String> split(ChannelBuffer buffer) {
+    public Iterable<String> split(ByteBuf buffer) {
         return split(buffer, Charsets.UTF_8, false);
     }
 
-    public Iterable<String> splitRemaining(ChannelBuffer buffer) {
+    public Iterable<String> splitRemaining(ByteBuf buffer) {
         return split(buffer, Charsets.UTF_8, true);
     }
 }

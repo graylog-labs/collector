@@ -2,8 +2,8 @@ package com.graylog.agent.file.splitters;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.testng.annotations.Test;
 
 import java.util.Map;
@@ -25,7 +25,7 @@ public class PatternChunkSplitterTest {
                 "\t\tcom.google.Keystone.Daemon.UpdateEngine: 2 connection(s)\n" +
                 "\t\tcom.google.Keystone.Daemon.Administration: 0 connection(s)\n" +
                 "Feb 20 17:05:18 otter GoogleSoftwareUpdateDaemon[32697]: -[KSUpdateEngine updateProductID:] KSUpdateEngine updating product ID: \"com.google.Keystone\"\n";
-        final ChannelBuffer buffer = ChannelBuffers.copiedBuffer(logLines, UTF_8);
+        final ByteBuf buffer = Unpooled.copiedBuffer(logLines, UTF_8);
         final Iterable<String> firstTwoChunks = splitter.split(buffer);
         final Iterable<String> remainingChunk = splitter.splitRemaining(buffer);
 

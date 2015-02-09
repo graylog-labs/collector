@@ -6,8 +6,8 @@ import com.graylog.agent.Message;
 import com.graylog.agent.MessageBuilder;
 import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.file.splitters.ContentSplitter;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
@@ -52,7 +52,7 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
         }
     }
 
-    private Map<Path, ChannelBuffer> buffersPerFile = Maps.newHashMap();
+    private Map<Path, ByteBuf> buffersPerFile = Maps.newHashMap();
     private Map<Path, ImmutablePair<String, Boolean>> pathConfig = Maps.newHashMap();
 
     public ChunkProcessor(Buffer buffer, MessageBuilder messageBuilder, BlockingQueue<FileChunk> chunkQueue, ContentSplitter splitter) {
@@ -73,7 +73,7 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
         if (chunk.isFinalChunk()) {
             // we've reached the EOF and aren't in follow mode
             log.debug("[{}] Processing final chunk.", path);
-            final ChannelBuffer channelBuffer = buffersPerFile.get(path);
+            final ByteBuf channelBuffer = buffersPerFile.get(path);
             final Iterable<String> messages = splitter.splitRemaining(channelBuffer);
 
             createMessages(path, messages);
@@ -84,12 +84,12 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
         }
         log.debug("[{}] Processing {} bytes chunk (pos {})", new Object[] {path, chunk.getChunkBuffer().readableBytes(), chunk.getId()});
 
-        final ChannelBuffer channelBuffer = buffersPerFile.get(path);
-        ChannelBuffer combinedBuffer;
-        if (channelBuffer == null) {
+        final ByteBuf byteBuf = buffersPerFile.get(path);
+        ByteBuf combinedBuffer;
+        if (byteBuf == null) {
             combinedBuffer = chunk.getChunkBuffer();
         } else {
-            combinedBuffer = ChannelBuffers.wrappedBuffer(channelBuffer, chunk.getChunkBuffer());
+            combinedBuffer = Unpooled.wrappedBuffer(byteBuf, chunk.getChunkBuffer());
         }
         buffersPerFile.put(path, combinedBuffer);
         Iterable<String> messages = splitter.split(combinedBuffer);

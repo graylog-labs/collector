@@ -4,8 +4,8 @@ import com.graylog.agent.Message;
 import com.graylog.agent.MessageBuilder;
 import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.file.splitters.NewlineChunkSplitter;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
@@ -51,7 +51,7 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
             }
         });
 
-        final FileChunk chunk = new FileChunk(logFile, ChannelBuffers.copiedBuffer("some line\nanother line\n", UTF_8), 1);
+        final FileChunk chunk = new FileChunk(logFile, Unpooled.copiedBuffer("some line\nanother line\n", UTF_8), 1);
         processor.process(chunk);
     }
 
@@ -83,8 +83,8 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
             }
         });
 
-        ChannelBuffer undelimitedBuffer = ChannelBuffers.copiedBuffer("some line", UTF_8);
-        ChannelBuffer secondBufferDelimitedComplete = ChannelBuffers.copiedBuffer(" with more content\n", UTF_8);
+        ByteBuf undelimitedBuffer = Unpooled.copiedBuffer("some line", UTF_8);
+        ByteBuf secondBufferDelimitedComplete = Unpooled.copiedBuffer(" with more content\n", UTF_8);
         processor.process(new FileChunk(logFile, undelimitedBuffer, 1));
         processor.process(new FileChunk(logFile, secondBufferDelimitedComplete, 2));
     }
@@ -115,9 +115,9 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
             }
         });
 
-        ChannelBuffer undelimitedBuffer = ChannelBuffers.copiedBuffer("some line", UTF_8);
-        ChannelBuffer secondBufferDelimitedIncomplete = ChannelBuffers.copiedBuffer(" with more content\ntrailing", UTF_8);
-        ChannelBuffer onlyNewline = ChannelBuffers.copiedBuffer("\n", UTF_8);
+        ByteBuf undelimitedBuffer = Unpooled.copiedBuffer("some line", UTF_8);
+        ByteBuf secondBufferDelimitedIncomplete = Unpooled.copiedBuffer(" with more content\ntrailing", UTF_8);
+        ByteBuf onlyNewline = Unpooled.copiedBuffer("\n", UTF_8);
         processor.process(new FileChunk(logFile, undelimitedBuffer, 1));
         processor.process(new FileChunk(logFile, secondBufferDelimitedIncomplete, 2));
         processor.process(new FileChunk(logFile, onlyNewline, 3)); // this flushes the remaining content in the buffer
@@ -147,9 +147,9 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
             }
         });
 
-        ChannelBuffer firstNewline = ChannelBuffers.copiedBuffer("\n", UTF_8);
-        ChannelBuffer secondNewline = ChannelBuffers.copiedBuffer("\n", UTF_8);
-        ChannelBuffer thirdNewline = ChannelBuffers.copiedBuffer("\n", UTF_8);
+        ByteBuf firstNewline = Unpooled.copiedBuffer("\n", UTF_8);
+        ByteBuf secondNewline = Unpooled.copiedBuffer("\n", UTF_8);
+        ByteBuf thirdNewline = Unpooled.copiedBuffer("\n", UTF_8);
         processor.process(new FileChunk(logFile, firstNewline, 1));
         processor.process(new FileChunk(logFile, secondNewline, 2));
         processor.process(new FileChunk(logFile, thirdNewline, 3));

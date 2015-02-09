@@ -1,10 +1,10 @@
 package com.graylog.agent.file;
 
 import com.google.common.base.Preconditions;
-import com.graylog.agent.inputs.file.FileInput;
 import com.graylog.agent.inputs.Input;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import com.graylog.agent.inputs.file.FileInput;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,7 +99,7 @@ public class ChunkReader implements Runnable {
                 lastReadSize = bytesRead;
                 position += bytesRead;
                 byteBuffer.flip();
-                final ChannelBuffer buffer = ChannelBuffers.wrappedBuffer(byteBuffer);
+                final ByteBuf buffer = Unpooled.wrappedBuffer(byteBuffer);
                 final FileChunk chunk = new FileChunk(path, buffer, ++chunkId);
                 final boolean isQueued = chunks.offer(chunk);
                 if (!isQueued) {
