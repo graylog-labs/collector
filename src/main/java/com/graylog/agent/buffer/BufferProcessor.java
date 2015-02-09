@@ -26,10 +26,10 @@ public class BufferProcessor extends AbstractExecutionThreadService {
             final Message message = buffer.remove();
 
             if (message != null) {
-                LOG.info("Read message from buffer {}", message);
+                LOG.debug("Read message from buffer {}", message);
 
                 for (final BufferConsumer consumer : consumers) {
-                    LOG.info("Processing message with consumer {}", consumer);
+                    LOG.debug("Processing message with consumer {}", consumer);
                     consumer.process(message);
                 }
             }

@@ -20,7 +20,7 @@ public class OutputRouter implements BufferConsumer {
 
     @Override
     public void process(Message message) {
-        LOG.info("Routing message to outputs. {}", message);
+        LOG.debug("Routing message to outputs. {}", message);
 
         for (Output output : outputs) {
             final Set<String> outputInputs = output.getInputs();
