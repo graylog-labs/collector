@@ -5,6 +5,7 @@ import com.graylog.agent.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.util.Set;
 
 public class BufferProcessor extends AbstractExecutionThreadService {
@@ -13,6 +14,7 @@ public class BufferProcessor extends AbstractExecutionThreadService {
     private final Buffer buffer;
     private final Set<BufferConsumer> consumers;
 
+    @Inject
     public BufferProcessor(Buffer buffer, Set<BufferConsumer> consumers) {
         this.buffer = buffer;
         this.consumers = consumers;

@@ -5,15 +5,12 @@ import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.graylog.agent.buffer.BufferConsumer;
 import com.graylog.agent.buffer.BufferModule;
 import com.graylog.agent.buffer.BufferProcessor;
-import com.graylog.agent.buffer.MessageBuffer;
 import com.graylog.agent.config.ConfigurationError;
 import com.graylog.agent.config.ConfigurationModule;
 import com.graylog.agent.config.ConfigurationProcessor;
 import com.graylog.agent.inputs.InputsModule;
-import com.graylog.agent.outputs.OutputRouter;
 import com.graylog.agent.outputs.OutputsModule;
 import io.airlift.airline.Command;
 import io.airlift.airline.Option;
@@ -21,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,15 +38,13 @@ public class Server implements Runnable {
                     new InputsModule(),
                     new OutputsModule());
 
-            final MessageBuffer buffer = new MessageBuffer(100);
             final ConfigurationProcessor configuration = injector.getInstance(ConfigurationProcessor.class);
 
             validateConfiguration(configuration);
 
             final Set<Service> services = Sets.newHashSet();
-            final HashSet<BufferConsumer> consumers = Sets.<BufferConsumer>newHashSet(new OutputRouter());
 
-            services.add(new BufferProcessor(buffer, consumers));
+            services.add(injector.getInstance(BufferProcessor.class));
             services.addAll(configuration.getServices());
 
             final ServiceManager serviceManager = new ServiceManager(services);

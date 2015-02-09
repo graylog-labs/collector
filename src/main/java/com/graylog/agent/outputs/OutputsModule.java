@@ -11,5 +11,7 @@ public class OutputsModule extends AgentModule {
     protected void configure() {
         registerOutput(GelfOutput.class, GelfOutputConfiguration.class);
         registerOutput(StdoutOutput.class, StdoutOutputConfiguration.class);
+
+        registerBufferConsumer(OutputRouter.class);
     }
 }
