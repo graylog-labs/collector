@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ConfigurationProcessor {
+public class ConfigurationRegistry {
     private final Set<Service> services = Sets.newHashSet();
 
     private final Map<String, InputConfiguration.Factory<? extends InputConfiguration>> inputConfigFactories;
@@ -26,9 +26,9 @@ public class ConfigurationProcessor {
     private final ConfigurationValidator validator;
 
     @Inject
-    public ConfigurationProcessor(Config config,
-                                  Map<String, InputConfiguration.Factory<? extends InputConfiguration>> inputConfigs,
-                                  Map<String, OutputConfiguration.Factory<? extends OutputConfiguration>> outputConfigs) {
+    public ConfigurationRegistry(Config config,
+                                 Map<String, InputConfiguration.Factory<? extends InputConfiguration>> inputConfigs,
+                                 Map<String, OutputConfiguration.Factory<? extends OutputConfiguration>> outputConfigs) {
         this.inputConfigFactories = inputConfigs;
         this.outputConfigFactories = outputConfigs;
         this.validator = new ConfigurationValidator();
@@ -51,7 +51,7 @@ public class ConfigurationProcessor {
     }
 
     private void buildInputs(final Config inputConfigs) {
-        final Map<String, InputConfiguration.Factory<? extends InputConfiguration>> factories = ConfigurationProcessor.this.inputConfigFactories;
+        final Map<String, InputConfiguration.Factory<? extends InputConfiguration>> factories = ConfigurationRegistry.this.inputConfigFactories;
 
         dispatchConfig(inputConfigs, new ConfigCallback() {
             @Override
@@ -67,7 +67,7 @@ public class ConfigurationProcessor {
     }
 
     private void buildOutputs(Config outputConfigs) {
-        final Map<String, OutputConfiguration.Factory<? extends OutputConfiguration>> factories = ConfigurationProcessor.this.outputConfigFactories;
+        final Map<String, OutputConfiguration.Factory<? extends OutputConfiguration>> factories = ConfigurationRegistry.this.outputConfigFactories;
 
         dispatchConfig(outputConfigs, new ConfigCallback() {
             @Override

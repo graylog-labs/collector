@@ -9,7 +9,7 @@ import com.graylog.agent.buffer.BufferModule;
 import com.graylog.agent.buffer.BufferProcessor;
 import com.graylog.agent.config.ConfigurationError;
 import com.graylog.agent.config.ConfigurationModule;
-import com.graylog.agent.config.ConfigurationProcessor;
+import com.graylog.agent.config.ConfigurationRegistry;
 import com.graylog.agent.inputs.InputsModule;
 import com.graylog.agent.outputs.OutputsModule;
 import io.airlift.airline.Command;
@@ -38,7 +38,7 @@ public class Server implements Runnable {
                     new InputsModule(),
                     new OutputsModule());
 
-            final ConfigurationProcessor configuration = injector.getInstance(ConfigurationProcessor.class);
+            final ConfigurationRegistry configuration = injector.getInstance(ConfigurationRegistry.class);
 
             validateConfiguration(configuration);
 
@@ -63,9 +63,9 @@ public class Server implements Runnable {
         }
     }
 
-    private void validateConfiguration(ConfigurationProcessor configurationProcessor) {
-        if (!configurationProcessor.isValid()) {
-            for (ConfigurationError error : configurationProcessor.getErrors()) {
+    private void validateConfiguration(ConfigurationRegistry configurationRegistry) {
+        if (!configurationRegistry.isValid()) {
+            for (ConfigurationError error : configurationRegistry.getErrors()) {
                 LOG.error("Configuration Error: {}", error.getMesssage());
             }
 
