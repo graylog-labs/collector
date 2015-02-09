@@ -1,12 +1,12 @@
 package com.graylog.agent.cli.commands;
 
 import com.google.common.util.concurrent.Service;
-import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.graylog.agent.buffer.BufferModule;
 import com.graylog.agent.config.ConfigurationError;
 import com.graylog.agent.config.ConfigurationModule;
 import com.graylog.agent.config.ConfigurationRegistry;
+import com.graylog.agent.guice.AgentInjector;
 import com.graylog.agent.inputs.InputsModule;
 import com.graylog.agent.outputs.OutputsModule;
 import com.graylog.agent.services.AgentServiceManager;
@@ -48,7 +48,7 @@ public class Server implements Runnable {
         Injector injector = null;
 
         try {
-            injector = Guice.createInjector(new ConfigurationModule(configFile),
+            injector = AgentInjector.createInjector(new ConfigurationModule(configFile),
                     new BufferModule(),
                     new InputsModule(),
                     new OutputsModule(),
