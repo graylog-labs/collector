@@ -5,11 +5,11 @@ import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.graylog.agent.buffer.BufferModule;
-import com.graylog.agent.config.ConfigurationError;
 import com.graylog.agent.buffer.BufferConsumer;
+import com.graylog.agent.buffer.BufferModule;
 import com.graylog.agent.buffer.BufferProcessor;
 import com.graylog.agent.buffer.MessageBuffer;
+import com.graylog.agent.config.ConfigurationError;
 import com.graylog.agent.config.ConfigurationModule;
 import com.graylog.agent.config.ConfigurationProcessor;
 import com.graylog.agent.inputs.InputsModule;
@@ -36,31 +36,37 @@ public class Server implements Runnable {
     public void run() {
         LOG.info("Running {}", getClass().getCanonicalName());
 
-        final Injector injector = Guice.createInjector(new ConfigurationModule(configFile),
-                new BufferModule(),
-                new InputsModule(),
-                new OutputsModule());
+        try {
+            final Injector injector = Guice.createInjector(new ConfigurationModule(configFile),
+                    new BufferModule(),
+                    new InputsModule(),
+                    new OutputsModule());
 
-        final MessageBuffer buffer = new MessageBuffer(100);
-        final ConfigurationProcessor configuration = injector.getInstance(ConfigurationProcessor.class);
+            final MessageBuffer buffer = new MessageBuffer(100);
+            final ConfigurationProcessor configuration = injector.getInstance(ConfigurationProcessor.class);
 
-        validateConfiguration(configuration);
+            validateConfiguration(configuration);
 
-        final Set<Service> services = Sets.newHashSet();
-        final HashSet<BufferConsumer> consumers = Sets.<BufferConsumer>newHashSet(new OutputRouter());
+            final Set<Service> services = Sets.newHashSet();
+            final HashSet<BufferConsumer> consumers = Sets.<BufferConsumer>newHashSet(new OutputRouter());
 
-        services.add(new BufferProcessor(buffer, consumers));
-        services.addAll(configuration.getServices());
+            services.add(new BufferProcessor(buffer, consumers));
+            services.addAll(configuration.getServices());
 
-        final ServiceManager serviceManager = new ServiceManager(services);
+            final ServiceManager serviceManager = new ServiceManager(services);
 
-        serviceManager.startAsync().awaitHealthy();
+            serviceManager.startAsync().awaitHealthy();
 
-        for (Map.Entry<Service.State, Service> entry : serviceManager.servicesByState().entries()) {
-            LOG.info("Service {}: {}", entry.getKey().toString(), entry.getValue().toString());
+            for (Map.Entry<Service.State, Service> entry : serviceManager.servicesByState().entries()) {
+                LOG.info("Service {}: {}", entry.getKey().toString(), entry.getValue().toString());
+            }
+
+            serviceManager.awaitStopped();
+        } catch (Exception e) {
+            LOG.error("ERROR: {}", e.getMessage());
+            LOG.debug("Detailed error", e);
+            System.exit(1);
         }
-
-        serviceManager.awaitStopped();
     }
 
     private void validateConfiguration(ConfigurationProcessor configurationProcessor) {
