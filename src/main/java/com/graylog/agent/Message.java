@@ -6,12 +6,12 @@ import org.joda.time.DateTime;
 import java.util.Set;
 
 public class Message {
+    private final String message;
+    private final String source;
     private final DateTime timestamp;
     private final String input;
     private final Set<String> outputs;
     private final MessageFields fields;
-    private String message;
-    private String source;
 
     public Message(String message, String source, DateTime timestamp, String input, Set<String> outputs) {
         this(message, source, timestamp, input, outputs, new MessageFields());
