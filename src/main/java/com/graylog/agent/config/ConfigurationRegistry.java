@@ -64,9 +64,12 @@ public class ConfigurationRegistry {
             public void call(String type, String id, Config config) {
                 if (factories.containsKey(type)) {
                     final InputConfiguration cfg = factories.get(type).create(id, config);
-                    final InputService input = cfg.createInput();
-                    services.add(input);
-                    inputs.add(input);
+
+                    if (validator.isValid(cfg)) {
+                        final InputService input = cfg.createInput();
+                        services.add(input);
+                        inputs.add(input);
+                    }
                 } else {
                     errors.add(new ConfigurationError("Unknown input type \"" + type + "\" for " + id));
                 }
@@ -82,9 +85,12 @@ public class ConfigurationRegistry {
             public void call(String type, String id, Config config) {
                 if (factories.containsKey(type)) {
                     final OutputConfiguration cfg = factories.get(type).create(id, config);
-                    final OutputService output = cfg.createOutput();
-                    services.add(output);
-                    outputs.add(output);
+
+                    if (validator.isValid(cfg)) {
+                        final OutputService output = cfg.createOutput();
+                        services.add(output);
+                        outputs.add(output);
+                    }
                 } else {
                     errors.add(new ConfigurationError("Unknown output type \"" + type + "\" for " + id));
                 }
