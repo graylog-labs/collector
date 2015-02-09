@@ -3,10 +3,11 @@ package com.graylog.agent.file;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
-import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.Message;
+import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.file.splitters.ContentSplitter;
 import com.graylog.agent.inputs.Input;
+import com.graylog.agent.utils.Utils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.joda.time.DateTime;
@@ -14,8 +15,6 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -64,18 +63,7 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
         this.input = input;
         this.chunkQueue = chunkQueue;
         this.splitter = splitter;
-        try {
-            hostname = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            hostname = System.getenv("HOSTNAME");
-            if (hostname == null) {
-                hostname = System.getenv("COMPUTERNAME");
-            }
-            if (hostname == null) {
-                hostname = "unknown host";
-                log.warn("Unable to detect the local host name, use source override!");
-            }
-        }
+        this.hostname = Utils.getHostname();
     }
 
     public void addFileConfig(Path path, String source, boolean overrideTimestamp) {
