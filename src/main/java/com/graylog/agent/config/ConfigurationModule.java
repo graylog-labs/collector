@@ -1,5 +1,6 @@
 package com.graylog.agent.config;
 
+import com.google.inject.Scopes;
 import com.graylog.agent.guice.AgentModule;
 import com.typesafe.config.Config;
 
@@ -15,5 +16,6 @@ public class ConfigurationModule extends AgentModule {
     @Override
     protected void configure() {
         bind(Config.class).toInstance(config);
+        bind(ConfigurationRegistry.class).in(Scopes.SINGLETON);
     }
 }

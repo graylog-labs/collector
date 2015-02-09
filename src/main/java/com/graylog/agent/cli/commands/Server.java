@@ -1,17 +1,16 @@
 package com.graylog.agent.cli.commands;
 
-import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Service;
-import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.graylog.agent.buffer.BufferModule;
-import com.graylog.agent.buffer.BufferProcessor;
 import com.graylog.agent.config.ConfigurationError;
 import com.graylog.agent.config.ConfigurationModule;
 import com.graylog.agent.config.ConfigurationRegistry;
 import com.graylog.agent.inputs.InputsModule;
 import com.graylog.agent.outputs.OutputsModule;
+import com.graylog.agent.services.AgentServiceManager;
+import com.graylog.agent.services.ServicesModule;
 import io.airlift.airline.Command;
 import io.airlift.airline.Option;
 import org.slf4j.Logger;
@@ -19,7 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.Map;
-import java.util.Set;
 
 @Command(name = "server", description = "Start the agent")
 public class Server implements Runnable {
@@ -32,35 +30,36 @@ public class Server implements Runnable {
     public void run() {
         LOG.info("Running {}", getClass().getCanonicalName());
 
+        final Injector injector = getInjector();
+        final AgentServiceManager serviceManager = injector.getInstance(AgentServiceManager.class);
+
+        validateConfiguration(serviceManager.getConfiguration());
+
+        serviceManager.start();
+
+        for (Map.Entry<Service.State, Service> entry : serviceManager.servicesByState().entries()) {
+            LOG.info("Service {}: {}", entry.getKey().toString(), entry.getValue().toString());
+        }
+
+        serviceManager.awaitStopped();
+    }
+
+    private Injector getInjector() {
+        Injector injector = null;
+
         try {
-            final Injector injector = Guice.createInjector(new ConfigurationModule(configFile),
+            injector = Guice.createInjector(new ConfigurationModule(configFile),
                     new BufferModule(),
                     new InputsModule(),
-                    new OutputsModule());
-
-            final ConfigurationRegistry configuration = injector.getInstance(ConfigurationRegistry.class);
-
-            validateConfiguration(configuration);
-
-            final Set<Service> services = Sets.newHashSet();
-
-            services.add(injector.getInstance(BufferProcessor.class));
-            services.addAll(configuration.getServices());
-
-            final ServiceManager serviceManager = new ServiceManager(services);
-
-            serviceManager.startAsync().awaitHealthy();
-
-            for (Map.Entry<Service.State, Service> entry : serviceManager.servicesByState().entries()) {
-                LOG.info("Service {}: {}", entry.getKey().toString(), entry.getValue().toString());
-            }
-
-            serviceManager.awaitStopped();
+                    new OutputsModule(),
+                    new ServicesModule());
         } catch (Exception e) {
             LOG.error("ERROR: {}", e.getMessage());
-            LOG.debug("Detailed error", e);
-            System.exit(1);
+            LOG.debug("Detailed injection creation error", e);
+            doExit();
         }
+
+        return injector;
     }
 
     private void validateConfiguration(ConfigurationRegistry configurationRegistry) {
@@ -69,8 +68,12 @@ public class Server implements Runnable {
                 LOG.error("Configuration Error: {}", error.getMesssage());
             }
 
-            LOG.info("Exit");
-            System.exit(1);
+            doExit();
         }
+    }
+
+    private void doExit() {
+        LOG.info("Exit");
+        System.exit(1);
     }
 }
