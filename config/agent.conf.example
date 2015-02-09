@@ -1,4 +1,6 @@
-# Graylog Agent example configuration.
+// Graylog Agent example configuration.
+
+message-buffer-size = 128
 
 inputs {
   local-syslog {

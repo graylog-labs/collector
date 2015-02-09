@@ -6,6 +6,7 @@ import com.graylog.agent.inputs.Input;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.util.concurrent.BlockingQueue;
 
 public class MessageBuffer implements Buffer {
@@ -13,8 +14,9 @@ public class MessageBuffer implements Buffer {
 
     private final BlockingQueue<Message> queue;
 
-    public MessageBuffer(final int capacity) {
-        this.queue = Queues.newLinkedBlockingQueue(capacity);
+    @Inject
+    public MessageBuffer(MessageBufferConfiguration config) {
+        this.queue = Queues.newLinkedBlockingQueue(config.getSize());
     }
 
     public void insert(Message message, Input input) {

@@ -5,7 +5,8 @@ import com.graylog.agent.guice.AgentModule;
 public class BufferModule extends AgentModule {
     @Override
     protected void configure() {
-        bind(Buffer.class).toInstance(new MessageBuffer(100));
+        bind(MessageBufferConfiguration.class);
+        bind(Buffer.class).to(MessageBuffer.class);
 
         registerService(BufferProcessor.class);
     }
