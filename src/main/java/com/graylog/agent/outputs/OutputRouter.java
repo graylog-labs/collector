@@ -23,7 +23,12 @@ public class OutputRouter implements BufferConsumer {
         LOG.info("Routing message to outputs. {}", message);
 
         for (Output output : outputs) {
-            if (output.getInputs().contains(message.getInput()) || message.getOutputs().contains(output.getId())) {
+            final Set<String> outputInputs = output.getInputs();
+            final Set<String> messageOutputs = message.getOutputs();
+
+            if (outputInputs.isEmpty() && messageOutputs.isEmpty()) {
+                output.write(message);
+            } else if (outputInputs.contains(message.getInput()) || messageOutputs.contains(output.getId())) {
                 output.write(message);
             }
         }
@@ -31,6 +36,9 @@ public class OutputRouter implements BufferConsumer {
 
     @Override
     public String toString() {
-        return "OutputRouter{}";
+        final StringBuffer sb = new StringBuffer("OutputRouter{");
+        sb.append("outputs=").append(outputs);
+        sb.append('}');
+        return sb.toString();
     }
 }
