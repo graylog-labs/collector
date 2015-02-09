@@ -6,7 +6,6 @@ inputs {
   local-syslog {
     type = "file"
     path = "/var/log/syslog"
-    interval = "1 hour"
   }
   apache-access {
     type = "file"
