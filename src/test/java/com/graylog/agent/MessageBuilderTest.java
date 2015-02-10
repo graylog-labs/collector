@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
@@ -149,6 +150,36 @@ public class MessageBuilderTest {
                 builder.fields(new MessageFields());
             }
         });
+    }
+
+    @Test
+    public void testCopyCanBeModifiedInThread() throws Exception {
+        final MessageBuilder builder = new MessageBuilder()
+                .message("the message")
+                .source("source")
+                .timestamp(DateTime.now())
+                .input("input-id")
+                .outputs(Sets.newHashSet("output1", "output2"))
+                .fields(new MessageFields());
+
+        builder.message("modified by owner thread");
+
+        final AtomicBoolean failed = new AtomicBoolean(true);
+        final Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    builder.copy().message("modified by another thread");
+                    failed.set(false);
+                } catch (IllegalStateException ignored) {
+                }
+            }
+        });
+
+        thread.start();
+        thread.join();
+
+        assertFalse(failed.get(), "Modifying builder copy in another thread should have failed!");
     }
 
     private void modifyInThread(final String field, final Runnable runnable) throws InterruptedException {
