@@ -4,7 +4,6 @@ import com.google.inject.assistedinject.Assisted;
 import com.graylog.agent.annotations.AgentConfigurationFactory;
 import com.graylog.agent.annotations.AgentOutputConfiguration;
 import com.graylog.agent.config.ConfigurationUtils;
-import com.graylog.agent.config.constraints.IsOneOf;
 import com.graylog.agent.outputs.OutputConfiguration;
 import com.typesafe.config.Config;
 import org.hibernate.validator.constraints.NotBlank;
@@ -25,10 +24,6 @@ public class GelfOutputConfiguration extends OutputConfiguration {
         @Override
         GelfOutputConfiguration create(String id, Config config);
     }
-
-    @NotBlank
-    @IsOneOf({"tcp", "udp"})
-    private String protocol;
 
     @NotBlank
     private String host;
@@ -63,9 +58,6 @@ public class GelfOutputConfiguration extends OutputConfiguration {
         super(id, config);
         this.outputFactory = outputFactory;
 
-        if (config.hasPath("protocol")) {
-            this.protocol = config.getString("protocol");
-        }
         if (config.hasPath("host")) {
             this.host = config.getString("host");
         }
@@ -92,10 +84,6 @@ public class GelfOutputConfiguration extends OutputConfiguration {
     @Override
     public GelfOutput createOutput() {
         return outputFactory.create(this);
-    }
-
-    public String getProtocol() {
-        return protocol;
     }
 
     public String getHost() {
@@ -130,7 +118,6 @@ public class GelfOutputConfiguration extends OutputConfiguration {
     public Map<String, String> toStringValues() {
         return Collections.unmodifiableMap(new HashMap<String, String>(super.toStringValues()) {
             {
-                put("protocol", getProtocol());
                 put("host", getHost());
                 put("port", String.valueOf(getPort()));
                 put("client-queue-size", String.valueOf(getClientQueueSize()));

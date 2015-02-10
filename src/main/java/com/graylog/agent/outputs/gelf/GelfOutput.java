@@ -48,7 +48,7 @@ public class GelfOutput extends OutputService {
     @Override
     protected void run() throws Exception {
         final GelfConfiguration clientConfig = new GelfConfiguration(configuration.getHost(), configuration.getPort())
-                .transport(GelfTransports.valueOf(configuration.getProtocol().toUpperCase()))
+                .transport(GelfTransports.TCP)
                 .queueSize(configuration.getClientQueueSize())
                 .connectTimeout(configuration.getClientConnectTimeout())
                 .reconnectDelay(configuration.getClientReconnectDelay())
