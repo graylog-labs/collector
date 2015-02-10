@@ -56,7 +56,11 @@ public class MessageBuilder {
 
     public MessageBuilder outputs(Set<String> outputs) {
         checkOwnership();
-        this.outputs = ImmutableSet.copyOf(outputs);
+        if (outputs == null) {
+            this.outputs = null;
+        } else {
+            this.outputs = ImmutableSet.copyOf(outputs);
+        }
         return this;
     }
 
