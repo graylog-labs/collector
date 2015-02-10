@@ -2,6 +2,11 @@
 
 message-buffer-size = 128
 
+metrics {
+  enable-logging = false
+  log-duration = "60s"
+}
+
 inputs {
   local-syslog {
     type = "file"

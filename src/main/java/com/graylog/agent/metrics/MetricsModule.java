@@ -8,5 +8,8 @@ public class MetricsModule extends AgentModule {
     @Override
     protected void configure() {
         bind(MetricRegistry.class).in(Scopes.SINGLETON);
+        bind(MetricServiceConfiguration.class);
+
+        registerService(MetricService.class);
     }
 }
