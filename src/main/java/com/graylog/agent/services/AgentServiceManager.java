@@ -25,6 +25,10 @@ public class AgentServiceManager {
         serviceManager.startAsync().awaitHealthy();
     }
 
+    public void stop() {
+        serviceManager.stopAsync().awaitStopped();
+    }
+
     public void awaitStopped() {
         serviceManager.awaitStopped();
     }

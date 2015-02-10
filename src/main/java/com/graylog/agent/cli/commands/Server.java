@@ -42,6 +42,8 @@ public class Server implements Runnable {
             LOG.info("Service {}: {}", entry.getKey().toString(), entry.getValue().toString());
         }
 
+        configureShutdownHook(serviceManager);
+
         serviceManager.awaitStopped();
     }
 
@@ -72,6 +74,16 @@ public class Server implements Runnable {
 
             doExit();
         }
+    }
+
+    private void configureShutdownHook(final AgentServiceManager serviceManager) {
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                LOG.info("Stopping...");
+                serviceManager.stop();
+            }
+        }));
     }
 
     private void doExit() {
