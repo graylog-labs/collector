@@ -3,7 +3,6 @@ package com.graylog.agent.outputs.stdout;
 import com.google.inject.assistedinject.Assisted;
 import com.graylog.agent.Message;
 import com.graylog.agent.annotations.AgentOutputFactory;
-import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.config.ConfigurationUtils;
 import com.graylog.agent.outputs.OutputService;
 import org.slf4j.Logger;
@@ -22,14 +21,12 @@ public class StdoutOutput extends OutputService {
     }
 
     private final StdoutOutputConfiguration configuration;
-    private final Buffer buffer;
 
     private final CountDownLatch stopLatch = new CountDownLatch(1);
 
     @Inject
-    public StdoutOutput(@Assisted StdoutOutputConfiguration configuration, Buffer buffer) {
+    public StdoutOutput(@Assisted StdoutOutputConfiguration configuration) {
         this.configuration = configuration;
-        this.buffer = buffer;
     }
 
     @Override

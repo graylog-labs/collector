@@ -4,7 +4,6 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import com.google.inject.assistedinject.Assisted;
 import com.graylog.agent.Message;
 import com.graylog.agent.annotations.AgentOutputFactory;
-import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.config.ConfigurationUtils;
 import com.graylog.agent.outputs.OutputService;
 import org.graylog2.gelfclient.GelfConfiguration;
@@ -28,16 +27,14 @@ public class GelfOutput extends OutputService {
     }
 
     private final GelfOutputConfiguration configuration;
-    private final Buffer buffer;
     private GelfTransport transport;
 
     private final CountDownLatch stopLatch = new CountDownLatch(1);
     private final CountDownLatch transportInitialized = new CountDownLatch(1);
 
     @Inject
-    public GelfOutput(@Assisted GelfOutputConfiguration configuration, Buffer buffer) {
+    public GelfOutput(@Assisted GelfOutputConfiguration configuration) {
         this.configuration = configuration;
-        this.buffer = buffer;
     }
 
     @Override
