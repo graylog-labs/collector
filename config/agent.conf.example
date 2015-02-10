@@ -24,6 +24,9 @@ outputs {
     protocol = "tcp"
     host = "127.0.0.1"
     port = 12201
+    client-tls = false
+    client-tls-cert-chain-file = "/path/to/cert-chain.pem"
+    client-tls-verify-cert = true
     client-queue-size = 512
     client-connect-timeout = 5000
     client-reconnect-delay = 1000

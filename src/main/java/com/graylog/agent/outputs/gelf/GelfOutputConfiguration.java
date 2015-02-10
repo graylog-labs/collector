@@ -11,6 +11,7 @@ import org.hibernate.validator.constraints.Range;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +32,14 @@ public class GelfOutputConfiguration extends OutputConfiguration {
     @NotNull
     @Range(min = 1024, max = 65535)
     private int port;
+
+    @NotNull
+    private boolean clientTls = false;
+
+    private File clientTlsCertChainFile = null;
+
+    @NotNull
+    private boolean clientTlsVerifyCert = true;
 
     @NotNull
     @Range(min = 1, max = Integer.MAX_VALUE)
@@ -64,6 +73,15 @@ public class GelfOutputConfiguration extends OutputConfiguration {
         if (config.hasPath("port")) {
             this.port = config.getInt("port");
         }
+        if (config.hasPath("client-tls")) {
+            this.clientTls = config.getBoolean("client-tls");
+        }
+        if (config.hasPath("client-tls-cert-chain-file")) {
+            this.clientTlsCertChainFile = new File(config.getString("client-tls-cert-chain-file"));
+        }
+        if (config.hasPath("client-tls-verify-cert")) {
+            this.clientTlsVerifyCert = config.getBoolean("client-tls-verify-cert");
+        }
         if (config.hasPath("client-queue-size")) {
             this.clientQueueSize = config.getInt("client-queue-size");
         }
@@ -92,6 +110,18 @@ public class GelfOutputConfiguration extends OutputConfiguration {
 
     public int getPort() {
         return port;
+    }
+
+    public boolean isClientTls() {
+        return clientTls;
+    }
+
+    public File getClientTlsCertChainFile() {
+        return clientTlsCertChainFile;
+    }
+
+    public boolean isClientTlsVerifyCert() {
+        return clientTlsVerifyCert;
     }
 
     public int getClientQueueSize() {
