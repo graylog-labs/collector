@@ -51,7 +51,6 @@ public class MessageBuffer implements Buffer {
 
             return message;
         } catch (InterruptedException e) {
-            LOG.error("Interrupted while removing from buffer.", e);
             return null;
         }
     }
