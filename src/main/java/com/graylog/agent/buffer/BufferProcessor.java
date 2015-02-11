@@ -13,11 +13,22 @@ public class BufferProcessor extends AbstractExecutionThreadService {
 
     private final Buffer buffer;
     private final Set<BufferConsumer> consumers;
+    private Thread thread;
 
     @Inject
     public BufferProcessor(Buffer buffer, Set<BufferConsumer> consumers) {
         this.buffer = buffer;
         this.consumers = consumers;
+    }
+
+    @Override
+    protected void startUp() throws Exception {
+        this.thread = Thread.currentThread();
+    }
+
+    @Override
+    protected void triggerShutdown() {
+        thread.interrupt();
     }
 
     @Override

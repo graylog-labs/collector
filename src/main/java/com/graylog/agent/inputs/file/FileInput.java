@@ -34,7 +34,7 @@ public class FileInput extends InputService {
 
     private final FileInputConfiguration configuration;
     private final Buffer buffer;
-    private final CountDownLatch stopLatch = new CountDownLatch(0);
+    private final CountDownLatch stopLatch = new CountDownLatch(1);
 
     @Inject
     public FileInput(@Assisted FileInputConfiguration inputConfiguration, Buffer buffer) {
@@ -71,6 +71,8 @@ public class FileInput extends InputService {
         readerService.awaitRunning();
 
         stopLatch.await();
+
+        readerService.stopAsync().awaitTerminated();
     }
 
     @Override
