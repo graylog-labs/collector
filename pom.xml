@@ -20,6 +20,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+        <rpm.release>1.SNAPSHOT</rpm.release>
+
         <agent.share-path>/usr/share/graylog-agent</agent.share-path>
         <agent.bin-path>/usr/bin</agent.bin-path>
         <agent.script-config>${agent.share-path}/agent-script-config.sh</agent.script-config>
@@ -291,7 +293,7 @@
                 </executions>
                 <configuration>
                     <version>${project.version}</version>
-                    <release>1</release>
+                    <release>${rpm.release}</release>
                     <group>Application/Internet</group>
                     <prefixes>
                         <prefix>/usr</prefix>
