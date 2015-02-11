@@ -1,11 +1,19 @@
 #!/bin/bash
 
-JAVA_CMD=${JAVA_CMD:=$(which java)}
-JAVA_OPTS="-Xms12m -Xmx64m"
-
 AGENT_BIN=$(readlink -f $0)
 AGENT_ROOT="$(dirname $(dirname $AGENT_BIN))"
-AGENT_JAR=${AGENT_JAR:="$AGENT_ROOT/graylog-agent.jar"}
+AGENT_DEFAULT_JAR="$AGENT_ROOT/graylog-agent.jar"
+
+JAVA_DEFAULT_OPTS="${agent.jvm-opts}"
+
+if [ -f "${agent.script-config}" ]; then
+    source "${agent.script-config}"
+fi
+
+AGENT_JAR=${AGENT_JAR:="$AGENT_DEFAULT_JAR"}
+
+JAVA_CMD=${JAVA_CMD:=$(which java)}
+JAVA_OPTS="${JAVA_OPTS:="$JAVA_DEFAULT_OPTS"}"
 
 die() {
     echo $*

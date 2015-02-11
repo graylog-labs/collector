@@ -10,10 +10,16 @@
     <groupId>com.graylog</groupId>
     <artifactId>graylog-agent</artifactId>
     <version>0.1.0-SNAPSHOT</version>
+    <description>The Graylog Agent</description>
 
     <properties>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <agent.share-path>/usr/share/graylog-agent</agent.share-path>
+        <agent.script-config>${agent.share-path}/agent-script-config.sh</agent.script-config>
+        <agent.jar-path>${agent.share-path}/${project.artifactId}-${project.version}.jar</agent.jar-path>
+        <agent.jvm-opts>-Xms12m -Xmx64m</agent.jvm-opts>
     </properties>
 
     <dependencies>
@@ -102,6 +108,19 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/main/scripts</directory>
+                <filtering>true</filtering>
+                <targetPath>${project.build.directory}</targetPath>
+                <includes>
+                    <include>*.sh</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
