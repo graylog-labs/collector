@@ -91,6 +91,13 @@ public class ChunkReader implements Runnable {
                 }
                 return;
             }
+
+            // If the size of the file is smaller than the read position, the file might have been truncated.
+            if (fileChannel.size() < position) {
+                log.trace("Reset read position");
+                position = 0;
+            }
+
             final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(initialChunkSize);
             final Future<Integer> read = fileChannel.read(byteBuffer, position);
             final Integer bytesRead = read.get();
@@ -130,6 +137,9 @@ public class ChunkReader implements Runnable {
             // TODO error handling
         } catch (ExecutionException e) {
             log.warn("[" + path + "] Read failed ", e);
+            // TODO error handling
+        } catch (IOException e) {
+            log.warn("[" + path + "] I/O error", e);
             // TODO error handling
         } finally {
             locked.set(false);
