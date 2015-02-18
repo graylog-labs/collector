@@ -23,7 +23,8 @@ public class ConfigurationValidator {
 
         if (constraintViolations.size() > 0) {
             for (ConstraintViolation<Object> violation : constraintViolations) {
-                errors.add(new ConfigurationError(violation.getMessage()));
+                final String msg = String.format("%s (%s)", violation.getMessage(), violation.getPropertyPath().toString());
+                errors.add(new ConfigurationError(msg));
             }
 
             return false;
