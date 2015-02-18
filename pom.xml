@@ -16,6 +16,12 @@
         <url>https://www.graylog.com/</url>
     </organization>
 
+    <scm>
+        <connection>scm:git:git@github.com:Graylog2/agent.git</connection>
+        <developerConnection>scm:git:git@github.com:Graylog2/agent.git</developerConnection>
+        <url>https://github.com/Graylog2/agent</url>
+    </scm>
+
     <properties>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -118,6 +124,10 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
             </resource>
             <resource>
                 <directory>src/main/scripts</directory>
@@ -136,6 +146,23 @@
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <version>1.3</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <doCheck>false</doCheck>
+                    <doUpdate>false</doUpdate>
                 </configuration>
             </plugin>
             <plugin>

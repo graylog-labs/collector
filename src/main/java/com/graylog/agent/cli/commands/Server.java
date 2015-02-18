@@ -2,6 +2,7 @@ package com.graylog.agent.cli.commands;
 
 import com.google.common.util.concurrent.Service;
 import com.google.inject.Injector;
+import com.graylog.agent.AgentVersion;
 import com.graylog.agent.buffer.BufferModule;
 import com.graylog.agent.config.ConfigurationError;
 import com.graylog.agent.config.ConfigurationModule;
@@ -29,7 +30,7 @@ public class Server implements Runnable {
 
     @Override
     public void run() {
-        LOG.info("Running {}", getClass().getCanonicalName());
+        LOG.info("Starting Agent v{} (commit {})", AgentVersion.CURRENT.version(), AgentVersion.CURRENT.commitIdShort());
 
         final Injector injector = getInjector();
         final AgentServiceManager serviceManager = injector.getInstance(AgentServiceManager.class);
