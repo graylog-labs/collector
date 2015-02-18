@@ -35,8 +35,8 @@ public class IsAccessibleValidator implements ConstraintValidator<IsAccessible, 
         HibernateConstraintValidatorContext hibernateContext = context.unwrap(HibernateConstraintValidatorContext.class);
         hibernateContext.disableDefaultConstraintViolation();
 
-        hibernateContext.addExpressionVariable("file", file.toString())
-                .addExpressionVariable("dir", file.getParentFile().toString())
+        hibernateContext.addExpressionVariable("theFile", file.toString())
+                .addExpressionVariable("theDir", file.getParentFile().toString())
                 .buildConstraintViolationWithTemplate(hibernateContext.getDefaultConstraintMessageTemplate())
                 .addConstraintViolation();
     }
