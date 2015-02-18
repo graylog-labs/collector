@@ -26,7 +26,6 @@ public class NewlineChunkSplitter extends ContentSplitter {
                                 return endOfData();
                             }
                             final int i = buffer.forEachByte(ByteBufProcessor.FIND_LF);
-                            //final int i = buffer.bytesBefore(ChannelBufferIndexFinder.LF);
                             if (i == -1) {
                                 if (includeRemainingData) {
                                     final ByteBuf remaining = buffer.readBytes(buffer.readableBytes());
@@ -36,7 +35,7 @@ public class NewlineChunkSplitter extends ContentSplitter {
                                 }
                             }
                             final ByteBuf fullLine = buffer.readBytes(i);
-                            final byte b = buffer.readByte();// the newline byte
+                            buffer.readByte(); // the newline byte
                             return fullLine.toString(charset);
                         } finally {
                             buffer.discardReadBytes();
@@ -45,13 +44,5 @@ public class NewlineChunkSplitter extends ContentSplitter {
                 };
             }
         };
-    }
-
-    private static class Proc implements ByteBufProcessor {
-
-        @Override
-        public boolean process(byte value) throws Exception {
-            return false;
-        }
     }
 }
