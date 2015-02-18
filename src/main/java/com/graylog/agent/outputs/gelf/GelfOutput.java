@@ -52,6 +52,17 @@ public class GelfOutput extends OutputService {
                 .tcpNoDelay(configuration.isClientTcpNoDelay())
                 .sendBufferSize(configuration.getClientSendBufferSize());
 
+        if (configuration.isClientTls()) {
+            clientConfig.enableTls();
+            clientConfig.tlsTrustCertChainFile(configuration.getClientTlsCertChainFile());
+
+            if (configuration.isClientTlsVerifyCert()) {
+                clientConfig.enableTlsCertVerification();
+            } else {
+                clientConfig.disableTlsCertVerification();
+            }
+        }
+
         LOG.info("Starting GELF transport: {}", clientConfig);
         this.transport = GelfTransports.create(clientConfig);
 
