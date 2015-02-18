@@ -3,6 +3,7 @@ package com.graylog.agent.cli;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.graylog.agent.cli.commands.Server;
+import com.graylog.agent.cli.commands.Version;
 import io.airlift.airline.Cli;
 import io.airlift.airline.ParseException;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ public class Main {
 
         final Cli.CliBuilder<Runnable> cliBuilder = Cli.<Runnable>builder("graylog-agent")
                 .withDescription("Graylog agent")
+                .withCommand(Version.class)
                 .withCommand(Server.class);
 
         final Cli<Runnable> cli = cliBuilder.build();
