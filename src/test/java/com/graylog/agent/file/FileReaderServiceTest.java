@@ -6,9 +6,9 @@ import com.graylog.agent.MessageBuilder;
 import com.graylog.agent.file.naming.NumberSuffixStrategy;
 import com.graylog.agent.file.splitters.NewlineChunkSplitter;
 import com.graylog.agent.inputs.file.FileInput;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,11 +22,11 @@ import java.util.HashSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
 
 public class FileReaderServiceTest extends MultithreadedBaseTest {
     private static final Logger log = LoggerFactory.getLogger(FileReaderServiceTest.class);
@@ -89,20 +89,20 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         readerService.startAsync();
         readerService.awaitRunning();
 
-        assertEquals(readerService.state(), Service.State.RUNNING, "service should be running");
+        assertEquals("service should be running", Service.State.RUNNING, readerService.state());
 
         final boolean newFile = file.createNewFile();
         log.debug("Created new file {} with key {}", file.getPath(),
                 Files.readAttributes(path, BasicFileAttributes.class).fileKey());
-        assertTrue(newFile, "Created monitored file");
+        assertTrue("Created monitored file", newFile);
 
         // OS X is using a poll service here, the default poll frequency is 10s (we set it to 2, but that's platform specific)
         final boolean awaitCreate = createLatch.await(10, TimeUnit.SECONDS);
-        assertTrue(awaitCreate, "Monitored creation change event must be delivered.");
+        assertTrue("Monitored creation change event must be delivered.", awaitCreate);
 
-        assertTrue(file.delete(), "Must be able to remove log file");
+        assertTrue("Must be able to remove log file", file.delete());
         final boolean awaitRemove = deleteLatch.await(10, TimeUnit.SECONDS);
-        assertTrue(awaitRemove, "Monitored removal change event must be delivered.");
+        assertTrue("Monitored removal change event must be delivered.", awaitRemove);
 
         readerService.stopAsync();
         readerService.awaitTerminated();
@@ -145,9 +145,9 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         // should appear in the buffer
         // let's wait for that
         final Message msg = buffer.getMessageQueue().poll(20, TimeUnit.SECONDS);
-        assertNotNull(msg, "file reader should have created a message");
-        assertEquals(msg.getMessage(), "hellotest", "message content matches");
-        assertEquals(buffer.getMessageQueue().size(), 0, "no more messages have been added to the buffer");
+        assertNotNull("file reader should have created a message", msg);
+        assertEquals("message content matches", "hellotest", msg.getMessage());
+        assertEquals("no more messages have been added to the buffer", 0, buffer.getMessageQueue().size());
 
         readerService.stopAsync();
         readerService.awaitTerminated();

@@ -1,10 +1,10 @@
 package com.graylog.agent;
 
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 import java.util.HashMap;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class MessageFieldsTest {
     @Test
@@ -25,6 +25,6 @@ public class MessageFieldsTest {
             }
         };
 
-        assertEquals(fields.asMap(), map);
+        assertEquals(map, fields.asMap());
     }
 }

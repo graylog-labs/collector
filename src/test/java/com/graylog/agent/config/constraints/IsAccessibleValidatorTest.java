@@ -1,7 +1,7 @@
 package com.graylog.agent.config.constraints;
 
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -12,7 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class IsAccessibleValidatorTest {
     private static class TestObject {
@@ -27,7 +27,7 @@ public class IsAccessibleValidatorTest {
     private static Validator validator;
 
     @BeforeClass
-    public void setUpClass() throws Exception {
+    public static void setUpClass() throws Exception {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
@@ -37,14 +37,14 @@ public class IsAccessibleValidatorTest {
         final Path path = Files.createTempDirectory("file-constraint-test");
         final File file = File.createTempFile("is-accessible", "constraint", path.toFile());
 
-        assertEquals(validate(file).size(), 0);
+        assertEquals(0, validate(file).size());
 
         // Delete temp file and the temp directory.
         file.delete();
         path.toFile().delete();
 
-        assertEquals(validate(file).size(), 1);
-        assertEquals(validate(file).iterator().next().getMessage(), file.toString() + " or " + path.toString() + " is not accessible (check if directory exists and permissions are correct)");
+        assertEquals(1, validate(file).size());
+        assertEquals(file.toString() + " or " + path.toString() + " is not accessible (check if directory exists and permissions are correct)", validate(file).iterator().next().getMessage());
     }
 
     private Set<ConstraintViolation<TestObject>> validate(File value) {

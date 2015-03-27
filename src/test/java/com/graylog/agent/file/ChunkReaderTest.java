@@ -4,9 +4,9 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.graylog.agent.inputs.file.FileInput;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -22,11 +22,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.fail;
 
 public class ChunkReaderTest implements Thread.UncaughtExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(ChunkReaderTest.class);
@@ -70,8 +70,8 @@ public class ChunkReaderTest implements Thread.UncaughtExceptionHandler {
         consumer.join();
 
         // we can process one chunk at a time, so one read is queued, the second is buffered
-        assertEquals(spy.getReadCount(), 2, "ChunkReader should perform two reads only");
-        assertEquals(chunkQueue.remainingCapacity(), 0, "The queue should be full");
+        assertEquals("ChunkReader should perform two reads only", 2, spy.getReadCount());
+        assertEquals("The queue should be full", 0, chunkQueue.remainingCapacity());
     }
 
     @Test
@@ -98,8 +98,7 @@ public class ChunkReaderTest implements Thread.UncaughtExceptionHandler {
             public void run() {
                 try {
                     final FileChunk chunk = chunkQueue.poll(2, TimeUnit.SECONDS);
-                    assertNull(chunk,
-                            "Reading from the end of the file must not produce a chunk for a non-changing file.");
+                    assertNull("Reading from the end of the file must not produce a chunk for a non-changing file.", chunk);
                 } catch (InterruptedException ignore) {
                 }
             }
@@ -109,7 +108,7 @@ public class ChunkReaderTest implements Thread.UncaughtExceptionHandler {
         consumer.join();
 
         // we can process one chunk at a time, so one read is queued, the second is buffered
-        assertEquals(chunkQueue.remainingCapacity(), 1, "The e should be empty");
+        assertEquals("The e should be empty", 1, chunkQueue.remainingCapacity());
     }
 
     @Test
@@ -141,9 +140,9 @@ public class ChunkReaderTest implements Thread.UncaughtExceptionHandler {
                     logFile.appendLine(appendedLine);
                     logFile.flush();
                 } catch (InterruptedException e) {
-                    assertNull(e, "Shouldn't get interrupted.");
+                    assertNull("Shouldn't get interrupted.", e);
                 } catch (IOException e) {
-                    assertNull(e, "Shouldn't fail to append line.");
+                    assertNull("Shouldn't fail to append line.", e);
                 }
             }
         };
@@ -154,15 +153,14 @@ public class ChunkReaderTest implements Thread.UncaughtExceptionHandler {
             public void run() {
                 try {
                     final FileChunk chunk = chunkQueue.poll(2, TimeUnit.SECONDS);
-                    assertNull(chunk,
-                            "Reading from the end of the file must not produce a chunk for a non-changing file.");
+                    assertNull("Reading from the end of the file must not produce a chunk for a non-changing file.", chunk);
                     produceLatch.countDown();
                     // this assumes that we will read the entire line we've written above.
                     // might be brittle and can break if we happen to read only part of the strings, but given the
                     // size of it it's unlikely. if this spuriously breaks, read chunks in a loop and buffer up.
                     final FileChunk nextChunk = chunkQueue.poll(2, TimeUnit.SECONDS);
-                    assertNotNull(nextChunk, "the next chunk should be filled");
-                    assertEquals(nextChunk.getChunkBuffer().toString(Charsets.UTF_8), appendedLine + "\n", "line should match");
+                    assertNotNull("the next chunk should be filled", nextChunk);
+                    assertEquals("line should match", appendedLine + "\n", nextChunk.getChunkBuffer().toString(Charsets.UTF_8));
                 } catch (InterruptedException ignore) {
                 }
             }
@@ -172,13 +170,13 @@ public class ChunkReaderTest implements Thread.UncaughtExceptionHandler {
         consumer.join();
 
         // we can process one chunk at a time, so one read is queued, the second is buffered
-        assertEquals(chunkQueue.remainingCapacity(), 1, "The e should be empty");
+        assertEquals("The e should be empty", 1, chunkQueue.remainingCapacity());
 
     }
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        fail("Thread " + t.getName() + " should not have thrown any uncaught exceptions!", e);
+        fail("Thread " + t.getName() + " should not have thrown any uncaught exceptions! (" + e.getMessage() + ")");
     }
 
     public static class CountingAsyncFileChannel extends AsynchronousFileChannel {

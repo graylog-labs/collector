@@ -6,9 +6,9 @@ import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.file.splitters.NewlineChunkSplitter;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.Test;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,8 +16,8 @@ import java.util.HashSet;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static com.google.common.base.Charsets.UTF_8;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class ChunkProcessorTest extends MultithreadedBaseTest {
     private static final Logger log = LoggerFactory.getLogger(ChunkProcessorTest.class);
@@ -34,13 +34,13 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
             public void insert(Message message) {
                 log.debug("Received message {}", message);
                 messagenumber++;
-                assertEquals(message.getSource(), "test");
+                assertEquals("test", message.getSource());
                 switch (messagenumber) {
                     case 1:
-                        assertEquals(message.getMessage(), "some line");
+                        assertEquals("some line", message.getMessage());
                         break;
                     case 2:
-                        assertEquals(message.getMessage(), "another line");
+                        assertEquals("another line", message.getMessage());
                         break;
                 }
             }
@@ -65,11 +65,11 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
             @Override
             public void insert(Message message) {
                 log.debug("Received message {}", message);
-                assertEquals(message.getSource(), "test");
+                assertEquals("test", message.getSource());
                 messageNumber++;
                 switch (messageNumber) {
                     case 1:
-                        assertEquals(message.getMessage(), "some line with more content");
+                        assertEquals("some line with more content", message.getMessage());
                         break;
                     case 2:
                         fail("There should be no second message! Message " + message.toString());
@@ -101,10 +101,10 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
                 messageNumber++;
                 switch (messageNumber) {
                     case 1:
-                        assertEquals(message.getMessage(), "some line with more content");
+                        assertEquals("some line with more content", message.getMessage());
                         break;
                     case 2:
-                        assertEquals(message.getMessage(), "trailing");
+                        assertEquals("trailing", message.getMessage());
                         break;
                 }
             }

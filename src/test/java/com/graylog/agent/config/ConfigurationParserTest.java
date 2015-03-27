@@ -2,19 +2,24 @@ package com.graylog.agent.config;
 
 import com.google.common.collect.Sets;
 import com.typesafe.config.Config;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class ConfigurationParserTest {
     private File configFile;
 
-    @BeforeMethod
+    @Rule
+    public ExpectedException thrower = ExpectedException.none();
+
+    @Before
     public void setUp() throws Exception {
         configFile = Files.createTempFile("agent", ".conf").toFile();
 
@@ -25,25 +30,31 @@ public class ConfigurationParserTest {
     public void testParsing() throws Exception{
         final Config config = ConfigurationParser.parse(configFile);
 
-        assertEquals(config.getInt("message-buffer-size"), 128);
+        assertEquals(128, config.getInt("message-buffer-size"));
     }
 
-    @Test(expectedExceptions = ConfigurationParser.Error.class)
+    @Test
     public void testMissingConfigFile() throws Exception {
+        thrower.expect(ConfigurationParser.Error.class);
+
         configFile.delete();
 
         ConfigurationParser.parse(configFile);
     }
 
-    @Test(expectedExceptions = ConfigurationParser.Error.class)
+    @Test
     public void testUnreadableFile() throws Exception {
+        thrower.expect(ConfigurationParser.Error.class);
+
         Files.setPosixFilePermissions(configFile.toPath(), Sets.newHashSet(new PosixFilePermission[]{}));
 
         ConfigurationParser.parse(configFile);
     }
 
-    @Test(expectedExceptions = ConfigurationParser.Error.class)
+    @Test
     public void testEmptyFile() throws Exception {
+        thrower.expect(ConfigurationParser.Error.class);
+
         configFile.delete();
         Files.write(configFile.toPath(), "".getBytes());
 

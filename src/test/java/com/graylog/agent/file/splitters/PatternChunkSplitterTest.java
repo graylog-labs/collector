@@ -4,12 +4,12 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 import java.util.Map;
 
 import static com.google.common.base.Charsets.UTF_8;
-import static org.testng.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class PatternChunkSplitterTest {
 
@@ -33,20 +33,21 @@ public class PatternChunkSplitterTest {
         for (String chunk : Iterables.concat(firstTwoChunks, remainingChunk)) {
             switch (++messageNum) {
                 case 1:
-                    assertEquals(chunk, "Feb 20 17:05:18 otter kernel[0]: CODE SIGNING: cs_invalid_page(0x1000): p=32696[GoogleSoftwareUp] final status 0x0, allow (remove VALID)ing page\n");
+                    assertEquals("Feb 20 17:05:18 otter kernel[0]: CODE SIGNING: cs_invalid_page(0x1000): p=32696[GoogleSoftwareUp] final status 0x0, allow (remove VALID)ing page\n", chunk);
                     break;
                 case 2:
-                    assertEquals(chunk, "Feb 20 17:05:18 otter GoogleSoftwareUpdateDaemon[32697]: -[KeystoneDaemon logServiceState] GoogleSoftwareUpdate daemon (1.1.0.3659) vending:\n" +
+                    assertEquals("Feb 20 17:05:18 otter GoogleSoftwareUpdateDaemon[32697]: -[KeystoneDaemon logServiceState] GoogleSoftwareUpdate daemon (1.1.0.3659) vending:\n" +
                             "\t\tcom.google.Keystone.Daemon.UpdateEngine: 2 connection(s)\n" +
-                            "\t\tcom.google.Keystone.Daemon.Administration: 0 connection(s)\n");
+                            "\t\tcom.google.Keystone.Daemon.Administration: 0 connection(s)\n",
+                            chunk);
                     break;
                 case 3:
-                    assertEquals(chunk, "Feb 20 17:05:18 otter GoogleSoftwareUpdateDaemon[32697]: -[KSUpdateEngine updateProductID:] KSUpdateEngine updating product ID: \"com.google.Keystone\"\n");
+                    assertEquals("Feb 20 17:05:18 otter GoogleSoftwareUpdateDaemon[32697]: -[KSUpdateEngine updateProductID:] KSUpdateEngine updating product ID: \"com.google.Keystone\"\n", chunk);
                     break;
             }
         }
 
-        assertEquals(messageNum, 3, "the last chunk should have triggered a message (no follow mode active)");
+        assertEquals("the last chunk should have triggered a message (no follow mode active)", 3, messageNum);
 
 
     }

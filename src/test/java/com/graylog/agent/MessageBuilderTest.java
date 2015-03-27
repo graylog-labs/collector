@@ -2,18 +2,23 @@ package com.graylog.agent;
 
 import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
-import org.testng.annotations.Test;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotEquals;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class MessageBuilderTest {
+    @Rule
+    public ExpectedException throwing = ExpectedException.none();
+
     @Test
     public void testSuccessfulBuild() throws Exception {
         final DateTime time = DateTime.now();
@@ -30,18 +35,19 @@ public class MessageBuilderTest {
                 .fields(fields)
                 .build();
 
-        assertEquals(message.getMessage(), "the message");
-        assertEquals(message.getSource(), "source");
-        assertEquals(message.getTimestamp(), time);
-        assertEquals(message.getInput(), "input-id");
-        assertEquals(message.getOutputs(), Sets.newHashSet("output1", "output2"));
-        assertEquals(message.getFields().asMap(), new HashMap<String, Object>(){
+        assertEquals("the message", message.getMessage());
+        assertEquals("source", message.getSource());
+        assertEquals(time, message.getTimestamp());
+        assertEquals("input-id", message.getInput());
+        assertEquals(Sets.newHashSet("output1", "output2"), message.getOutputs());
+        assertEquals(new HashMap<String, Object>(){
             { put("hello", "world"); }
-        });
+        }, message.getFields().asMap());
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void testEmpty() throws Exception {
+        throwing.expect(NullPointerException.class);
         new MessageBuilder().build();
     }
 
@@ -89,7 +95,7 @@ public class MessageBuilderTest {
                 .fields(new MessageFields());
         final MessageBuilder copy = builder.copy();
 
-        assertNotEquals(copy, builder);
+        assertNotEquals(builder, copy);
     }
 
     @Test
@@ -179,7 +185,7 @@ public class MessageBuilderTest {
         thread.start();
         thread.join();
 
-        assertFalse(failed.get(), "Modifying builder copy in another thread should have failed!");
+        assertFalse("Modifying builder copy in another thread should have failed!", failed.get());
     }
 
     private void modifyInThread(final String field, final Runnable runnable) throws InterruptedException {
@@ -198,7 +204,7 @@ public class MessageBuilderTest {
         thread.start();
         thread.join();
 
-        assertTrue(failed.get(), "Modifying " + field + " in another thread should have failed!");
+        assertTrue("Modifying " + field + " in another thread should have failed!", failed.get());
     }
 
     private void ensureFailure(MessageBuilder builder, String field) {

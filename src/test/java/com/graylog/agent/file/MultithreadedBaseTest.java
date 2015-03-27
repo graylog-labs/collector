@@ -1,15 +1,15 @@
 package com.graylog.agent.file;
 
 import com.google.common.collect.Sets;
+import org.junit.After;
+import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 
 import java.util.Set;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class MultithreadedBaseTest {
     private static final Logger log = LoggerFactory.getLogger(MultithreadedBaseTest.class);
@@ -27,7 +27,7 @@ public class MultithreadedBaseTest {
         }
     };
 
-    @BeforeMethod
+    @Before
     public void assertErrorTrap() {
         log.info("clearing background assertions {}", Thread.currentThread().getName());
         assertionErrors.get().clear();
@@ -43,10 +43,10 @@ public class MultithreadedBaseTest {
         setupDone.set(true);
     }
 
-    @AfterMethod
+    @After
     public void checkThreadAssertions() {
-        assertTrue(setupDone.get(), "Thread " + Thread.currentThread().getName());
+        assertTrue("Thread " + Thread.currentThread().getName(), setupDone.get());
         log.info("checking background assertions");
-        assertEquals(assertionErrors.get().size(), 0, "Background threads should not fail assertions");
+        assertEquals("Background threads should not fail assertions", 0, assertionErrors.get().size());
     }
 }
