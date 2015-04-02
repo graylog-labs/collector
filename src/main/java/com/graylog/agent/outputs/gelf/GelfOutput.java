@@ -81,7 +81,9 @@ public class GelfOutput extends OutputService {
 
         try {
             final GelfMessageBuilder messageBuilder = new GelfMessageBuilder(message.getMessage(), message.getSource())
-                    .level(GelfMessageLevel.INFO);
+                    .timestamp(message.getTimestamp().getMillis())
+                    .additionalFields(message.getFields().asMap())
+                    .level(GelfMessageLevel.valueOf(message.getLevel().toString()));
 
             transport.send(messageBuilder.build());
         } catch (InterruptedException e) {
