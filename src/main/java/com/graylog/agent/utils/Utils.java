@@ -9,6 +9,8 @@ import java.net.UnknownHostException;
 public class Utils {
     private static final Logger LOG = LoggerFactory.getLogger(Utils.class);
 
+    private static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().startsWith("windows");
+
     public static String getHostname() {
         String hostname;
         try {
@@ -25,5 +27,9 @@ public class Utils {
         }
 
         return hostname;
+    }
+
+    public static boolean isWindows() {
+        return IS_WINDOWS;
     }
 }
