@@ -14,6 +14,7 @@ public class MessageBuilder {
     private String message;
     private String source;
     private DateTime timestamp;
+    private Message.Level level;
     private String input;
     private Set<String> outputs;
     private MessageFields fields;
@@ -21,10 +22,11 @@ public class MessageBuilder {
     public MessageBuilder() {
     }
 
-    private MessageBuilder(String message, String source, DateTime timestamp, String input, Set<String> outputs, MessageFields fields) {
+    private MessageBuilder(String message, String source, DateTime timestamp, Message.Level level, String input, Set<String> outputs, MessageFields fields) {
         this.message = message;
         this.source = source;
         this.timestamp = timestamp;
+        this.level = level;
         this.input = input;
         this.outputs = outputs;
         this.fields = fields;
@@ -45,6 +47,12 @@ public class MessageBuilder {
     public MessageBuilder timestamp(DateTime timestamp) {
         checkOwnership();
         this.timestamp = timestamp;
+        return this;
+    }
+
+    public MessageBuilder level(Message.Level level) {
+        checkOwnership();
+        this.level = level;
         return this;
     }
 
@@ -74,18 +82,19 @@ public class MessageBuilder {
         checkNotNull(message, "Message should not be null!");
         checkNotNull(source, "Message source should not be null!");
         checkNotNull(timestamp, "Message timestamp should not be null!");
+        checkNotNull(level, "Message level should not be null!");
         checkNotNull(input, "Message input should not be null!");
         checkNotNull(outputs, "Message outputs should not be null!");
 
         if (fields == null) {
-            return new Message(message, source, timestamp, input, outputs);
+            return new Message(message, source, timestamp, level, input, outputs);
         } else {
-            return new Message(message, source, timestamp, input, outputs, fields);
+            return new Message(message, source, timestamp, level, input, outputs, fields);
         }
     }
 
     public MessageBuilder copy() {
-        return new MessageBuilder(message, source, timestamp, input, outputs, fields);
+        return new MessageBuilder(message, source, timestamp, level, input, outputs, fields);
     }
 
     private void checkOwnership() {

@@ -30,6 +30,7 @@ public class MessageBuilderTest {
                 .message("the message")
                 .source("source")
                 .timestamp(time)
+                .level(Message.Level.INFO)
                 .input("input-id")
                 .outputs(Sets.newHashSet("output1", "output2"))
                 .fields(fields)
@@ -38,6 +39,7 @@ public class MessageBuilderTest {
         assertEquals("the message", message.getMessage());
         assertEquals("source", message.getSource());
         assertEquals(time, message.getTimestamp());
+        assertEquals(Message.Level.INFO, message.getLevel());
         assertEquals("input-id", message.getInput());
         assertEquals(Sets.newHashSet("output1", "output2"), message.getOutputs());
         assertEquals(new HashMap<String, Object>(){
@@ -57,6 +59,7 @@ public class MessageBuilderTest {
                 .message("the message")
                 .source("source")
                 .timestamp(DateTime.now())
+                .level(Message.Level.INFO)
                 .input("input-id")
                 .outputs(Sets.newHashSet("output1", "output2"))
                 .fields(new MessageFields());
@@ -72,6 +75,10 @@ public class MessageBuilderTest {
         builder.timestamp(null);
         ensureFailure(builder, "timestamp");
         builder.timestamp(DateTime.now());
+
+        builder.level(null);
+        ensureFailure(builder, "level");
+        builder.level(Message.Level.INFO);
 
         builder.input(null);
         ensureFailure(builder, "input");
@@ -90,6 +97,7 @@ public class MessageBuilderTest {
                 .message("the message")
                 .source("source")
                 .timestamp(DateTime.now())
+                .level(Message.Level.INFO)
                 .input("input-id")
                 .outputs(Sets.newHashSet("output1", "output2"))
                 .fields(new MessageFields());
@@ -105,6 +113,7 @@ public class MessageBuilderTest {
                 .message("the message")
                 .source("source")
                 .timestamp(DateTime.now())
+                .level(Message.Level.INFO)
                 .input("input-id")
                 .outputs(Sets.newHashSet("output1", "output2"))
                 .fields(new MessageFields());
@@ -130,6 +139,14 @@ public class MessageBuilderTest {
             @Override
             public void run() {
                 builder.timestamp(DateTime.now());
+            }
+        });
+
+        builder.level(Message.Level.INFO);
+        modifyInThread("level", new Runnable() {
+            @Override
+            public void run() {
+                builder.level(Message.Level.CRITICAL);
             }
         });
 
@@ -164,6 +181,7 @@ public class MessageBuilderTest {
                 .message("the message")
                 .source("source")
                 .timestamp(DateTime.now())
+                .level(Message.Level.INFO)
                 .input("input-id")
                 .outputs(Sets.newHashSet("output1", "output2"))
                 .fields(new MessageFields());

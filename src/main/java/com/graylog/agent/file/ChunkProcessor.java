@@ -107,6 +107,7 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
             final Message message = messageBuilder.copy()
                     .message(messageString)
                     .timestamp(DateTime.now(DateTimeZone.UTC))
+                    .level(Message.Level.INFO)
                     .build();
 
             message.getFields().put("source_file", path.toFile().getAbsolutePath());
