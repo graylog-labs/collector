@@ -12,6 +12,11 @@ inputs {
     type = "file"
     path = "/var/log/syslog"
   }
+  win-application {
+    type = "windows-eventlog"
+    source-name = "Application"
+    poll-interval = 1s
+  }
   apache-access {
     type = "file"
     path = "/var/log/apache2/access.log"
@@ -37,9 +42,9 @@ outputs {
     client-reconnect-delay = 1000
     client-tcp-no-delay = true
     client-send-buffer-size = 32768
-    inputs = "test-log"
   }
   console {
     type = "stdout"
+    inputs = "test-log"
   }
 }
