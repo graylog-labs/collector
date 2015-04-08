@@ -33,6 +33,9 @@
         <agent.script-config>${agent.share-path}/agent-script-config.sh</agent.script-config>
         <agent.jar-path>${agent.share-path}/${project.artifactId}-${project.version}.jar</agent.jar-path>
         <agent.jvm-opts>-Xms12m -Xmx64m</agent.jvm-opts>
+
+        <jackson.version>2.5.1</jackson.version>
+        <retrofit.version>1.9.0</retrofit.version>
     </properties>
 
     <dependencies>
@@ -106,6 +109,33 @@
             <artifactId>slf4j-api</artifactId>
             <version>1.7.10</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.retrofit</groupId>
+            <artifactId>retrofit</artifactId>
+            <version>${retrofit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.retrofit</groupId>
+            <artifactId>converter-jackson</artifactId>
+            <version>${retrofit.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.auto.value</groupId>
+            <artifactId>auto-value</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
@@ -147,6 +177,9 @@
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
+                    <annotationProcessors>
+                        <annotationProcessor>com.google.auto.value.processor.AutoValueProcessor</annotationProcessor>
+                    </annotationProcessors>
                 </configuration>
             </plugin>
             <plugin>

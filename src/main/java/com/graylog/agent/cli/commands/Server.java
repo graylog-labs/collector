@@ -8,6 +8,7 @@ import com.graylog.agent.config.ConfigurationError;
 import com.graylog.agent.config.ConfigurationModule;
 import com.graylog.agent.config.ConfigurationRegistry;
 import com.graylog.agent.guice.AgentInjector;
+import com.graylog.agent.heartbeat.HeartbeatModule;
 import com.graylog.agent.inputs.InputsModule;
 import com.graylog.agent.metrics.MetricsModule;
 import com.graylog.agent.outputs.OutputsModule;
@@ -57,7 +58,8 @@ public class Server implements Runnable {
                     new InputsModule(),
                     new OutputsModule(),
                     new ServicesModule(),
-                    new MetricsModule());
+                    new MetricsModule(),
+                    new HeartbeatModule());
         } catch (Exception e) {
             LOG.error("ERROR: {}", e.getMessage());
             LOG.debug("Detailed injection creation error", e);
