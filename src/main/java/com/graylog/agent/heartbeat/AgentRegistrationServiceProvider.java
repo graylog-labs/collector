@@ -1,9 +1,6 @@
 package com.graylog.agent.heartbeat;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.graylog.agent.annotations.GraylogServerURL;
 import retrofit.RestAdapter;
-import retrofit.converter.JacksonConverter;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -12,11 +9,8 @@ public class AgentRegistrationServiceProvider implements Provider<AgentRegistrat
     private final RestAdapter restAdapter;
 
     @Inject
-    public AgentRegistrationServiceProvider(@GraylogServerURL String graylogServerURL) {
-        this.restAdapter = new RestAdapter.Builder()
-                .setEndpoint(graylogServerURL)
-                .setConverter(new JacksonConverter(new ObjectMapper()))
-                .build();
+    public AgentRegistrationServiceProvider(RestAdapter restAdapter) {
+        this.restAdapter = restAdapter;
     }
 
     @Override

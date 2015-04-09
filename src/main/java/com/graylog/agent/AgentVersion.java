@@ -61,4 +61,9 @@ public class AgentVersion {
     public String timestamp() {
         return timestamp;
     }
+
+    @Override
+    public String toString() {
+        return "v" + version() + "(commit "+ commitIdShort() + ")";
+    }
 }

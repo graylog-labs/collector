@@ -12,6 +12,7 @@ import com.graylog.agent.heartbeat.HeartbeatModule;
 import com.graylog.agent.inputs.InputsModule;
 import com.graylog.agent.metrics.MetricsModule;
 import com.graylog.agent.outputs.OutputsModule;
+import com.graylog.agent.serverapi.ServerApiModule;
 import com.graylog.agent.services.AgentServiceManager;
 import com.graylog.agent.services.ServicesModule;
 import io.airlift.airline.Command;
@@ -59,6 +60,7 @@ public class Server implements Runnable {
                     new OutputsModule(),
                     new ServicesModule(),
                     new MetricsModule(),
+                    new ServerApiModule(),
                     new HeartbeatModule());
         } catch (Exception e) {
             LOG.error("ERROR: {}", e.getMessage());
