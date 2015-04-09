@@ -8,8 +8,15 @@ import java.nio.charset.Charset;
 import java.util.Iterator;
 
 public class NewlineChunkSplitter extends ContentSplitter {
-    @Override
-    public void configure(ContentSplitterConfiguration configuration) {
+
+    private final ByteBufProcessor processor;
+
+    public NewlineChunkSplitter() {
+        this(ByteBufProcessor.FIND_LF);
+    }
+
+    public NewlineChunkSplitter(ByteBufProcessor processor) {
+        this.processor = processor;
     }
 
     @Override
@@ -25,7 +32,7 @@ public class NewlineChunkSplitter extends ContentSplitter {
                             if (!buffer.isReadable()) {
                                 return endOfData();
                             }
-                            final int i = buffer.forEachByte(ByteBufProcessor.FIND_LF);
+                            final int i = buffer.forEachByte(processor);
                             if (i == -1) {
                                 if (includeRemainingData) {
                                     final ByteBuf remaining = buffer.readBytes(buffer.readableBytes());

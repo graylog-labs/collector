@@ -8,7 +8,6 @@ import com.graylog.agent.config.ConfigurationUtils;
 import com.graylog.agent.file.ChunkReader;
 import com.graylog.agent.file.FileReaderService;
 import com.graylog.agent.file.naming.NumberSuffixStrategy;
-import com.graylog.agent.file.splitters.NewlineChunkSplitter;
 import com.graylog.agent.inputs.InputService;
 import com.graylog.agent.utils.Utils;
 import org.slf4j.Logger;
@@ -63,7 +62,7 @@ public class FileInput extends InputService {
                 InitialReadPosition.END,
                 this,
                 messageBuilder,
-                new NewlineChunkSplitter(),
+                configuration.createContentSplitter(),
                 buffer
         );
 

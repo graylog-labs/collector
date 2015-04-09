@@ -11,6 +11,7 @@ inputs {
   local-syslog {
     type = "file"
     path = "/var/log/syslog"
+    content-splitter = "newline"
   }
   apache-access {
     type = "file"
