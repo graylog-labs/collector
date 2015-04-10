@@ -1,5 +1,8 @@
 package com.graylog.agent.heartbeat;
 
+import com.graylog.agent.utils.AgentId;
+
+import javax.inject.Inject;
 import javax.inject.Provider;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -9,10 +12,11 @@ public class AgentRegistrationRequestProvider implements Provider<AgentRegistrat
     private final String hostname;
     private final String agentId;
 
-    public AgentRegistrationRequestProvider() throws UnknownHostException {
+    @Inject
+    public AgentRegistrationRequestProvider(AgentId agentId) throws UnknownHostException {
         this.operatingSystem = System.getProperty("os.name", "unknown");
         this.hostname = InetAddress.getLocalHost().getHostName();
-        this.agentId = "veryUniqueAgentId";
+        this.agentId = agentId.toString();
     }
 
     @Override
