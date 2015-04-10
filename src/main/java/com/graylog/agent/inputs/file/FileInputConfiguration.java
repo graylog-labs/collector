@@ -11,7 +11,6 @@ import com.graylog.agent.file.splitters.NewlineChunkSplitter;
 import com.graylog.agent.file.splitters.PatternChunkSplitter;
 import com.graylog.agent.inputs.InputConfiguration;
 import com.typesafe.config.Config;
-import io.netty.buffer.ByteBufProcessor;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -87,9 +86,9 @@ public class FileInputConfiguration extends InputConfiguration {
     public ContentSplitter createContentSplitter() {
         switch(contentSplitter) {
             case "NEWLINE":
-                return new NewlineChunkSplitter(ByteBufProcessor.FIND_LF);
+                return new NewlineChunkSplitter(NewlineChunkSplitter.LineEnding.LF);
             case "CRLF":
-                return new NewlineChunkSplitter(ByteBufProcessor.FIND_CRLF);
+                return new NewlineChunkSplitter(NewlineChunkSplitter.LineEnding.CRLF);
             case "PATTERN":
                 return new PatternChunkSplitter(contentSplitterPattern);
             default:

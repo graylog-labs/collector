@@ -8,15 +8,31 @@ import java.nio.charset.Charset;
 import java.util.Iterator;
 
 public class NewlineChunkSplitter extends ContentSplitter {
+    public enum LineEnding {
+        LF, CRLF;
+    }
 
+    private final LineEnding lineEnding;
     private final ByteBufProcessor processor;
 
     public NewlineChunkSplitter() {
-        this(ByteBufProcessor.FIND_LF);
+        this(LineEnding.LF);
     }
 
-    public NewlineChunkSplitter(ByteBufProcessor processor) {
-        this.processor = processor;
+    public NewlineChunkSplitter(LineEnding lineEnding) {
+        this.lineEnding = lineEnding;
+        this.processor = getProcessor(lineEnding);
+    }
+
+    public ByteBufProcessor getProcessor(LineEnding lineEnding) {
+        switch (lineEnding) {
+            case LF:
+                return ByteBufProcessor.FIND_LF;
+            case CRLF:
+                return ByteBufProcessor.FIND_CRLF;
+            default:
+                throw new IllegalArgumentException("Unknown line ending");
+        }
     }
 
     @Override
@@ -42,7 +58,10 @@ public class NewlineChunkSplitter extends ContentSplitter {
                                 }
                             }
                             final ByteBuf fullLine = buffer.readBytes(i);
-                            buffer.readByte(); // the newline byte
+                            buffer.readByte(); // the newline/cr byte
+                            if (lineEnding == LineEnding.CRLF) {
+                                buffer.readByte(); // the newline byte if CRLF line endings are used
+                            }
                             return fullLine.toString(charset);
                         } finally {
                             buffer.discardReadBytes();
