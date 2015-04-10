@@ -1,5 +1,8 @@
 // Graylog Agent example configuration.
 
+// Url to Graylog server this agent registers at
+server-url = "http://localhost:12900"
+
 message-buffer-size = 128
 
 // The id used to identify this agent. Can be either a string which is used as id,

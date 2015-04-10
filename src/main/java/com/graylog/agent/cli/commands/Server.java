@@ -16,7 +16,6 @@ import com.graylog.agent.serverapi.ServerApiModule;
 import com.graylog.agent.services.AgentServiceManager;
 import com.graylog.agent.services.ServicesModule;
 import com.graylog.agent.utils.AgentIdModule;
-import io.airlift.airline.Arguments;
 import io.airlift.airline.Command;
 import io.airlift.airline.Option;
 import org.slf4j.Logger;
@@ -32,13 +31,9 @@ public class Server implements Runnable {
     @Option(name = "-f", description = "Path to configuration file.", required = true)
     private final File configFile = null;
 
-    @Arguments(description = "URL to Graylog server")
-    private String graylogServerURL;
-
     @Override
     public void run() {
         LOG.info("Starting Agent v{} (commit {})", AgentVersion.CURRENT.version(), AgentVersion.CURRENT.commitIdShort());
-        LOG.debug("Registering at Graylog server @ {}", graylogServerURL);
 
         final Injector injector = getInjector();
         final AgentServiceManager serviceManager = injector.getInstance(AgentServiceManager.class);
@@ -66,7 +61,7 @@ public class Server implements Runnable {
                     new OutputsModule(),
                     new ServicesModule(),
                     new MetricsModule(),
-                    new ServerApiModule(graylogServerURL),
+                    new ServerApiModule(),
                     new HeartbeatModule(),
                     new AgentIdModule());
         } catch (Exception e) {

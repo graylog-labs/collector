@@ -1,6 +1,7 @@
 package com.graylog.agent.heartbeat;
 
 import com.google.common.util.concurrent.AbstractScheduledService;
+import com.graylog.agent.utils.AgentId;
 import com.typesafe.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,20 +19,23 @@ public class HeartbeatService extends AbstractScheduledService {
     private final AgentRegistrationService agentRegistrationService;
     private final AgentRegistrationRequest agentRegistrationRequest;
     private final Config config;
+    private final String agentId;
 
     @Inject
     public HeartbeatService(AgentRegistrationService agentRegistrationService,
                             AgentRegistrationRequest agentRegistrationRequest,
-                            Config config) {
+                            Config config,
+                            AgentId agentId) {
         this.agentRegistrationService = agentRegistrationService;
         this.agentRegistrationRequest = agentRegistrationRequest;
         this.config = config;
+        this.agentId = agentId.toString();
     }
 
     @Override
     protected void runOneIteration() throws Exception {
         try {
-            agentRegistrationService.register(agentRegistrationRequest);
+            agentRegistrationService.register(this.agentId, this.agentRegistrationRequest);
         } catch (RetrofitError e) {
             final Response response = e.getResponse();
             if (response != null)
@@ -39,9 +43,9 @@ public class HeartbeatService extends AbstractScheduledService {
             else {
                 final String message;
                 if (e.getCause() != null)
-                    message = e.getCause().getMessage();
+                    message = e.getCause().getClass().getSimpleName() + ": " + e.getCause().getMessage();
                 else
-                    message = e.getMessage();
+                    message = e.getClass().getSimpleName() + ": " + e.getMessage();
                 LOG.warn("Unable to send successfull heartbeat to Graylog server: {}", message);
             }
         }
