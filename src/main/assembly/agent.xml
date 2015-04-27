@@ -8,6 +8,15 @@
         <format>tar.gz</format>
         <format>zip</format>
     </formats>
+    <fileSets>
+        <fileSet>
+            <directory>${project.basedir}/bin/windows</directory>
+            <outputDirectory>/bin/windows</outputDirectory>
+            <includes>
+                <include>*.exe</include>
+            </includes>
+        </fileSet>
+    </fileSets>
     <files>
         <file>
             <source>${project.basedir}/config/agent.conf.example</source>
@@ -22,6 +31,12 @@
         <file>
             <source>${project.build.directory}/graylog-agent.bat</source>
             <destName>graylog-agent.bat</destName>
+            <outputDirectory>/bin/</outputDirectory>
+            <fileMode>0755</fileMode>
+        </file>
+        <file>
+            <source>${project.build.directory}/graylog-agent-service.bat</source>
+            <destName>graylog-agent-service.bat</destName>
             <outputDirectory>/bin/</outputDirectory>
             <fileMode>0755</fileMode>
         </file>
