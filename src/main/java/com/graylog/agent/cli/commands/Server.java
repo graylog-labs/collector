@@ -25,18 +25,20 @@ import java.io.File;
 import java.util.Map;
 
 @Command(name = "server", description = "Start the agent")
-public class Server implements Runnable {
+public class Server implements AgentCommand {
     private static final Logger LOG = LoggerFactory.getLogger(Server.class);
 
     @Option(name = "-f", description = "Path to configuration file.", required = true)
     private final File configFile = null;
+
+    private AgentServiceManager serviceManager;
 
     @Override
     public void run() {
         LOG.info("Starting Agent v{} (commit {})", AgentVersion.CURRENT.version(), AgentVersion.CURRENT.commitIdShort());
 
         final Injector injector = getInjector();
-        final AgentServiceManager serviceManager = injector.getInstance(AgentServiceManager.class);
+        serviceManager = injector.getInstance(AgentServiceManager.class);
 
         validateConfiguration(serviceManager.getConfiguration());
 
@@ -46,9 +48,15 @@ public class Server implements Runnable {
             LOG.info("Service {}: {}", entry.getKey().toString(), entry.getValue().toString());
         }
 
-        configureShutdownHook(serviceManager);
+        configureShutdownHook();
 
         serviceManager.awaitStopped();
+    }
+
+    @Override
+    public void stop() {
+        LOG.info("Stopping...");
+        serviceManager.stop();
     }
 
     private Injector getInjector() {
@@ -83,12 +91,11 @@ public class Server implements Runnable {
         }
     }
 
-    private void configureShutdownHook(final AgentServiceManager serviceManager) {
+    private void configureShutdownHook() {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
-                LOG.info("Stopping...");
-                serviceManager.stop();
+                stop();
             }
         }));
     }

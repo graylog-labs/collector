@@ -4,7 +4,7 @@ import com.graylog.agent.AgentVersion;
 import io.airlift.airline.Command;
 
 @Command(name = "version", description = "Show version information on STDOUT")
-public class Version implements Runnable {
+public class Version implements AgentCommand {
     @Override
     public void run() {
         final AgentVersion v = AgentVersion.CURRENT;
@@ -12,5 +12,10 @@ public class Version implements Runnable {
                 v.version(), v.commitIdShort(), v.timestamp());
 
         System.out.println(message);
+    }
+
+    @Override
+    public void stop() {
+        // nothing to stop
     }
 }
