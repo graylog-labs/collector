@@ -175,6 +175,7 @@
                 <targetPath>${project.build.directory}</targetPath>
                 <includes>
                     <include>*.sh</include>
+                    <include>*.bat</include>
                 </includes>
             </resource>
         </resources>

@@ -6,6 +6,7 @@
     <id>agent</id>
     <formats>
         <format>tar.gz</format>
+        <format>zip</format>
     </formats>
     <files>
         <file>
@@ -15,6 +16,12 @@
         <file>
             <source>${project.build.directory}/graylog-agent.sh</source>
             <destName>graylog-agent</destName>
+            <outputDirectory>/bin/</outputDirectory>
+            <fileMode>0755</fileMode>
+        </file>
+        <file>
+            <source>${project.build.directory}/graylog-agent.bat</source>
+            <destName>graylog-agent.bat</destName>
             <outputDirectory>/bin/</outputDirectory>
             <fileMode>0755</fileMode>
         </file>
