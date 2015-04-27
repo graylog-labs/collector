@@ -47,6 +47,7 @@ ECHO.
 ECHO Service name: "%SERVICE_NAME%"
 ECHO JAVA_HOME:    "%JAVA_HOME%"
 ECHO ARCH:         "%ARCH%"
+ECHO.
 
 :: Select the correct JVM DLL.
 SET JVM_DLL=%JAVA_HOME%\jre\bin\server\jvm.dll
@@ -78,7 +79,7 @@ SET AGENT_PID_FILE="%SERVICE_NAME%.pid"
 SET AGENT_LOG_DIR="%AGENT_ROOT%\logs"
 SET AGENT_LOG_OPTIONS=--LogPath "%AGENT_LOG_DIR%" --LogPrefix "graylog-agent" --StdError auto --StdOutput auto
 
-"%PROCRUN%" //IS//%SERVICE_NAME% --Classpath "%AGENT_JAR%" --Jvm "%JVM_DLL%" --JvmMs %AGENT_JVM_MS% --JvmMx %AGENT_JVM_MX% --StartPath "%AGENT_ROOT%" --Startup %AGENT_STARTUP% --StartMode %AGENT_MODE% --StartClass %AGENT_CLASS% --StartMethod %AGENT_START_METHOD% --StartParams %AGENT_START_PARAMS% --StopMode %AGENT_MODE% --StopClass %AGENT_CLASS% --StopMethod %AGENT_STOP_METHOD% --StopTimeout %AGENT_STOP_TIMEOUT% --PidFile "%AGENT_PID_FILE%" --DisplayName "Graylog Agent (%SERVICE_NAME)" --Description "Graylog Agent %AGENT_VERSION% service. See http://www.graylog.org/ for details." %AGENT_LOG_OPTIONS%
+"%PROCRUN%" //IS//%SERVICE_NAME% --Classpath "%AGENT_JAR%" --Jvm "%JVM_DLL%" --JvmMs %AGENT_JVM_MS% --JvmMx %AGENT_JVM_MX% --StartPath "%AGENT_ROOT%" --Startup %AGENT_STARTUP% --StartMode %AGENT_MODE% --StartClass %AGENT_CLASS% --StartMethod %AGENT_START_METHOD% --StartParams %AGENT_START_PARAMS% --StopMode %AGENT_MODE% --StopClass %AGENT_CLASS% --StopMethod %AGENT_STOP_METHOD% --StopTimeout %AGENT_STOP_TIMEOUT% --PidFile "%AGENT_PID_FILE%" --DisplayName "Graylog Agent (%SERVICE_NAME%)" --Description "Graylog Agent %AGENT_VERSION% service. See http://www.graylog.org/ for details." %AGENT_LOG_OPTIONS%
 
 IF NOT errorlevel 1 GOTO actionInstallSuccess
 ECHO ERROR: Failed to install service: %SERVICE_NAME%
