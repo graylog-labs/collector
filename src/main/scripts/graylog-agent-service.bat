@@ -30,7 +30,7 @@ FOR %%D in ("%AGENT_BIN_DIR%..") DO SET AGENT_ROOT=%%~dpfD
 IF "%PROCESSOR_ARCHITECTURE%"=="x64" (SET ARCH=x64) ELSE (SET ARCH=x86)
 
 :: Use the correct executable based on the architecture.
-SET PROCRUN="%AGENT_BIN_DIR%\windows\graylog-agent-prunsrv-%ARCH%.exe"
+SET PROCRUN="%AGENT_BIN_DIR%\windows\graylog-agent-service-%ARCH%.exe"
 
 :: Dispatch the supported commands, show usage otherwise.
 IF /i %ACTION% == install GOTO actionInstallCheck
@@ -110,7 +110,7 @@ ECHO Service '%SERVICE_NAME%' has been removed
 GOTO:EOF
 
 :actionManage
-SET PRUNMGR=%AGENT_BIN_DIR%\windows\graylog-agent-prunmgr.exe
+SET PRUNMGR=%AGENT_BIN_DIR%\windows\graylog-agent-service-manager.exe
 "%PRUNMGR%" //ES//%SERVICE_NAME%
 IF NOT errorlevel 1 GOTO actionManageSuccess
 ECHO ERROR: Failed to start service manager for service: %SERVICE_NAME%
