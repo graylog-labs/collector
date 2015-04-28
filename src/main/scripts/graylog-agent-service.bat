@@ -36,6 +36,8 @@ SET PROCRUN="%AGENT_BIN_DIR%\windows\graylog-agent-prunsrv-%ARCH%.exe"
 IF /i %ACTION% == install GOTO actionInstallCheck
 IF /i %ACTION% == uninstall GOTO actionUninstall
 IF /i %ACTION% == manage GOTO actionManage
+IF /i %ACTION% == start GOTO actionStart
+IF /i %ACTION% == stop GOTO actionStop
 
 :usage
 ECHO.
@@ -106,9 +108,29 @@ GOTO:EOF
 SET PRUNMGR=%AGENT_BIN_DIR%\windows\graylog-agent-prunmgr.exe
 "%PRUNMGR%" //ES//%SERVICE_NAME%
 IF NOT errorlevel 1 GOTO actionManageSuccess
-ECHO ERROR: Failed to start service manager for '%SERVICE_NAME%'
+ECHO ERROR: Failed to start service manager for service: %SERVICE_NAME%
 GOTO:EOF
 
 :actionManageSuccess
-ECHO Successfully ran service manager for '%SERVICE_NAME%'.
+ECHO Successfully ran service manager for service: %SERVICE_NAME%
+GOTO:EOF
+
+:actionStart
+"%PROCRUN%" //ES//%SERVICE_NAME% %AGENT_LOG_OPTIONS%
+IF NOT errorlevel 1 GOTO actionStartSuccess
+ECHO ERROR: Failed to start service: %SERVICE_NAME%
+GOTO:EOF
+
+:actionStartSuccess
+ECHO Service '%SERVICE_NAME%' has been started
+GOTO:EOF
+
+:actionStop
+"%PROCRUN%" //SS//%SERVICE_NAME% %AGENT_LOG_OPTIONS%
+IF NOT errorlevel 1 GOTO actionStopSuccess
+ECHO ERROR: Failed to stop service: %SERVICE_NAME%
+GOTO:EOF
+
+:actionStopSuccess
+ECHO Service '%SERVICE_NAME%' has been stopped
 GOTO:EOF
