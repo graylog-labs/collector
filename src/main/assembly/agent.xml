@@ -16,6 +16,10 @@
                 <include>*.exe</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/lib/sigar-${sigar.version}</directory>
+            <outputDirectory>/lib/sigar</outputDirectory>
+        </fileSet>
     </fileSets>
     <files>
         <file>

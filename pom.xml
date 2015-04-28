@@ -34,6 +34,7 @@
         <agent.jar-path>${agent.share-path}/${project.artifactId}-${project.version}.jar</agent.jar-path>
         <agent.jvm-opts>-Xms12m -Xmx64m</agent.jvm-opts>
 
+        <sigar.version>1.6.4</sigar.version>
         <jackson.version>2.5.1</jackson.version>
         <retrofit.version>1.9.0</retrofit.version>
     </properties>
@@ -112,7 +113,7 @@
         <dependency>
             <groupId>org.fusesource</groupId>
             <artifactId>sigar</artifactId>
-            <version>1.6.4</version>
+            <version>${sigar.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
