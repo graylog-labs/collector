@@ -67,7 +67,7 @@ The following command can be used to build the fat JAR, tarball, deb, and
 rpm packages.
 
 ```
-$ mvn package assembly:single
+$ mvn (-Pbuild-packages|-Dbuild.packages) package assembly:single
 ```
 
 Find the artifacts in the following places.
