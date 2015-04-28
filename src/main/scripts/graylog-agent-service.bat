@@ -27,7 +27,8 @@ SET SERVICE_NAME=%1
 FOR %%D in ("%AGENT_BIN_DIR%..") DO SET AGENT_ROOT=%%~dpfD
 
 :: Detect if we are running on 32bit or 64bit Windows.
-IF "%PROCESSOR_ARCHITECTURE%"=="x64" (SET ARCH=x64) ELSE (SET ARCH=x86)
+"%JAVA_HOME%\bin\java" -version 2>&1 | "%windir%\System32\find" "64-Bit" >nul:
+IF errorlevel 1 (SET ARCH=x86) ELSE (SET ARCH=x64)
 
 :: Use the correct executable based on the architecture.
 SET PROCRUN="%AGENT_BIN_DIR%\windows\graylog-agent-service-%ARCH%.exe"
