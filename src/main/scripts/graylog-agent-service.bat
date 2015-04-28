@@ -35,10 +35,11 @@ SET PROCRUN="%AGENT_BIN_DIR%\windows\graylog-agent-prunsrv-%ARCH%.exe"
 :: Dispatch the supported commands, show usage otherwise.
 IF /i %ACTION% == install GOTO actionInstallCheck
 IF /i %ACTION% == uninstall GOTO actionUninstall
+IF /i %ACTION% == manage GOTO actionManage
 
 :usage
 ECHO.
-ECHO Usage: %~nx0 install^|uninstall^|start^|stop SERVICE_NAME
+ECHO Usage: %~nx0 install^|uninstall^|manage SERVICE_NAME
 GOTO:EOF
 
 :actionInstallCheck
@@ -99,4 +100,15 @@ GOTO:EOF
 
 :actionUninstallSuccess
 ECHO Service '%SERVICE_NAME%' has been removed
+GOTO:EOF
+
+:actionManage
+SET PRUNMGR=%AGENT_BIN_DIR%\windows\graylog-agent-prunmgr.exe
+"%PRUNMGR%" //ES//%SERVICE_NAME%
+IF NOT errorlevel 1 GOTO actionManageSuccess
+ECHO ERROR: Failed to start service manager for '%SERVICE_NAME%'
+GOTO:EOF
+
+:actionManageSuccess
+ECHO Successfully ran service manager for '%SERVICE_NAME%'.
 GOTO:EOF
