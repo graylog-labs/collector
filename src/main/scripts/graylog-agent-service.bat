@@ -13,15 +13,15 @@ ECHO JAVA_HOME not set! 1>&2
 EXIT /B 1
 
 :dispatchAction
+:: Get the directory of this script. NEEDS to run before argument parsing!
+SET AGENT_BIN_DIR=%~dp0
+
 :: Get the ACTION and SERVICE_NAME from the script arguments.
 IF "x%1x" == "xx" GOTO usage
 SET ACTION=%1
 SHIFT
 IF "x%1x" == "xx" GOTO usage
 SET SERVICE_NAME=%1
-
-:: Get the directory of this script.
-SET AGENT_BIN_DIR=%~dp0
 
 :: Get root directory of the Agent.
 FOR %%D in ("%AGENT_BIN_DIR%..") DO SET AGENT_ROOT=%%~dpfD
