@@ -33,6 +33,9 @@
         <agent.script-config>${agent.share-path}/agent-script-config.sh</agent.script-config>
         <agent.jar-path>${agent.share-path}/${project.artifactId}-${project.version}.jar</agent.jar-path>
         <agent.jvm-opts>-Xms12m -Xmx64m</agent.jvm-opts>
+
+        <jackson.version>2.5.1</jackson.version>
+        <retrofit.version>1.9.0</retrofit.version>
     </properties>
 
     <dependencies>
@@ -106,6 +109,38 @@
             <artifactId>slf4j-api</artifactId>
             <version>1.7.10</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.retrofit</groupId>
+            <artifactId>retrofit</artifactId>
+            <version>${retrofit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.retrofit</groupId>
+            <artifactId>converter-jackson</artifactId>
+            <version>${retrofit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.auto.value</groupId>
+            <artifactId>auto-value</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
@@ -147,6 +182,9 @@
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
+                    <annotationProcessors>
+                        <annotationProcessor>com.google.auto.value.processor.AutoValueProcessor</annotationProcessor>
+                    </annotationProcessors>
                 </configuration>
             </plugin>
             <plugin>
@@ -243,130 +281,143 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>jdeb</artifactId>
-                <groupId>org.vafer</groupId>
-                <version>1.3</version>
-                <executions>
-                    <execution>
-                        <id>generate-deb</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>jdeb</goal>
-                        </goals>
-                        <configuration>
-                            <deb>${project.build.directory}/${project.artifactId}_${project.version}_all.deb</deb>
-                            <dataSet>
-                                <data>
-                                    <src>${project.build.directory}/${project.build.finalName}.jar</src>
-                                    <type>file</type>
-                                    <mapper>
-                                        <type>perm</type>
-                                        <prefix>${agent.share-path}</prefix>
-                                        <filemode>444</filemode>
-                                        <user>root</user>
-                                        <group>root</group>
-                                    </mapper>
-                                </data>
-                                <data>
-                                    <src>config/agent.conf.example</src>
-                                    <type>file</type>
-                                    <mapper>
-                                        <type>perm</type>
-                                        <prefix>${agent.share-path}</prefix>
-                                        <filemode>644</filemode>
-                                        <user>root</user>
-                                        <group>root</group>
-                                    </mapper>
-                                </data>
-                                <data>
-                                    <src>${project.build.directory}/agent-script-config.sh</src>
-                                    <type>file</type>
-                                    <mapper>
-                                        <type>perm</type>
-                                        <prefix>${agent.share-path}</prefix>
-                                        <filemode>444</filemode>
-                                        <user>root</user>
-                                        <group>root</group>
-                                    </mapper>
-                                </data>
-                                <data>
-                                    <src>${project.build.directory}/graylog-agent.sh</src>
-                                    <dst>graylog-agent</dst>
-                                    <type>file</type>
-                                    <mapper>
-                                        <type>perm</type>
-                                        <prefix>${agent.bin-path}</prefix>
-                                        <filemode>555</filemode>
-                                        <user>root</user>
-                                        <group>root</group>
-                                    </mapper>
-                                </data>
-                            </dataSet>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>rpm-maven-plugin</artifactId>
-                <version>2.1.2</version>
-                <executions>
-                    <execution>
-                        <id>generate-rpm</id>
-                        <goals>
-                            <goal>attached-rpm</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <version>${project.version}</version>
-                    <release>${rpm.release}</release>
-                    <group>Application/Internet</group>
-                    <prefixes>
-                        <prefix>/usr</prefix>
-                    </prefixes>
-                    <defineStatements>
-                        <defineStatement>_unpackaged_files_terminate_build 0</defineStatement>
-                        <defineStatement>_binaries_in_noarch_packages_terminate_build 0</defineStatement>
-                    </defineStatements>
-                    <defaultFilemode>644</defaultFilemode>
-                    <defaultDirmode>755</defaultDirmode>
-                    <defaultUsername>root</defaultUsername>
-                    <defaultGroupname>root</defaultGroupname>
-                    <mappings>
-                        <mapping>
-                            <directory>${agent.bin-path}</directory>
-                            <filemode>555</filemode>
-                            <sources>
-                                <source>
-                                    <location>${project.build.directory}/graylog-agent.sh</location>
-                                    <destination>graylog-agent</destination>
-                                </source>
-                            </sources>
-                        </mapping>
-                        <mapping>
-                            <directory>${agent.share-path}</directory>
-                            <filemode>444</filemode>
-                            <sources>
-                                <source>
-                                    <location>${project.build.directory}/</location>
-                                    <includes>
-                                        <include>${project.build.finalName}.jar</include>
-                                        <include>agent-script-config.sh</include>
-                                    </includes>
-                                </source>
-                                <source>
-                                    <location>config/</location>
-                                    <includes>
-                                        <include>agent.conf.example</include>
-                                    </includes>
-                                </source>
-                            </sources>
-                        </mapping>
-                    </mappings>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>build-packages</id>
+            <activation>
+                <property><name>build.packages</name></property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>rpm-maven-plugin</artifactId>
+                        <version>2.1.2</version>
+                        <executions>
+                            <execution>
+                                <id>generate-rpm</id>
+                                <goals>
+                                    <goal>attached-rpm</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <version>${project.version}</version>
+                            <release>${rpm.release}</release>
+                            <group>Application/Internet</group>
+                            <prefixes>
+                                <prefix>/usr</prefix>
+                            </prefixes>
+                            <defineStatements>
+                                <defineStatement>_unpackaged_files_terminate_build 0</defineStatement>
+                                <defineStatement>_binaries_in_noarch_packages_terminate_build 0</defineStatement>
+                            </defineStatements>
+                            <defaultFilemode>644</defaultFilemode>
+                            <defaultDirmode>755</defaultDirmode>
+                            <defaultUsername>root</defaultUsername>
+                            <defaultGroupname>root</defaultGroupname>
+                            <mappings>
+                                <mapping>
+                                    <directory>${agent.bin-path}</directory>
+                                    <filemode>555</filemode>
+                                    <sources>
+                                        <source>
+                                            <location>${project.build.directory}/graylog-agent.sh</location>
+                                            <destination>graylog-agent</destination>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                                <mapping>
+                                    <directory>${agent.share-path}</directory>
+                                    <filemode>444</filemode>
+                                    <sources>
+                                        <source>
+                                            <location>${project.build.directory}/</location>
+                                            <includes>
+                                                <include>${project.build.finalName}.jar</include>
+                                                <include>agent-script-config.sh</include>
+                                            </includes>
+                                        </source>
+                                        <source>
+                                            <location>config/</location>
+                                            <includes>
+                                                <include>agent.conf.example</include>
+                                            </includes>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                            </mappings>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <artifactId>jdeb</artifactId>
+                        <groupId>org.vafer</groupId>
+                        <version>1.3</version>
+                        <executions>
+                            <execution>
+                                <id>generate-deb</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jdeb</goal>
+                                </goals>
+                                <configuration>
+                                    <deb>${project.build.directory}/${project.artifactId}_${project.version}_all.deb</deb>
+                                    <dataSet>
+                                        <data>
+                                            <src>${project.build.directory}/${project.build.finalName}.jar</src>
+                                            <type>file</type>
+                                            <mapper>
+                                                <type>perm</type>
+                                                <prefix>${agent.share-path}</prefix>
+                                                <filemode>444</filemode>
+                                                <user>root</user>
+                                                <group>root</group>
+                                            </mapper>
+                                        </data>
+                                        <data>
+                                            <src>config/agent.conf.example</src>
+                                            <type>file</type>
+                                            <mapper>
+                                                <type>perm</type>
+                                                <prefix>${agent.share-path}</prefix>
+                                                <filemode>644</filemode>
+                                                <user>root</user>
+                                                <group>root</group>
+                                            </mapper>
+                                        </data>
+                                        <data>
+                                            <src>${project.build.directory}/agent-script-config.sh</src>
+                                            <type>file</type>
+                                            <mapper>
+                                                <type>perm</type>
+                                                <prefix>${agent.share-path}</prefix>
+                                                <filemode>444</filemode>
+                                                <user>root</user>
+                                                <group>root</group>
+                                            </mapper>
+                                        </data>
+                                        <data>
+                                            <src>${project.build.directory}/graylog-agent.sh</src>
+                                            <dst>graylog-agent</dst>
+                                            <type>file</type>
+                                            <mapper>
+                                                <type>perm</type>
+                                                <prefix>${agent.bin-path}</prefix>
+                                                <filemode>555</filemode>
+                                                <user>root</user>
+                                                <group>root</group>
+                                            </mapper>
+                                        </data>
+                                    </dataSet>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

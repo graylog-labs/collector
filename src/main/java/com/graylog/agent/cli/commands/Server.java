@@ -8,11 +8,14 @@ import com.graylog.agent.config.ConfigurationError;
 import com.graylog.agent.config.ConfigurationModule;
 import com.graylog.agent.config.ConfigurationRegistry;
 import com.graylog.agent.guice.AgentInjector;
+import com.graylog.agent.heartbeat.HeartbeatModule;
 import com.graylog.agent.inputs.InputsModule;
 import com.graylog.agent.metrics.MetricsModule;
 import com.graylog.agent.outputs.OutputsModule;
+import com.graylog.agent.serverapi.ServerApiModule;
 import com.graylog.agent.services.AgentServiceManager;
 import com.graylog.agent.services.ServicesModule;
+import com.graylog.agent.utils.AgentIdModule;
 import io.airlift.airline.Command;
 import io.airlift.airline.Option;
 import org.slf4j.Logger;
@@ -57,7 +60,10 @@ public class Server implements Runnable {
                     new InputsModule(),
                     new OutputsModule(),
                     new ServicesModule(),
-                    new MetricsModule());
+                    new MetricsModule(),
+                    new ServerApiModule(),
+                    new HeartbeatModule(),
+                    new AgentIdModule());
         } catch (Exception e) {
             LOG.error("ERROR: {}", e.getMessage());
             LOG.debug("Detailed injection creation error", e);
