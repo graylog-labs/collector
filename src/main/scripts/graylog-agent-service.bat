@@ -41,7 +41,12 @@ IF /i %ACTION% == stop GOTO actionStop
 
 :usage
 ECHO.
-ECHO Usage: %~nx0 install^|uninstall^|manage SERVICE_NAME
+ECHO Usage: %~nx0 install^|uninstall^|manage^|start^|stop SERVICE_NAME
+ECHO.
+ECHO Example:
+ECHO.
+ECHO * Install Agent as service with service name "GA"
+ECHO     graylog-agent-service.bat install GA
 GOTO:EOF
 
 :actionInstallCheck
