@@ -14,10 +14,10 @@ EXIT /B 1
 
 :: Execute the JAR.
 :continue
-set BIN_DIR=%~dp0
+set AGENT_BIN_DIR=%~dp0
 
 :: Get root directory of the Agent.
-FOR %%D in ("%BIN_DIR%..") DO SET AGENT_ROOT=%%~dpfD
+FOR %%D in ("%AGENT_BIN_DIR%..") DO SET AGENT_ROOT=%%~dpfD
 
 SET AGENT_JAR="%AGENT_ROOT%\${project.artifactId}.jar"
 SET AGENT_JVM_OPTIONS=-Djava.library.path=%AGENT_ROOT%\lib\sigar -Dfile.encoding=UTF-8 ${agent.jvm-opts}
