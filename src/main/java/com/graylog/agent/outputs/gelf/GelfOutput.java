@@ -81,7 +81,7 @@ public class GelfOutput extends OutputService {
 
         try {
             final GelfMessageBuilder messageBuilder = new GelfMessageBuilder(message.getMessage(), message.getSource())
-                    .timestamp(message.getTimestamp().getMillis())
+                    .timestamp(message.getTimestamp().getMillis() / 1000.0)
                     .additionalFields(message.getFields().asMap())
                     .level(GelfMessageLevel.valueOf(message.getLevel().toString()));
 
