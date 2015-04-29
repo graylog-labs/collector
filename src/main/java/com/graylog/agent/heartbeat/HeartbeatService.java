@@ -43,14 +43,14 @@ public class HeartbeatService extends AbstractScheduledService {
         } catch (RetrofitError e) {
             final Response response = e.getResponse();
             if (response != null)
-                LOG.warn("Unable to send successfull heartbeat to Graylog server, result was: {} - {}", response.getStatus(), response.getReason());
+                LOG.warn("Unable to send heartbeat to Graylog server, result was: {} - {}", response.getStatus(), response.getReason());
             else {
                 final String message;
                 if (e.getCause() != null)
                     message = e.getCause().getClass().getSimpleName() + ": " + e.getCause().getMessage();
                 else
                     message = e.getClass().getSimpleName() + ": " + e.getMessage();
-                LOG.warn("Unable to send successfull heartbeat to Graylog server: {}", message);
+                LOG.warn("Unable to send heartbeat to Graylog server: {}", message);
             }
         }
     }
