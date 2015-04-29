@@ -4,6 +4,8 @@ import org.hibernate.validator.constraintvalidation.HibernateConstraintValidator
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -15,6 +17,16 @@ public class FileInputConfigurationValidator implements ConstraintValidator<Vali
 
     @Override
     public boolean isValid(FileInputConfiguration config, ConstraintValidatorContext context) {
+        try {
+            Charset.forName(config.getCharsetString());
+        } catch (UnsupportedCharsetException e) {
+            setMessageTemplate(context, "{com.graylog.agent.inputs.file.ValidFileInputConfiguration.unsupportedCharset.message}", config.getCharsetString());
+            return false;
+        } catch (IllegalArgumentException e) {
+            setMessageTemplate(context, "{com.graylog.agent.inputs.file.ValidFileInputConfiguration.illegalCharset.message}", config.getContentSplitterPattern());
+            return false;
+        }
+
         switch (config.getContentSplitter()) {
             case "PATTERN":
                 if (config.getContentSplitterPattern() != null && !config.getContentSplitterPattern().isEmpty()) {
@@ -33,9 +45,9 @@ public class FileInputConfigurationValidator implements ConstraintValidator<Vali
         }
     }
 
-    private void setMessageTemplate(ConstraintValidatorContext context, String messageTemplate, String pattern) {
+    private void setMessageTemplate(ConstraintValidatorContext context, String messageTemplate, String value) {
         HibernateConstraintValidatorContext hibernateContext = context.unwrap(HibernateConstraintValidatorContext.class);
         hibernateContext.disableDefaultConstraintViolation();
-        hibernateContext.addExpressionVariable("pattern", pattern).buildConstraintViolationWithTemplate(messageTemplate).addConstraintViolation();
+        hibernateContext.addExpressionVariable("value", value).buildConstraintViolationWithTemplate(messageTemplate).addConstraintViolation();
     }
 }

@@ -1,5 +1,6 @@
 package com.graylog.agent.file.splitters;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.AbstractIterator;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufProcessor;
@@ -62,7 +63,7 @@ public class NewlineChunkSplitter extends ContentSplitter {
                             if (lineEnding == LineEnding.CRLF) {
                                 buffer.readByte(); // the newline byte if CRLF line endings are used
                             }
-                            return fullLine.toString(charset);
+                            return new String(fullLine.toString(charset).getBytes(Charsets.UTF_8));
                         } finally {
                             buffer.discardReadBytes();
                         }

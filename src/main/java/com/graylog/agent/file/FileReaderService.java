@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.channels.AsynchronousFileChannel;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -32,6 +33,7 @@ public class FileReaderService extends AbstractService {
     private final MessageBuilder messageBuilder;
     private final ContentSplitter contentSplitter;
     private final Buffer buffer;
+    private final Charset charset;
     private FileObserver fileObserver;
     private ChunkReader chunkReader;
     private ArrayBlockingQueue<FileChunk> chunkQueue;
@@ -42,6 +44,7 @@ public class FileReaderService extends AbstractService {
     private ScheduledFuture<?> chunkReaderFuture;
 
     public FileReaderService(Path monitoredFile,
+                             Charset charset,
                              FileNamingStrategy namingStrategy,
                              boolean followMode,
                              FileInput.InitialReadPosition initialReadPosition,
@@ -58,6 +61,7 @@ public class FileReaderService extends AbstractService {
         this.messageBuilder = messageBuilder;
         this.contentSplitter = contentSplitter;
         this.buffer = buffer;
+        this.charset = charset;
         scheduler = Executors.newSingleThreadScheduledExecutor(
                 new ThreadFactoryBuilder()
                         .setDaemon(false)
@@ -76,7 +80,7 @@ public class FileReaderService extends AbstractService {
             notifyFailed(new IllegalStateException(msg));
             return;
         }
-        chunkProcessor = new ChunkProcessor(buffer, messageBuilder, chunkQueue, contentSplitter);
+        chunkProcessor = new ChunkProcessor(buffer, messageBuilder, chunkQueue, contentSplitter, charset);
         chunkProcessor.addFileConfig(monitoredFile, "source", false);
         chunkProcessor.startAsync();
         chunkProcessor.awaitRunning();

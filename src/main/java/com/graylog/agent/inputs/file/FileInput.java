@@ -55,6 +55,7 @@ public class FileInput extends InputService {
         final MessageBuilder messageBuilder = new MessageBuilder().input(getId()).outputs(getOutputs()).source(Utils.getHostname());
         final FileReaderService readerService = new FileReaderService(
                 path,
+                configuration.getCharset(),
                 new NumberSuffixStrategy(path),
                 true,
                 InitialReadPosition.END,

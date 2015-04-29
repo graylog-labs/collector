@@ -13,6 +13,7 @@ import com.typesafe.config.Config;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +40,9 @@ public class FileInputConfiguration extends InputConfiguration {
 
     private final FileInput.Factory inputFactory;
 
+    @NotNull
+    private final String charsetString;
+
     @Inject
     public FileInputConfiguration(@Assisted String id,
                                   @Assisted Config config,
@@ -59,6 +63,11 @@ public class FileInputConfiguration extends InputConfiguration {
             this.contentSplitterPattern = config.getString("content-splitter-pattern");
         } else {
             this.contentSplitterPattern = "";
+        }
+        if (config.hasPath("charset")) {
+            this.charsetString = config.getString("charset");
+        } else {
+            this.charsetString = "UTF-8";
         }
     }
 
@@ -90,6 +99,14 @@ public class FileInputConfiguration extends InputConfiguration {
             default:
                 throw new IllegalArgumentException("Unknown content splitter type: " + contentSplitter);
         }
+    }
+
+    public String getCharsetString() {
+        return charsetString;
+    }
+
+    public Charset getCharset() {
+        return Charset.forName(charsetString);
     }
 
     @Override

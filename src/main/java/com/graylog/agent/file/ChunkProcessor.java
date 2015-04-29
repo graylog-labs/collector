@@ -13,6 +13,7 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -27,6 +28,7 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
     private final BlockingQueue<FileChunk> chunkQueue;
 
     private final ContentSplitter splitter;
+    private final Charset charset;
 
     @Override
     protected void run() throws Exception {
@@ -55,11 +57,12 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
     private Map<Path, ByteBuf> buffersPerFile = Maps.newHashMap();
     private Map<Path, ImmutablePair<String, Boolean>> pathConfig = Maps.newHashMap();
 
-    public ChunkProcessor(Buffer buffer, MessageBuilder messageBuilder, BlockingQueue<FileChunk> chunkQueue, ContentSplitter splitter) {
+    public ChunkProcessor(Buffer buffer, MessageBuilder messageBuilder, BlockingQueue<FileChunk> chunkQueue, ContentSplitter splitter, final Charset charset) {
         this.buffer = buffer;
         this.messageBuilder = messageBuilder;
         this.chunkQueue = chunkQueue;
         this.splitter = splitter;
+        this.charset = charset;
     }
 
     public void addFileConfig(Path path, String source, boolean overrideTimestamp) {
@@ -92,7 +95,7 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
             combinedBuffer = Unpooled.wrappedBuffer(byteBuf, chunk.getChunkBuffer());
         }
         buffersPerFile.put(path, combinedBuffer);
-        Iterable<String> messages = splitter.split(combinedBuffer);
+        Iterable<String> messages = splitter.split(combinedBuffer, charset, false);
 
         createMessages(path, messages);
     }

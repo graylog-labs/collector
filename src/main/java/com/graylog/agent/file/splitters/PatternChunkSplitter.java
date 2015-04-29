@@ -1,5 +1,6 @@
 package com.graylog.agent.file.splitters;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.AbstractIterator;
 import io.netty.buffer.ByteBuf;
 
@@ -24,7 +25,7 @@ public class PatternChunkSplitter extends ContentSplitter {
             @Override
             public Iterator<String> iterator() {
                 return new AbstractIterator<String>() {
-                    private final String inputAsString = buffer.toString(charset);
+                    private final String inputAsString = new String(buffer.toString(charset).getBytes(Charsets.UTF_8));
                     final Matcher matcher = pattern.matcher(inputAsString);
                     private int positionInString = 0;
 

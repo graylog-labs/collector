@@ -1,5 +1,6 @@
 package com.graylog.agent.file;
 
+import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.Service;
 import com.graylog.agent.Message;
 import com.graylog.agent.MessageBuilder;
@@ -48,6 +49,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         final CollectingBuffer buffer = new CollectingBuffer();
         final FileReaderService readerService = new FileReaderService(
                 path,
+                Charsets.UTF_8,
                 new NumberSuffixStrategy(path),
                 true,
                 FileInput.InitialReadPosition.START,
@@ -127,6 +129,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         final MessageBuilder messageBuilder = new MessageBuilder().input("input-id").outputs(new HashSet<String>()).source("test");
         final FileReaderService readerService = new FileReaderService(
                 path,
+                Charsets.UTF_8,
                 new NumberSuffixStrategy(path),
                 true,
                 FileInput.InitialReadPosition.START,

@@ -1,5 +1,6 @@
 package com.graylog.agent.file;
 
+import com.google.common.base.Charsets;
 import com.graylog.agent.Message;
 import com.graylog.agent.MessageBuilder;
 import com.graylog.agent.buffer.Buffer;
@@ -159,7 +160,7 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
         final LinkedBlockingQueue<FileChunk> chunkQueue = new LinkedBlockingQueue<>();
 
         final MessageBuilder messageBuilder = new MessageBuilder().input("input-id").outputs(new HashSet<String>()).source("test");
-        final ChunkProcessor processor = new ChunkProcessor(buffer, messageBuilder, chunkQueue, new NewlineChunkSplitter());
+        final ChunkProcessor processor = new ChunkProcessor(buffer, messageBuilder, chunkQueue, new NewlineChunkSplitter(), Charsets.UTF_8);
         processor.addFileConfig(logFile, "test", true);
 
         return processor;
