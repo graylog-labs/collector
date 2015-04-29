@@ -2,7 +2,6 @@ package com.graylog.agent.inputs.eventlog;
 
 import com.google.inject.assistedinject.Assisted;
 import com.graylog.agent.MessageBuilder;
-import com.graylog.agent.annotations.AgentInputFactory;
 import com.graylog.agent.buffer.Buffer;
 import com.graylog.agent.config.ConfigurationUtils;
 import com.graylog.agent.file.ChunkReader;
@@ -18,7 +17,6 @@ public class WindowsEventlogInput extends InputService {
     private final Buffer buffer;
     private final CountDownLatch stopLatch = new CountDownLatch(1);
 
-    @AgentInputFactory
     public interface Factory extends InputService.Factory<WindowsEventlogInput, WindowsEventlogInputConfiguration> {
         WindowsEventlogInput create(WindowsEventlogInputConfiguration configuration);
     }

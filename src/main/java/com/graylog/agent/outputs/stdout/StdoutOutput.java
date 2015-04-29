@@ -2,7 +2,6 @@ package com.graylog.agent.outputs.stdout;
 
 import com.google.inject.assistedinject.Assisted;
 import com.graylog.agent.Message;
-import com.graylog.agent.annotations.AgentOutputFactory;
 import com.graylog.agent.config.ConfigurationUtils;
 import com.graylog.agent.outputs.OutputService;
 import org.slf4j.Logger;
@@ -15,7 +14,6 @@ import java.util.concurrent.CountDownLatch;
 public class StdoutOutput extends OutputService {
     private static final Logger LOG = LoggerFactory.getLogger(StdoutOutput.class);
 
-    @AgentOutputFactory
     public interface Factory extends OutputService.Factory<StdoutOutput, StdoutOutputConfiguration> {
         StdoutOutput create(StdoutOutputConfiguration configuration);
     }

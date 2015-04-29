@@ -10,10 +10,18 @@ import com.graylog.agent.utils.Utils;
 public class InputsModule extends AgentModule {
     @Override
     protected void configure() {
-        registerInput(FileInput.class, FileInputConfiguration.class);
+        registerInput("file",
+                FileInput.class,
+                FileInput.Factory.class,
+                FileInputConfiguration.class,
+                FileInputConfiguration.Factory.class);
 
         if (Utils.isWindows()) {
-            registerInput(WindowsEventlogInput.class, WindowsEventlogInputConfiguration.class);
+            registerInput("windows-eventlog",
+                    WindowsEventlogInput.class,
+                    WindowsEventlogInput.Factory.class,
+                    WindowsEventlogInputConfiguration.class,
+                    WindowsEventlogInputConfiguration.Factory.class);
         }
     }
 }

@@ -3,7 +3,6 @@ package com.graylog.agent.outputs.gelf;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.google.inject.assistedinject.Assisted;
 import com.graylog.agent.Message;
-import com.graylog.agent.annotations.AgentOutputFactory;
 import com.graylog.agent.config.ConfigurationUtils;
 import com.graylog.agent.outputs.OutputService;
 import org.graylog2.gelfclient.GelfConfiguration;
@@ -21,7 +20,6 @@ import java.util.concurrent.CountDownLatch;
 public class GelfOutput extends OutputService {
     private static final Logger LOG = LoggerFactory.getLogger(GelfOutput.class);
 
-    @AgentOutputFactory
     public interface Factory extends OutputService.Factory<GelfOutput, GelfOutputConfiguration> {
         GelfOutput create(GelfOutputConfiguration configuration);
     }

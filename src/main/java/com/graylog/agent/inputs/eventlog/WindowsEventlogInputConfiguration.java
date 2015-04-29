@@ -1,8 +1,6 @@
 package com.graylog.agent.inputs.eventlog;
 
 import com.google.inject.assistedinject.Assisted;
-import com.graylog.agent.annotations.AgentConfigurationFactory;
-import com.graylog.agent.annotations.AgentInputConfiguration;
 import com.graylog.agent.config.ConfigurationUtils;
 import com.graylog.agent.inputs.InputConfiguration;
 import com.graylog.agent.inputs.InputService;
@@ -15,10 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-@AgentInputConfiguration(type = "windows-eventlog")
 public class WindowsEventlogInputConfiguration extends InputConfiguration {
 
-    @AgentConfigurationFactory
     public interface Factory extends InputConfiguration.Factory<WindowsEventlogInputConfiguration> {
         @Override
         WindowsEventlogInputConfiguration create(String id, Config config);

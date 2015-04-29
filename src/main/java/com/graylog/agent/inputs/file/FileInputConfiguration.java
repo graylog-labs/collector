@@ -1,8 +1,6 @@
 package com.graylog.agent.inputs.file;
 
 import com.google.inject.assistedinject.Assisted;
-import com.graylog.agent.annotations.AgentConfigurationFactory;
-import com.graylog.agent.annotations.AgentInputConfiguration;
 import com.graylog.agent.config.ConfigurationUtils;
 import com.graylog.agent.config.constraints.IsAccessible;
 import com.graylog.agent.inputs.InputConfiguration;
@@ -15,10 +13,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-@AgentInputConfiguration(type = "file")
 public class FileInputConfiguration extends InputConfiguration {
 
-    @AgentConfigurationFactory
     public interface Factory extends InputConfiguration.Factory<FileInputConfiguration> {
         @Override
         FileInputConfiguration create(String id, Config config);

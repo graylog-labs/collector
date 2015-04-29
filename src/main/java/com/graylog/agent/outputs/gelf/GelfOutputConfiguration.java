@@ -1,8 +1,6 @@
 package com.graylog.agent.outputs.gelf;
 
 import com.google.inject.assistedinject.Assisted;
-import com.graylog.agent.annotations.AgentConfigurationFactory;
-import com.graylog.agent.annotations.AgentOutputConfiguration;
 import com.graylog.agent.config.ConfigurationUtils;
 import com.graylog.agent.outputs.OutputConfiguration;
 import com.typesafe.config.Config;
@@ -16,11 +14,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-@AgentOutputConfiguration(type = "gelf")
 public class GelfOutputConfiguration extends OutputConfiguration {
     private final GelfOutput.Factory outputFactory;
 
-    @AgentConfigurationFactory
     public interface Factory extends OutputConfiguration.Factory<GelfOutputConfiguration> {
         @Override
         GelfOutputConfiguration create(String id, Config config);

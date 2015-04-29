@@ -9,8 +9,17 @@ import com.graylog.agent.outputs.stdout.StdoutOutputConfiguration;
 public class OutputsModule extends AgentModule {
     @Override
     protected void configure() {
-        registerOutput(GelfOutput.class, GelfOutputConfiguration.class);
-        registerOutput(StdoutOutput.class, StdoutOutputConfiguration.class);
+        registerOutput("gelf",
+                GelfOutput.class,
+                GelfOutput.Factory.class,
+                GelfOutputConfiguration.class,
+                GelfOutputConfiguration.Factory.class);
+
+        registerOutput("stdout",
+                StdoutOutput.class,
+                StdoutOutput.Factory.class,
+                StdoutOutputConfiguration.class,
+                StdoutOutputConfiguration.Factory.class);
 
         registerBufferConsumer(OutputRouter.class);
     }
