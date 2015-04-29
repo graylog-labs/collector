@@ -24,6 +24,7 @@ inputs {
   local-syslog {
     type = "file"
     path = "/var/log/syslog"
+    charset = "utf-8"
     content-splitter = "newline"
   }
   win-application {
@@ -37,6 +38,7 @@ inputs {
   }
   test-log {
     type = "file"
+    charset = "windows-1252"
     path = "logs/file.log"
   }
 }
