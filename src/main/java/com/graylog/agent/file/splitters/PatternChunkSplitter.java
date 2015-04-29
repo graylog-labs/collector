@@ -12,14 +12,10 @@ import static com.google.common.base.Charsets.UTF_8;
 
 public class PatternChunkSplitter extends ContentSplitter {
 
-    public static final String CK_SPLITTER_PATTERN = "patternsplitter_pattern";
-
     private Pattern pattern;
 
-    @Override
-    public void configure(ContentSplitterConfiguration configuration) {
-        final String regex = configuration.getString(CK_SPLITTER_PATTERN);
-        pattern = Pattern.compile(regex, Pattern.MULTILINE);
+    public PatternChunkSplitter(String pattern) {
+        this.pattern = Pattern.compile(pattern, Pattern.MULTILINE);
     }
 
     @Override

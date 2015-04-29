@@ -1,13 +1,13 @@
 package com.graylog.agent.file.splitters;
 
 import com.google.common.base.Charsets;
+import com.graylog.agent.inputs.file.FileInputConfiguration;
+import com.typesafe.config.Config;
 import io.netty.buffer.ByteBuf;
 
 import java.nio.charset.Charset;
 
 public abstract class ContentSplitter {
-
-    public abstract void configure(ContentSplitterConfiguration configuration);
 
     public abstract Iterable<String> split(ByteBuf buffer, Charset charset, boolean includeRemainingData);
 

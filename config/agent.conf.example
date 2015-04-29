@@ -24,6 +24,7 @@ inputs {
   local-syslog {
     type = "file"
     path = "/var/log/syslog"
+    content-splitter = "newline"
   }
   win-application {
     type = "windows-eventlog"
