@@ -9,8 +9,6 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.google.common.base.Charsets.UTF_8;
-
 public class PatternChunkSplitter extends ContentSplitter {
 
     private Pattern pattern;
@@ -25,7 +23,7 @@ public class PatternChunkSplitter extends ContentSplitter {
             @Override
             public Iterator<String> iterator() {
                 return new AbstractIterator<String>() {
-                    private final String inputAsString = new String(buffer.toString(charset).getBytes(Charsets.UTF_8));
+                    private final String inputAsString = buffer.toString(charset);
                     final Matcher matcher = pattern.matcher(inputAsString);
                     private int positionInString = 0;
 
@@ -57,8 +55,8 @@ public class PatternChunkSplitter extends ContentSplitter {
                                 }
                                 final String substring = inputAsString.substring(positionInString, firstByte);
                                 positionInString = firstByte;
-                                buffer.skipBytes(substring.getBytes(UTF_8).length); // TODO performance
-                                return substring;
+                                buffer.skipBytes(substring.getBytes(charset).length); // TODO performance
+                                return asUtf8String(substring);
                             } else {
                                 if (includeRemainingData) {
                                     return getRemainingContent();
@@ -78,7 +76,11 @@ public class PatternChunkSplitter extends ContentSplitter {
 
                     private String getRemainingContent() {
                         final ByteBuf channelBuffer = buffer.readBytes(buffer.readableBytes());
-                        return channelBuffer.toString(charset);
+                        return asUtf8String(channelBuffer.toString(charset));
+                    }
+
+                    private String asUtf8String(String string) {
+                        return new String(string.getBytes(Charsets.UTF_8));
                     }
                 };
             }

@@ -1,12 +1,17 @@
 package com.graylog.agent.file.splitters;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.Iterables;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.junit.Test;
 
+import java.util.Iterator;
+
+import static com.google.common.base.Charsets.ISO_8859_1;
 import static com.google.common.base.Charsets.UTF_8;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class NewlineChunkSplitterTest {
     @Test
@@ -18,8 +23,8 @@ public class NewlineChunkSplitterTest {
                 "Feb 20 17:05:18 otter GoogleSoftwareUpdateDaemon[32697]: -[KSUpdateEngine updateProductID:] KSUpdateEngine updating product ID: \"com.google.Keystone\"\n";
 
         final ByteBuf buffer = Unpooled.copiedBuffer(logLines, UTF_8);
-        final Iterable<String> firstTwoChunks = splitter.split(buffer);
-        final Iterable<String> remainingChunk = splitter.splitRemaining(buffer);
+        final Iterable<String> firstTwoChunks = splitter.split(buffer, UTF_8);
+        final Iterable<String> remainingChunk = splitter.splitRemaining(buffer, UTF_8);
 
         int messageNum = 0;
         for (String chunk : Iterables.concat(firstTwoChunks, remainingChunk)) {
@@ -48,8 +53,8 @@ public class NewlineChunkSplitterTest {
                 "Feb 20 17:05:18 otter GoogleSoftwareUpdateDaemon[32697]: -[KSUpdateEngine updateProductID:] KSUpdateEngine updating product ID: \"com.google.Keystone\"\r\n";
 
         final ByteBuf buffer = Unpooled.copiedBuffer(logLines, UTF_8);
-        final Iterable<String> firstTwoChunks = splitter.split(buffer);
-        final Iterable<String> remainingChunk = splitter.splitRemaining(buffer);
+        final Iterable<String> firstTwoChunks = splitter.split(buffer, UTF_8);
+        final Iterable<String> remainingChunk = splitter.splitRemaining(buffer, UTF_8);
 
         int messageNum = 0;
         for (String chunk : Iterables.concat(firstTwoChunks, remainingChunk)) {
@@ -67,5 +72,26 @@ public class NewlineChunkSplitterTest {
         }
 
         assertEquals("the last chunk should have triggered a message (no follow mode active)", 3, messageNum);
+    }
+
+    @Test
+    public void testEncodings() throws Exception {
+        final NewlineChunkSplitter splitter = new NewlineChunkSplitter();
+
+        final String logLines = "Hällo Wörld\nBüe\n";
+
+        // With correct encoding
+        final ByteBuf isoBuffer = Unpooled.copiedBuffer(logLines, Charsets.ISO_8859_1);
+        final Iterator<String> isoIterator = splitter.split(isoBuffer, ISO_8859_1).iterator();
+
+        assertEquals("Hällo Wörld", isoIterator.next());
+        assertEquals("Büe", isoIterator.next());
+
+        // With wrong encoding
+        final ByteBuf isoBuffer2 = Unpooled.copiedBuffer(logLines, Charsets.ISO_8859_1);
+        final Iterator<String> wrongIterator = splitter.split(isoBuffer2, UTF_8).iterator();
+
+        assertNotEquals("Hällo Wörld", wrongIterator.next());
+        assertNotEquals("Büe", wrongIterator.next());
     }
 }

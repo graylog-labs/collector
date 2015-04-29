@@ -5,8 +5,12 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.junit.Test;
 
+import java.util.Iterator;
+
+import static com.google.common.base.Charsets.ISO_8859_1;
 import static com.google.common.base.Charsets.UTF_8;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class PatternChunkSplitterTest {
 
@@ -20,8 +24,8 @@ public class PatternChunkSplitterTest {
                 "\t\tcom.google.Keystone.Daemon.Administration: 0 connection(s)\n" +
                 "Feb 20 17:05:18 otter GoogleSoftwareUpdateDaemon[32697]: -[KSUpdateEngine updateProductID:] KSUpdateEngine updating product ID: \"com.google.Keystone\"\n";
         final ByteBuf buffer = Unpooled.copiedBuffer(logLines, UTF_8);
-        final Iterable<String> firstTwoChunks = splitter.split(buffer);
-        final Iterable<String> remainingChunk = splitter.splitRemaining(buffer);
+        final Iterable<String> firstTwoChunks = splitter.split(buffer, UTF_8);
+        final Iterable<String> remainingChunk = splitter.splitRemaining(buffer, UTF_8);
 
         int messageNum = 0;
         for (String chunk : Iterables.concat(firstTwoChunks, remainingChunk)) {
@@ -44,5 +48,26 @@ public class PatternChunkSplitterTest {
         assertEquals("the last chunk should have triggered a message (no follow mode active)", 3, messageNum);
 
 
+    }
+
+    @Test
+    public void testEncodings() throws Exception {
+        final PatternChunkSplitter splitter = new PatternChunkSplitter("^(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)");
+
+        String logLines = "Feb 20 17:05:18 Hällö Wörld\nFeb 20 17:05:18 Büe\n";
+
+        // With correct encoding
+        final ByteBuf buffer = Unpooled.copiedBuffer(logLines, ISO_8859_1);
+        final Iterator<String> iterator = splitter.splitRemaining(buffer, ISO_8859_1).iterator();
+
+        assertEquals("Feb 20 17:05:18 Hällö Wörld\n", iterator.next());
+        assertEquals("Feb 20 17:05:18 Büe\n", iterator.next());
+
+        // With wrong encoding
+        final ByteBuf buffer2 = Unpooled.copiedBuffer(logLines, ISO_8859_1);
+        final Iterator<String> iterator2 = splitter.splitRemaining(buffer2, UTF_8).iterator();
+
+        assertNotEquals("Feb 20 17:05:18 Hällö Wörld\n", iterator2.next());
+        assertNotEquals("Feb 20 17:05:18 Büe\n", iterator2.next());
     }
 }

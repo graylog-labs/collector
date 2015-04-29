@@ -77,7 +77,7 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
             // we've reached the EOF and aren't in follow mode
             log.debug("[{}] Processing final chunk.", path);
             final ByteBuf channelBuffer = buffersPerFile.get(path);
-            final Iterable<String> messages = splitter.splitRemaining(channelBuffer);
+            final Iterable<String> messages = splitter.splitRemaining(channelBuffer, charset);
 
             createMessages(path, messages);
 
