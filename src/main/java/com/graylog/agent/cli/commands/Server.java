@@ -54,7 +54,9 @@ public class Server implements AgentCommand {
     @Override
     public void stop() {
         LOG.info("Stopping...");
-        serviceManager.stop();
+        if (serviceManager != null) {
+            serviceManager.stop();
+        }
     }
 
     private Injector getInjector() {
