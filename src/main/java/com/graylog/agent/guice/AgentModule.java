@@ -12,12 +12,8 @@ import com.graylog.agent.inputs.Input;
 import com.graylog.agent.inputs.InputConfiguration;
 import com.graylog.agent.outputs.Output;
 import com.graylog.agent.outputs.OutputConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class AgentModule extends AbstractModule {
-    private static final Logger LOG = LoggerFactory.getLogger(AgentModule.class);
-
     private MapBinder<String, InputConfiguration.Factory<? extends InputConfiguration>> inputsMapBinder = null;
     private MapBinder<String, OutputConfiguration.Factory<? extends OutputConfiguration>> outputsMapBinder = null;
 
