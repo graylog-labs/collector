@@ -114,6 +114,7 @@ public class FileInputConfiguration extends InputConfiguration {
         return Collections.unmodifiableMap(new HashMap<String, String>(super.toStringValues()) {
             {
                 put("path", getPath().toString());
+                put("charset", getCharset().toString());
                 put("content-splitter", getContentSplitter());
                 if (!isNullOrEmpty(contentSplitterPattern)) {
                     put("content-splitter-pattern", getContentSplitterPattern());

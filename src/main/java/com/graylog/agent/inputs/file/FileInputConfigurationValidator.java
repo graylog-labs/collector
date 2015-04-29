@@ -23,7 +23,7 @@ public class FileInputConfigurationValidator implements ConstraintValidator<Vali
             setMessageTemplate(context, "{com.graylog.agent.inputs.file.ValidFileInputConfiguration.unsupportedCharset.message}", config.getCharsetString());
             return false;
         } catch (IllegalArgumentException e) {
-            setMessageTemplate(context, "{com.graylog.agent.inputs.file.ValidFileInputConfiguration.illegalCharset.message}", config.getContentSplitterPattern());
+            setMessageTemplate(context, "{com.graylog.agent.inputs.file.ValidFileInputConfiguration.illegalCharset.message}", config.getCharsetString());
             return false;
         }
 

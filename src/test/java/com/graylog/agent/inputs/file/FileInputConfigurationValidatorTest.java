@@ -45,6 +45,19 @@ public class FileInputConfigurationValidatorTest {
                 validate("PATTERN", "[").iterator().next().getMessage());
     }
 
+    @Test
+    public void testCharset() throws Exception {
+        assertEquals(0, validateCharset("utf-8").size());
+        assertEquals(0, validateCharset("windows-1252").size());
+
+        assertEquals("Empty charset should be an error", 1, validateCharset("").size());
+        assertEquals("Null charset should be an error", 2, validateCharset(null).size());
+
+        assertEquals("Invalid charset should show the correct message",
+                "Invalid character set value: \"__foo\"",
+                validateCharset("__foo").iterator().next().getMessage());
+    }
+
     private Set<ConstraintViolation<FileInputConfiguration>> validate(String contentSplitter, String contentSplitterPattern) {
         final Config config = mock(Config.class);
 
@@ -55,6 +68,20 @@ public class FileInputConfigurationValidatorTest {
         when(config.hasPath("content-splitter-pattern")).thenReturn(contentSplitterPattern != null);
         when(config.getString("content-splitter")).thenReturn(contentSplitter);
         when(config.getString("content-splitter-pattern")).thenReturn(contentSplitterPattern);
+
+        return validator.validate(new FileInputConfiguration("id", config, null));
+    }
+
+    private Set<ConstraintViolation<FileInputConfiguration>> validateCharset(String charsetString) {
+        final Config config = mock(Config.class);
+
+        when(config.hasPath("path")).thenReturn(true);
+        when(config.getString("path")).thenReturn("target/foo.txt");
+        when(config.hasPath("content-splitter")).thenReturn(true);
+        when(config.getString("content-splitter")).thenReturn("newline");
+
+        when(config.hasPath("charset")).thenReturn(true);
+        when(config.getString("charset")).thenReturn(charsetString);
 
         return validator.validate(new FileInputConfiguration("id", config, null));
     }
