@@ -1,5 +1,6 @@
 /.idea/
 /config/*.conf
+/config/agent-id
 /logs/
 /target/
 *.iml
