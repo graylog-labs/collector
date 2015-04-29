@@ -3,6 +3,9 @@
 // Url to Graylog server this agent registers at
 server-url = "http://localhost:12900"
 
+// Enable registration with the Graylog server. (enabled by default)
+//enable-registration = true
+
 message-buffer-size = 128
 
 // The id used to identify this agent. Can be either a string which is used as id,
@@ -10,7 +13,6 @@ message-buffer-size = 128
 // an id will be generated and written to that file. If it exists, it is expected
 // to contain a single string without spaces which will be used for the id.
 // Defaults to "file:config/agent-id" if not specified.
-
 agent-id = "file:config/agent-id"
 
 metrics {

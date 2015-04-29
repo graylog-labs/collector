@@ -15,6 +15,7 @@ public class HeartbeatService extends AbstractScheduledService {
     private static final Logger LOG = LoggerFactory.getLogger(HeartbeatService.class);
     private static final String heartbeatIntervalParameter = "heartbeat-interval";
     private static final int defaultHeartbeatInterval = 5;
+    private static final String enableRegistrationParameter = "enable-registration";
 
     private final AgentRegistrationService agentRegistrationService;
     private final AgentRegistrationRequest agentRegistrationRequest;
@@ -34,6 +35,9 @@ public class HeartbeatService extends AbstractScheduledService {
 
     @Override
     protected void runOneIteration() throws Exception {
+        if (config.hasPath(enableRegistrationParameter) && !config.getBoolean(enableRegistrationParameter)) {
+            return;
+        }
         try {
             agentRegistrationService.register(this.agentId, this.agentRegistrationRequest);
         } catch (RetrofitError e) {
