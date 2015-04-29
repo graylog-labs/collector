@@ -35,8 +35,9 @@
         <agent.jvm-opts>-Xms12m -Xmx64m</agent.jvm-opts>
 
         <sigar.version>1.6.4</sigar.version>
-        <jackson.version>2.5.1</jackson.version>
+        <jackson.version>2.5.3</jackson.version>
         <retrofit.version>1.9.0</retrofit.version>
+        <guice.version>3.0</guice.version>
     </properties>
 
     <dependencies>
@@ -68,7 +69,7 @@
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-core</artifactId>
-            <version>3.1.1</version>
+            <version>3.1.2</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -88,17 +89,17 @@
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-            <version>3.0</version>
+            <version>${guice.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-multibindings</artifactId>
-            <version>3.0</version>
+            <version>${guice.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-assistedinject</artifactId>
-            <version>3.0</version>
+            <version>${guice.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -108,7 +109,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.10</version>
+            <version>1.7.12</version>
         </dependency>
         <dependency>
             <groupId>org.fusesource</groupId>
