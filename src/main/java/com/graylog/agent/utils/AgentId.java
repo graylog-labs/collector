@@ -1,6 +1,5 @@
 package com.graylog.agent.utils;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +11,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
@@ -73,7 +73,13 @@ public class AgentId {
     }
 
     private void persist(String nodeId, String filename) throws IOException {
-        FileUtils.writeStringToFile(new File(filename), nodeId);
+        final Path path = new File(filename).getAbsoluteFile().toPath();
+
+        if (path.getParent() != null) {
+            Files.createDirectories(path.getParent());
+        }
+
+        Files.write(path, nodeId.getBytes());
     }
 
     /**
