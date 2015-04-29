@@ -48,8 +48,6 @@ public class Server implements AgentCommand {
             LOG.info("Service {}: {}", entry.getKey().toString(), entry.getValue().toString());
         }
 
-        configureShutdownHook();
-
         serviceManager.awaitStopped();
     }
 
@@ -89,15 +87,6 @@ public class Server implements AgentCommand {
 
             doExit();
         }
-    }
-
-    private void configureShutdownHook() {
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                stop();
-            }
-        }));
     }
 
     private void doExit() {

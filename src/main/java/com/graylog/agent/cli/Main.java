@@ -30,6 +30,7 @@ public class Main {
 
         try {
             command = cli.parse(args);
+            configureShutdownHook(command);
             command.run();
         } catch (ParseException e) {
             LOG.error(e.getMessage());
@@ -41,5 +42,14 @@ public class Main {
         if (command != null) {
             command.stop();
         }
+    }
+
+    private static void configureShutdownHook(final AgentCommand command) {
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                command.stop();
+            }
+        }));
     }
 }
