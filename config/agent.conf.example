@@ -33,7 +33,6 @@ inputs {
   apache-access {
     type = "file"
     path = "/var/log/apache2/access.log"
-    outputs = "gelf-tcp,console"
   }
   test-log {
     type = "file"
@@ -58,6 +57,5 @@ outputs {
   }
   console {
     type = "stdout"
-    inputs = "test-log"
   }
 }
