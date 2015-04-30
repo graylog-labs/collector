@@ -57,7 +57,7 @@ public class FileInputConfiguration extends InputConfiguration {
             this.contentSplitter = config.getString("content-splitter").toUpperCase();
 
         } else {
-            this.contentSplitter = "PATTERN";
+            this.contentSplitter = "NEWLINE";
         }
         if (config.hasPath("content-splitter-pattern")) {
             this.contentSplitterPattern = config.getString("content-splitter-pattern");
