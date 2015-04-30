@@ -23,6 +23,8 @@ public class PatternChunkSplitter extends ContentSplitter {
             @Override
             public Iterator<String> iterator() {
                 return new AbstractIterator<String>() {
+                    // TODO Might throw an exception if multibyte charset is used and buffer is not complete.
+                    //      Use CharsetDecoder to create a CharBuffer and match on that!
                     private final String inputAsString = buffer.toString(charset);
                     final Matcher matcher = pattern.matcher(inputAsString);
                     private int positionInString = 0;
