@@ -46,7 +46,7 @@ public class NewlineChunkSplitterTest {
 
     @Test
     public void successfulSplitCRLF() throws Exception {
-        final NewlineChunkSplitter splitter = new NewlineChunkSplitter(NewlineChunkSplitter.LineEnding.CRLF);
+        final NewlineChunkSplitter splitter = new NewlineChunkSplitter();
 
         final String logLines = "Feb 20 17:05:18 otter kernel[0]: CODE SIGNING: cs_invalid_page(0x1000): p=32696[GoogleSoftwareUp] final status 0x0, allow (remove VALID)ing page\r\n" +
                 "Feb 20 17:05:18 otter GoogleSoftwareUpdateDaemon[32697]: -[KeystoneDaemon logServiceState] GoogleSoftwareUpdate daemon (1.1.0.3659) vending:\r\n" +

@@ -9,33 +9,6 @@ import java.nio.charset.Charset;
 import java.util.Iterator;
 
 public class NewlineChunkSplitter extends ContentSplitter {
-    public enum LineEnding {
-        LF, CRLF;
-    }
-
-    private final LineEnding lineEnding;
-    private final ByteBufProcessor processor;
-
-    public NewlineChunkSplitter() {
-        this(LineEnding.LF);
-    }
-
-    public NewlineChunkSplitter(LineEnding lineEnding) {
-        this.lineEnding = lineEnding;
-        this.processor = getProcessor(lineEnding);
-    }
-
-    public ByteBufProcessor getProcessor(LineEnding lineEnding) {
-        switch (lineEnding) {
-            case LF:
-                return ByteBufProcessor.FIND_LF;
-            case CRLF:
-                return ByteBufProcessor.FIND_CRLF;
-            default:
-                throw new IllegalArgumentException("Unknown line ending");
-        }
-    }
-
     @Override
     public Iterable<String> split(final ByteBuf buffer, final Charset charset, final boolean includeRemainingData) {
         return new Iterable<String>() {
@@ -49,7 +22,7 @@ public class NewlineChunkSplitter extends ContentSplitter {
                             if (!buffer.isReadable()) {
                                 return endOfData();
                             }
-                            final int i = buffer.forEachByte(processor);
+                            final int i = buffer.forEachByte(ByteBufProcessor.FIND_CRLF);
                             if (i == -1) {
                                 if (includeRemainingData) {
                                     final ByteBuf remaining = buffer.readBytes(buffer.readableBytes());
@@ -59,9 +32,10 @@ public class NewlineChunkSplitter extends ContentSplitter {
                                 }
                             }
                             final ByteBuf fullLine = buffer.readBytes(i);
-                            buffer.readByte(); // the newline/cr byte
-                            if (lineEnding == LineEnding.CRLF) {
-                                buffer.readByte(); // the newline byte if CRLF line endings are used
+                            // Strip the \r/\n bytes from the buffer.
+                            final byte readByte = buffer.readByte();// the \r or \n byte
+                            if (readByte == '\r') {
+                                buffer.readByte(); // the \n byte if previous was \r
                             }
                             return new String(fullLine.toString(charset).getBytes(Charsets.UTF_8));
                         } finally {

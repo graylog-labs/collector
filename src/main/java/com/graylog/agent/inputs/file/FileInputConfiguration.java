@@ -32,7 +32,7 @@ public class FileInputConfiguration extends InputConfiguration {
     @IsAccessible
     private File path;
 
-    @IsOneOf({"NEWLINE", "CRLF", "PATTERN"})
+    @IsOneOf({"NEWLINE", "PATTERN"})
     private final String contentSplitter;
 
     @NotNull
@@ -91,9 +91,7 @@ public class FileInputConfiguration extends InputConfiguration {
     public ContentSplitter createContentSplitter() {
         switch(contentSplitter) {
             case "NEWLINE":
-                return new NewlineChunkSplitter(NewlineChunkSplitter.LineEnding.LF);
-            case "CRLF":
-                return new NewlineChunkSplitter(NewlineChunkSplitter.LineEnding.CRLF);
+                return new NewlineChunkSplitter();
             case "PATTERN":
                 return new PatternChunkSplitter(contentSplitterPattern);
             default:
