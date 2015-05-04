@@ -50,6 +50,8 @@ outputs {
 
 ### Running The Agent
 
+#### Linux
+
 The agent needs a configuration file and can be started with the following command.
 
 ```
