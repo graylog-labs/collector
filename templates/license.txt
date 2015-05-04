@@ -1,5 +1,0 @@
-Copyright (c) ${year} ${owner} - All Rights Reserved
-
-This file is part of ${project}. (${url})
-
-Unauthorized copying of this file, via any medium is strictly prohibited. Proprietary and confidential.
