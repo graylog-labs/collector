@@ -15,7 +15,15 @@
         <name>Graylog, Inc.</name>
         <url>https://www.graylog.com/</url>
     </organization>
-
+    
+    <licenses>
+        <license>
+            <name>GNU General Public License (GPL) version 3.0</name>
+            <url>https://www.gnu.org/licenses/gpl-3.0.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    
     <scm>
         <connection>scm:git:git@github.com:Graylog2/agent.git</connection>
         <developerConnection>scm:git:git@github.com:Graylog2/agent.git</developerConnection>
