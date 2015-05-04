@@ -61,18 +61,16 @@ $ bin/graylog-agent server -f agent.conf
 2015-02-09T18:30:30.624+0100 INFO  [main] c.graylog.agent.cli.commands.Server - Service RUNNING: FileInput{id='test-log', path='logs/file.log', outputs=''}
 ```
 
-## Building Packages
+## Building
 
-The following command can be used to build the fat JAR, tarball, deb, and
-rpm packages.
+The following command can be used to build the fat JAR and tarball/zip packages.
 
 ```
-$ mvn (-Pbuild-packages|-Dbuild.packages) package assembly:single
+$ mvn package assembly:single
 ```
 
 Find the artifacts in the following places.
 
 * JAR `target/graylog-agent-*.jar`
 * TAR `target/graylog-agent-*.tar.gz`
-* DEB `target/graylog-agent_*_all.deb`
-* RPM `target/rpm/graylog-agent/RPMS/noarch/graylog-agent-*.noarch.rpm`
+* TAR `target/graylog-agent-*.zip`
