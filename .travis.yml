@@ -3,12 +3,6 @@ language: java
 jdk:
   - oraclejdk7
   - oraclejdk8
-notifications:
-  slack:
-    on_success: change
-    on_failure: always
-    rooms:
-      secure: Q6ixG4Lj/HWlLKuq3sDReLe0t6s8fgIcKFcbJwhgvRz0UbOpa+trbeW8x44+p4m6fz508Z62bmvvGM1lYYDrJ46lxAlmwjXUEaQA5pTwgxiHQUTWcUSc6W5XD+Qcs7CY6HSE1FVt5L/mxkpddo5blhBbM18o36lK6xur5C1kN4A=
 after_success:
   - mvn -DskipTests -B assembly:single
 deploy:
