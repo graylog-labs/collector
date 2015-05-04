@@ -15,7 +15,7 @@
         <name>Graylog, Inc.</name>
         <url>https://www.graylog.com/</url>
     </organization>
-    
+
     <licenses>
         <license>
             <name>GNU General Public License (GPL) version 3.0</name>
@@ -23,7 +23,7 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    
+
     <scm>
         <connection>scm:git:git@github.com:Graylog2/agent.git</connection>
         <developerConnection>scm:git:git@github.com:Graylog2/agent.git</developerConnection>
@@ -33,6 +33,8 @@
     <properties>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
 
         <agent.share-path>/usr/share/graylog-agent</agent.share-path>
         <agent.script-config>${agent.share-path}/agent-script-config.sh</agent.script-config>
