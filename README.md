@@ -72,5 +72,5 @@ $ mvn package assembly:single
 Find the artifacts in the following places.
 
 * JAR `target/graylog-agent-*.jar`
-* TAR `target/graylog-agent-*.tar.gz`
-* TAR `target/graylog-agent-*.zip`
+* TAR `target/assembly/graylog-agent-*.tar.gz`
+* TAR `target/assembly/graylog-agent-*.zip`

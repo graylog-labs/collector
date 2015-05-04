@@ -212,6 +212,7 @@
                         <descriptor>src/main/assembly/agent.xml</descriptor>
                     </descriptors>
                     <appendAssemblyId>false</appendAssemblyId>
+                    <outputDirectory>${project.build.directory}/assembly</outputDirectory>
                     <finalName>${project.artifactId}-${project.version}</finalName>
                 </configuration>
             </plugin>
