@@ -1,6 +1,8 @@
 Graylog Agent
 =============
 
+[![Build Status](https://travis-ci.org/Graylog2/agent.svg?branch=master)](https://travis-ci.org/Graylog2/agent)
+
 This is the Graylog Agent.
 
 ## Usage
