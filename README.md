@@ -56,7 +56,7 @@ The agent needs a configuration file and can be started with the following comma
 
 ```
 $ bin/graylog-agent server -f agent.conf
-2015-02-09T18:30:30.233+0100 INFO  [main] c.graylog.agent.cli.commands.Server - Running com.graylog.agent.cli.commands.Server
+2015-02-09T18:30:30.233+0100 INFO  [main] c.graylog.agent.cli.commands.Server - Running org.graylog.collector.cli.commands.Server
 2015-02-09T18:30:30.610+0100 INFO  [GelfOutput] c.g.agent.outputs.gelf.GelfOutput - Starting GELF transport: org.graylog2.gelfclient.GelfConfiguration@53847a91
 2015-02-09T18:30:30.619+0100 INFO  [main] c.graylog.agent.cli.commands.Server - Service RUNNING: BufferProcessor [RUNNING]
 2015-02-09T18:30:30.621+0100 INFO  [main] c.graylog.agent.cli.commands.Server - Service RUNNING: StdoutOutput{id='console', inputs=''}

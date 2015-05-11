@@ -75,7 +75,7 @@ GOTO:EOF
 :actionInstall
 SET AGENT_VERSION=${project.version}
 SET AGENT_JAR="%AGENT_ROOT%\${project.artifactId}.jar"
-SET AGENT_CLASS=com.graylog.agent.cli.Main
+SET AGENT_CLASS=org.graylog.collector.cli.Main
 SET AGENT_JVM_MS=12m
 SET AGENT_JVM_MX=64m
 SET AGENT_JVM_OPTIONS=-Djava.library.path=%AGENT_ROOT%\lib\sigar -Dfile.encoding=UTF-8 ${agent.jvm-opts}
