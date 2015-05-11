@@ -18,9 +18,9 @@ package org.graylog.collector.metrics;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Scopes;
-import org.graylog.collector.guice.AgentModule;
+import org.graylog.collector.guice.CollectorModule;
 
-public class MetricsModule extends AgentModule {
+public class MetricsModule extends CollectorModule {
     @Override
     protected void configure() {
         bind(MetricRegistry.class).in(Scopes.SINGLETON);

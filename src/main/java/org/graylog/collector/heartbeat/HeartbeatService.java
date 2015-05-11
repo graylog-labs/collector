@@ -17,7 +17,7 @@
 package org.graylog.collector.heartbeat;
 
 import com.google.common.util.concurrent.AbstractScheduledService;
-import org.graylog.collector.utils.AgentId;
+import org.graylog.collector.utils.CollectorId;
 import com.typesafe.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,20 +33,20 @@ public class HeartbeatService extends AbstractScheduledService {
     private static final int defaultHeartbeatInterval = 5;
     private static final String enableRegistrationParameter = "enable-registration";
 
-    private final AgentRegistrationService agentRegistrationService;
-    private final AgentRegistrationRequest agentRegistrationRequest;
+    private final CollectorRegistrationService collectorRegistrationService;
+    private final CollectorRegistrationRequest collectorRegistrationRequest;
     private final Config config;
-    private final String agentId;
+    private final String collectorId;
 
     @Inject
-    public HeartbeatService(AgentRegistrationService agentRegistrationService,
-                            AgentRegistrationRequest agentRegistrationRequest,
+    public HeartbeatService(CollectorRegistrationService collectorRegistrationService,
+                            CollectorRegistrationRequest collectorRegistrationRequest,
                             Config config,
-                            AgentId agentId) {
-        this.agentRegistrationService = agentRegistrationService;
-        this.agentRegistrationRequest = agentRegistrationRequest;
+                            CollectorId collectorId) {
+        this.collectorRegistrationService = collectorRegistrationService;
+        this.collectorRegistrationRequest = collectorRegistrationRequest;
         this.config = config;
-        this.agentId = agentId.toString();
+        this.collectorId = collectorId.toString();
     }
 
     @Override
@@ -55,7 +55,7 @@ public class HeartbeatService extends AbstractScheduledService {
             return;
         }
         try {
-            agentRegistrationService.register(this.agentId, this.agentRegistrationRequest);
+            collectorRegistrationService.register(this.collectorId, this.collectorRegistrationRequest);
         } catch (RetrofitError e) {
             final Response response = e.getResponse();
             if (response != null)

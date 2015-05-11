@@ -23,12 +23,12 @@ import org.graylog.collector.config.ConfigurationRegistry;
 
 import javax.inject.Inject;
 
-public class AgentServiceManager {
+public class CollectorServiceManager {
     private final ServiceManager serviceManager;
     private final ConfigurationRegistry configuration;
 
     @Inject
-    public AgentServiceManager(ServiceManager serviceManager, ConfigurationRegistry configuration) {
+    public CollectorServiceManager(ServiceManager serviceManager, ConfigurationRegistry configuration) {
         this.serviceManager = serviceManager;
         this.configuration = configuration;
     }

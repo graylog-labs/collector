@@ -16,13 +16,13 @@
  */
 package org.graylog.collector.heartbeat;
 
-import org.graylog.collector.guice.AgentModule;
+import org.graylog.collector.guice.CollectorModule;
 
-public class HeartbeatModule extends AgentModule {
+public class HeartbeatModule extends CollectorModule {
     @Override
     protected void configure() {
-        bind(AgentRegistrationService.class).toProvider(AgentRegistrationServiceProvider.class);
-        bind(AgentRegistrationRequest.class).toProvider(AgentRegistrationRequestProvider.class);
+        bind(CollectorRegistrationService.class).toProvider(CollectorRegistrationServiceProvider.class);
+        bind(CollectorRegistrationRequest.class).toProvider(CollectorRegistrationRequestProvider.class);
         registerService(HeartbeatService.class);
     }
 }

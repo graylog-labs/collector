@@ -14,21 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with Graylog.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graylog.collector.guice;
+package org.graylog.collector.utils;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Module;
+import org.graylog.collector.guice.CollectorModule;
 
-public class AgentInjector {
-    public static Injector createInjector(Module... modules) {
-        final Injector injector = Guice.createInjector(new AgentModule() {
-            @Override
-            protected void configure() {
-                binder().requireExplicitBindings();
-            }
-        });
-
-        return injector.createChildInjector(modules);
+public class CollectorIdModule extends CollectorModule {
+    @Override
+    protected void configure() {
+        bind(CollectorIdConfiguration.class);
+        bind(CollectorId.class);
     }
 }

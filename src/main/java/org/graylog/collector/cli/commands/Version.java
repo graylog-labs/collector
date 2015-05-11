@@ -16,15 +16,15 @@
  */
 package org.graylog.collector.cli.commands;
 
-import org.graylog.collector.AgentVersion;
+import org.graylog.collector.CollectorVersion;
 import io.airlift.airline.Command;
 
 @Command(name = "version", description = "Show version information on STDOUT")
-public class Version implements AgentCommand {
+public class Version implements CollectorCommand {
     @Override
     public void run() {
-        final AgentVersion v = AgentVersion.CURRENT;
-        final String message = String.format("Graylog Agent v%s (commit=%s, timestamp=%s)",
+        final CollectorVersion v = CollectorVersion.CURRENT;
+        final String message = String.format("Graylog Collector v%s (commit=%s, timestamp=%s)",
                 v.version(), v.commitIdShort(), v.timestamp());
 
         System.out.println(message);

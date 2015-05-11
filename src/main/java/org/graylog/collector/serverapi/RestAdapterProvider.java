@@ -17,7 +17,7 @@
 package org.graylog.collector.serverapi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.graylog.collector.AgentVersion;
+import org.graylog.collector.CollectorVersion;
 import org.graylog.collector.annotations.GraylogServerURL;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
@@ -42,8 +42,8 @@ public class RestAdapterProvider implements Provider<RestAdapter> {
                 .setRequestInterceptor(new RequestInterceptor() {
                     @Override
                     public void intercept(RequestFacade request) {
-                        request.addHeader("User-Agent", "Graylog Agent " + AgentVersion.CURRENT);
-                        request.addHeader("X-Graylog-Agent-Version", AgentVersion.CURRENT.version());
+                        request.addHeader("User-Agent", "Graylog Collector " + CollectorVersion.CURRENT);
+                        request.addHeader("X-Graylog-Collector-Version", CollectorVersion.CURRENT.version());
                     }
                 })
                 .build();

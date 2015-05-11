@@ -16,13 +16,13 @@
  */
 package org.graylog.collector.outputs;
 
-import org.graylog.collector.guice.AgentModule;
+import org.graylog.collector.guice.CollectorModule;
 import org.graylog.collector.outputs.gelf.GelfOutput;
 import org.graylog.collector.outputs.gelf.GelfOutputConfiguration;
 import org.graylog.collector.outputs.stdout.StdoutOutput;
 import org.graylog.collector.outputs.stdout.StdoutOutputConfiguration;
 
-public class OutputsModule extends AgentModule {
+public class OutputsModule extends CollectorModule {
     @Override
     protected void configure() {
         registerOutput("gelf",

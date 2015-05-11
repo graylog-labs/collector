@@ -17,12 +17,12 @@
 package org.graylog.collector.services;
 
 import com.google.common.util.concurrent.ServiceManager;
-import org.graylog.collector.guice.AgentModule;
+import org.graylog.collector.guice.CollectorModule;
 
-public class ServicesModule extends AgentModule {
+public class ServicesModule extends CollectorModule {
     @Override
     protected void configure() {
-        bind(AgentServiceManager.class);
+        bind(CollectorServiceManager.class);
         bind(ServiceManager.class).toProvider(ServiceManagerProvider.class);
     }
 }

@@ -16,21 +16,25 @@
  */
 package org.graylog.collector.heartbeat;
 
-import retrofit.RestAdapter;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.auto.value.AutoValue;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
-public class AgentRegistrationServiceProvider implements Provider<AgentRegistrationService> {
-    private final RestAdapter restAdapter;
+@AutoValue
+@JsonAutoDetect
+public abstract class CollectorNodeDetailsSummary {
 
-    @Inject
-    public AgentRegistrationServiceProvider(RestAdapter restAdapter) {
-        this.restAdapter = restAdapter;
-    }
+    @JsonProperty("operating_system")
+    @NotNull
+    @Size(min = 1)
+    public abstract String operatingSystem();
 
-    @Override
-    public AgentRegistrationService get() {
-        return this.restAdapter.create(AgentRegistrationService.class);
+    @JsonCreator
+    public static CollectorNodeDetailsSummary create(@JsonProperty("operating_system") String operatingSystem) {
+        return new AutoValue_CollectorNodeDetailsSummary(operatingSystem);
     }
 }

@@ -17,9 +17,9 @@
 package org.graylog.collector.buffer;
 
 import com.google.inject.Scopes;
-import org.graylog.collector.guice.AgentModule;
+import org.graylog.collector.guice.CollectorModule;
 
-public class BufferModule extends AgentModule {
+public class BufferModule extends CollectorModule {
     @Override
     protected void configure() {
         bind(MessageBufferConfiguration.class);

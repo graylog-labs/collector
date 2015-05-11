@@ -17,10 +17,10 @@
 package org.graylog.collector.serverapi;
 
 import org.graylog.collector.annotations.GraylogServerURL;
-import org.graylog.collector.guice.AgentModule;
+import org.graylog.collector.guice.CollectorModule;
 import retrofit.RestAdapter;
 
-public class ServerApiModule extends AgentModule {
+public class ServerApiModule extends CollectorModule {
     @Override
     protected void configure() {
         bind(String.class).annotatedWith(GraylogServerURL.class).toProvider(ServerURLProvider.class);

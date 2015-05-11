@@ -14,24 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Graylog.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graylog.collector.config;
+package org.graylog.collector.cli.commands;
 
-import com.google.inject.Scopes;
-import org.graylog.collector.guice.CollectorModule;
-import com.typesafe.config.Config;
-
-import java.io.File;
-
-public class ConfigurationModule extends CollectorModule {
-    private final Config config;
-
-    public ConfigurationModule(File configFile) {
-        this.config = ConfigurationParser.parse(configFile);
-    }
-
-    @Override
-    protected void configure() {
-        bind(Config.class).toInstance(config);
-        bind(ConfigurationRegistry.class).in(Scopes.SINGLETON);
-    }
+public interface CollectorCommand extends Runnable {
+    void stop();
 }

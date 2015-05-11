@@ -14,27 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with Graylog.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graylog.collector.utils;
+package org.graylog.collector.cli.commands;
 
-import com.typesafe.config.Config;
+import io.airlift.airline.Help;
 
-import javax.inject.Inject;
-
-public class AgentIdConfiguration {
-    private static final String agentIdStatement = "agent-id";
-    private final String agentId;
-
-    @Inject
-    public AgentIdConfiguration(Config config) {
-        if (config.hasPath(agentIdStatement)) {
-            this.agentId = config.getString(agentIdStatement);
-        } else {
-            this.agentId = "file:config/agent-id";
-        }
-    }
-
-    public String getAgentId() {
-        return agentId;
+public class CollectorHelp extends Help implements CollectorCommand {
+    @Override
+    public void stop() {
+        // nothing to stop
     }
 }
-

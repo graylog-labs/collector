@@ -1,5 +1,5 @@
-Graylog Agent ChangeLog
-=======================
+Graylog Collector ChangeLog
+===========================
 
 
 ## v0.1.1 (2015-02-18)

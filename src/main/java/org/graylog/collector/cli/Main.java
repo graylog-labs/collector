@@ -18,8 +18,8 @@ package org.graylog.collector.cli;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import org.graylog.collector.cli.commands.AgentCommand;
-import org.graylog.collector.cli.commands.AgentHelp;
+import org.graylog.collector.cli.commands.CollectorCommand;
+import org.graylog.collector.cli.commands.CollectorHelp;
 import org.graylog.collector.cli.commands.Server;
 import org.graylog.collector.cli.commands.Version;
 import io.airlift.airline.Cli;
@@ -30,19 +30,19 @@ import org.slf4j.LoggerFactory;
 public class Main {
     private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
-    private static AgentCommand command = null;
+    private static CollectorCommand command = null;
 
     public static void main(String[] args) {
         final Injector injector = Guice.createInjector();
 
-        final Cli.CliBuilder<AgentCommand> cliBuilder = Cli.<AgentCommand>builder("graylog-agent")
-                .withDescription("Graylog agent")
-                .withDefaultCommand(AgentHelp.class)
-                .withCommand(AgentHelp.class)
+        final Cli.CliBuilder<CollectorCommand> cliBuilder = Cli.<CollectorCommand>builder("graylog-collector")
+                .withDescription("Graylog Collector")
+                .withDefaultCommand(CollectorHelp.class)
+                .withCommand(CollectorHelp.class)
                 .withCommand(Version.class)
                 .withCommand(Server.class);
 
-        final Cli<AgentCommand> cli = cliBuilder.build();
+        final Cli<CollectorCommand> cli = cliBuilder.build();
 
         try {
             command = cli.parse(args);
@@ -60,7 +60,7 @@ public class Main {
         }
     }
 
-    private static void configureShutdownHook(final AgentCommand command) {
+    private static void configureShutdownHook(final CollectorCommand command) {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {

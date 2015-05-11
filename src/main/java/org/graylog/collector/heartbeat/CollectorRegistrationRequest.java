@@ -27,18 +27,18 @@ import javax.validation.constraints.Size;
 
 @AutoValue
 @JsonAutoDetect
-public abstract class AgentRegistrationRequest {
+public abstract class CollectorRegistrationRequest {
     @JsonProperty("node_id")
     @NotNull
     @Size(min = 1)
     public abstract String nodeId();
 
     @JsonProperty("node_details")
-    public abstract AgentNodeDetailsSummary nodeDetails();
+    public abstract CollectorNodeDetailsSummary nodeDetails();
 
     @JsonCreator
-    public static AgentRegistrationRequest create(@JsonProperty("node_id") String nodeId,
-                                                  @JsonProperty("node_details") @Valid AgentNodeDetailsSummary nodeDetails) {
-        return new AutoValue_AgentRegistrationRequest(nodeId, nodeDetails);
+    public static CollectorRegistrationRequest create(@JsonProperty("node_id") String nodeId,
+                                                  @JsonProperty("node_details") @Valid CollectorNodeDetailsSummary nodeDetails) {
+        return new AutoValue_CollectorRegistrationRequest(nodeId, nodeDetails);
     }
 }

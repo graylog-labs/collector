@@ -37,7 +37,7 @@ public class ConfigurationParserTest {
 
     @Before
     public void setUp() throws Exception {
-        configFile = Files.createTempFile("agent", ".conf").toFile();
+        configFile = Files.createTempFile("collector", ".conf").toFile();
 
         Files.write(configFile.toPath(), "message-buffer-size = 128".getBytes());
     }

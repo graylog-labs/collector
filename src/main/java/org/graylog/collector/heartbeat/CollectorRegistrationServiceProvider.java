@@ -14,8 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with Graylog.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graylog.collector.cli.commands;
+package org.graylog.collector.heartbeat;
 
-public interface AgentCommand extends Runnable {
-    void stop();
+import retrofit.RestAdapter;
+
+import javax.inject.Inject;
+import javax.inject.Provider;
+
+public class CollectorRegistrationServiceProvider implements Provider<CollectorRegistrationService> {
+    private final RestAdapter restAdapter;
+
+    @Inject
+    public CollectorRegistrationServiceProvider(RestAdapter restAdapter) {
+        this.restAdapter = restAdapter;
+    }
+
+    @Override
+    public CollectorRegistrationService get() {
+        return this.restAdapter.create(CollectorRegistrationService.class);
+    }
 }

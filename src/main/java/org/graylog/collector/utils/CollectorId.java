@@ -33,21 +33,21 @@ import java.util.List;
 import java.util.UUID;
 
 @Singleton
-public class AgentId {
-    private static final Logger LOG = LoggerFactory.getLogger(AgentId.class);
+public class CollectorId {
+    private static final Logger LOG = LoggerFactory.getLogger(CollectorId.class);
 
     private final String id;
 
     @Inject
-    public AgentId(AgentIdConfiguration config) {
-        final String configuredAgentId = config.getAgentId();
-        if (configuredAgentId.startsWith("file:")) {
-            final String[] splittedConfig = configuredAgentId.split("^file:");
+    public CollectorId(CollectorIdConfiguration config) {
+        final String configuredCollectorId = config.getCollectorId();
+        if (configuredCollectorId.startsWith("file:")) {
+            final String[] splittedConfig = configuredCollectorId.split("^file:");
             if (splittedConfig.length < 2)
-                throw new RuntimeException("Invalid specified file location for agent id: " + configuredAgentId);
+                throw new RuntimeException("Invalid specified file location for collector id: " + configuredCollectorId);
             this.id = readOrGenerate(splittedConfig[1]);
         } else {
-            this.id = configuredAgentId;
+            this.id = configuredCollectorId;
         }
     }
 
@@ -59,7 +59,7 @@ public class AgentId {
                 return generate(filename);
             }
 
-            LOG.info("Agent ID: {}", read);
+            LOG.info("Collector ID: {}", read);
             return read;
         } catch (FileNotFoundException | NoSuchFileException e) {
             return generate(filename);

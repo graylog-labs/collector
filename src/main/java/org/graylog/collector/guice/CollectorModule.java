@@ -29,7 +29,7 @@ import org.graylog.collector.inputs.InputConfiguration;
 import org.graylog.collector.outputs.Output;
 import org.graylog.collector.outputs.OutputConfiguration;
 
-public abstract class AgentModule extends AbstractModule {
+public abstract class CollectorModule extends AbstractModule {
     private MapBinder<String, InputConfiguration.Factory<? extends InputConfiguration>> inputsMapBinder = null;
     private MapBinder<String, OutputConfiguration.Factory<? extends OutputConfiguration>> outputsMapBinder = null;
 

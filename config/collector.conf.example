@@ -1,6 +1,6 @@
-// Graylog Agent example configuration.
+// Graylog Collector example configuration.
 
-// Url to Graylog server this agent registers at
+// Url to Graylog server this collector registers at
 server-url = "http://localhost:12900"
 
 // Enable registration with the Graylog server. (enabled by default)
@@ -8,12 +8,12 @@ server-url = "http://localhost:12900"
 
 message-buffer-size = 128
 
-// The id used to identify this agent. Can be either a string which is used as id,
+// The id used to identify this collector. Can be either a string which is used as id,
 // or the location of a file if prefixed with "file:". If the file does not exist,
 // an id will be generated and written to that file. If it exists, it is expected
 // to contain a single string without spaces which will be used for the id.
-// Defaults to "file:config/agent-id" if not specified.
-agent-id = "file:config/agent-id"
+// Defaults to "file:config/collector-id" if not specified.
+collector-id = "file:config/collector-id"
 
 metrics {
   enable-logging = false

@@ -18,20 +18,20 @@ package org.graylog.collector.cli.commands;
 
 import com.google.common.util.concurrent.Service;
 import com.google.inject.Injector;
-import org.graylog.collector.AgentVersion;
+import org.graylog.collector.CollectorVersion;
 import org.graylog.collector.buffer.BufferModule;
 import org.graylog.collector.config.ConfigurationError;
 import org.graylog.collector.config.ConfigurationModule;
 import org.graylog.collector.config.ConfigurationRegistry;
-import org.graylog.collector.guice.AgentInjector;
+import org.graylog.collector.guice.CollectorInjector;
 import org.graylog.collector.heartbeat.HeartbeatModule;
 import org.graylog.collector.inputs.InputsModule;
 import org.graylog.collector.metrics.MetricsModule;
 import org.graylog.collector.outputs.OutputsModule;
 import org.graylog.collector.serverapi.ServerApiModule;
-import org.graylog.collector.services.AgentServiceManager;
+import org.graylog.collector.services.CollectorServiceManager;
 import org.graylog.collector.services.ServicesModule;
-import org.graylog.collector.utils.AgentIdModule;
+import org.graylog.collector.utils.CollectorIdModule;
 import io.airlift.airline.Command;
 import io.airlift.airline.Option;
 import org.slf4j.Logger;
@@ -40,21 +40,21 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.Map;
 
-@Command(name = "server", description = "Start the agent")
-public class Server implements AgentCommand {
+@Command(name = "server", description = "Start the collector")
+public class Server implements CollectorCommand {
     private static final Logger LOG = LoggerFactory.getLogger(Server.class);
 
     @Option(name = "-f", description = "Path to configuration file.", required = true)
     private final File configFile = null;
 
-    private AgentServiceManager serviceManager;
+    private CollectorServiceManager serviceManager;
 
     @Override
     public void run() {
-        LOG.info("Starting Agent v{} (commit {})", AgentVersion.CURRENT.version(), AgentVersion.CURRENT.commitIdShort());
+        LOG.info("Starting Collector v{} (commit {})", CollectorVersion.CURRENT.version(), CollectorVersion.CURRENT.commitIdShort());
 
         final Injector injector = getInjector();
-        serviceManager = injector.getInstance(AgentServiceManager.class);
+        serviceManager = injector.getInstance(CollectorServiceManager.class);
 
         validateConfiguration(serviceManager.getConfiguration());
 
@@ -79,7 +79,7 @@ public class Server implements AgentCommand {
         Injector injector = null;
 
         try {
-            injector = AgentInjector.createInjector(new ConfigurationModule(configFile),
+            injector = CollectorInjector.createInjector(new ConfigurationModule(configFile),
                     new BufferModule(),
                     new InputsModule(),
                     new OutputsModule(),
@@ -87,7 +87,7 @@ public class Server implements AgentCommand {
                     new MetricsModule(),
                     new ServerApiModule(),
                     new HeartbeatModule(),
-                    new AgentIdModule());
+                    new CollectorIdModule());
         } catch (Exception e) {
             LOG.error("ERROR: {}", e.getMessage());
             LOG.debug("Detailed injection creation error", e);

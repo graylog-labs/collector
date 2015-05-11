@@ -14,13 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with Graylog.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graylog.collector.cli.commands;
+package org.graylog.collector.heartbeat;
 
-import io.airlift.airline.Help;
+import retrofit.client.Response;
+import retrofit.http.Body;
+import retrofit.http.PUT;
+import retrofit.http.Path;
 
-public class AgentHelp extends Help implements AgentCommand {
-    @Override
-    public void stop() {
-        // nothing to stop
-    }
+public interface CollectorRegistrationService {
+    @PUT("/system/collectors/{collectorId}")
+    Response register(@Path("collectorId") String collectorId, @Body CollectorRegistrationRequest request);
 }

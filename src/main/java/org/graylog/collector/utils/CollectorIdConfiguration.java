@@ -16,12 +16,25 @@
  */
 package org.graylog.collector.utils;
 
-import org.graylog.collector.guice.AgentModule;
+import com.typesafe.config.Config;
 
-public class AgentIdModule extends AgentModule {
-    @Override
-    protected void configure() {
-        bind(AgentIdConfiguration.class);
-        bind(AgentId.class);
+import javax.inject.Inject;
+
+public class CollectorIdConfiguration {
+    private static final String collectorIdStatement = "collector-id";
+    private final String collectorId;
+
+    @Inject
+    public CollectorIdConfiguration(Config config) {
+        if (config.hasPath(collectorIdStatement)) {
+            this.collectorId = config.getString(collectorIdStatement);
+        } else {
+            this.collectorId = "file:config/collector-id";
+        }
+    }
+
+    public String getCollectorId() {
+        return collectorId;
     }
 }
+

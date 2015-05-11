@@ -14,14 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with Graylog.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graylog.collector.heartbeat;
+package org.graylog.collector.guice;
 
-import retrofit.client.Response;
-import retrofit.http.Body;
-import retrofit.http.PUT;
-import retrofit.http.Path;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Module;
 
-public interface AgentRegistrationService {
-    @PUT("/system/agents/{agentId}")
-    Response register(@Path("agentId") String agentId, @Body AgentRegistrationRequest request);
+public class CollectorInjector {
+    public static Injector createInjector(Module... modules) {
+        final Injector injector = Guice.createInjector(new CollectorModule() {
+            @Override
+            protected void configure() {
+                binder().requireExplicitBindings();
+            }
+        });
+
+        return injector.createChildInjector(modules);
+    }
 }

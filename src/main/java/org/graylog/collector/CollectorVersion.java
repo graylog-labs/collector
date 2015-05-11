@@ -22,8 +22,8 @@ import java.util.Properties;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
-public class AgentVersion {
-    public static final AgentVersion CURRENT;
+public class CollectorVersion {
+    public static final CollectorVersion CURRENT;
 
     static {
         String version = "NONE";
@@ -31,7 +31,7 @@ public class AgentVersion {
         String commitIdShort = "NONE";
         String timestamp = "NONE";
 
-        final InputStream stream = AgentVersion.class.getResourceAsStream("/agent-version.properties");
+        final InputStream stream = CollectorVersion.class.getResourceAsStream("/collector-version.properties");
         final Properties properties = new Properties();
 
         try {
@@ -47,7 +47,7 @@ public class AgentVersion {
         } catch (IOException ignored) {
         }
 
-        CURRENT = new AgentVersion(version, commitId, commitIdShort, timestamp);
+        CURRENT = new CollectorVersion(version, commitId, commitIdShort, timestamp);
     }
 
     private final String version;
@@ -55,7 +55,7 @@ public class AgentVersion {
     private final String commitIdShort;
     private final String timestamp;
 
-    public AgentVersion(String version, String commitId, String commitIdShort, String timestamp) {
+    public CollectorVersion(String version, String commitId, String commitIdShort, String timestamp) {
         this.version = version;
         this.commitId = commitId;
         this.commitIdShort = commitIdShort;
