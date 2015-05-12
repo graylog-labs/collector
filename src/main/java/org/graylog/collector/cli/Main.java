@@ -16,8 +16,6 @@
  */
 package org.graylog.collector.cli;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import io.airlift.airline.Cli;
 import io.airlift.airline.ParseException;
 import org.graylog.collector.cli.commands.CollectorCommand;
@@ -33,8 +31,6 @@ public class Main {
     private static CollectorCommand command = null;
 
     public static void main(String[] args) {
-        final Injector injector = Guice.createInjector();
-
         final Cli.CliBuilder<CollectorCommand> cliBuilder = Cli.<CollectorCommand>builder("graylog-collector")
                 .withDescription("Graylog Collector")
                 .withDefaultCommand(CollectorHelp.class)
