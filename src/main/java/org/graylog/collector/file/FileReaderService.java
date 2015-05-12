@@ -111,22 +111,27 @@ public class FileReaderService extends AbstractService {
             fileObserver.awaitRunning();
             // for a previously existing file, we would not get a watcher callback, so we initialize the chunkreader here
             if (monitoredFile.toFile().exists()) {
-                AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(monitoredFile,
-                        StandardOpenOption.READ);
-                chunkReader = new ChunkReader(input,
-                        monitoredFile,
-                        fileChannel,
-                        chunkQueue,
-                        1024,
-                        followMode,
-                        initialReadPosition);
-                chunkReaderFuture = scheduler.scheduleAtFixedRate(chunkReader, 0, 250, TimeUnit.MILLISECONDS);
+                followFile();
             }
         } catch (Exception e) {
             log.error("Unable to monitor directory for file " + monitoredFile, e);
             notifyFailed(e);
         }
         notifyStarted();
+    }
+
+    private void followFile() throws IOException {
+        AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(monitoredFile, StandardOpenOption.READ);
+
+        chunkReader = new ChunkReader(input,
+                monitoredFile,
+                fileChannel,
+                chunkQueue,
+                1024,
+                followMode,
+                initialReadPosition);
+
+        chunkReaderFuture = scheduler.scheduleAtFixedRate(chunkReader, 0, 250, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -162,16 +167,7 @@ public class FileReaderService extends AbstractService {
                 }
                 try {
                     if (monitoredFile.toFile().exists()) {
-                        AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(monitoredFile,
-                                StandardOpenOption.READ);
-                        chunkReader = new ChunkReader(input,
-                                monitoredFile,
-                                fileChannel,
-                                chunkQueue,
-                                1024,
-                                followMode,
-                                initialReadPosition);
-                        chunkReaderFuture = scheduler.scheduleAtFixedRate(chunkReader, 0, 250, TimeUnit.MILLISECONDS);
+                        followFile();
                     }
                 } catch (IOException e) {
                     log.error("Cannot read newly created file " + monitoredFile, e);
