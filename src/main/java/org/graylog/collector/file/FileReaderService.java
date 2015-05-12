@@ -90,11 +90,15 @@ public class FileReaderService extends AbstractService {
 
     @Override
     protected void doStart() {
-        if (!followMode && !monitoredFile.toFile().exists()) {
-            final String msg = "File " + monitoredFile + " does not exist and follow mode is not enabled. Not waiting for file to appear.";
-            log.error(msg);
-            notifyFailed(new IllegalStateException(msg));
-            return;
+        if (!monitoredFile.toFile().exists()) {
+            if (followMode) {
+                log.warn("File {} does not exist but will be followed once it will be created.", monitoredFile);
+            } else {
+                final String msg = "File " + monitoredFile + " does not exist and follow mode is not enabled. Not waiting for file to appear.";
+                log.error(msg);
+                notifyFailed(new IllegalStateException(msg));
+                return;
+            }
         }
         chunkProcessor = new ChunkProcessor(buffer, messageBuilder, chunkQueue, contentSplitter, charset);
         chunkProcessor.addFileConfig(monitoredFile, "source", false);
