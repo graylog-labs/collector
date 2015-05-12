@@ -19,8 +19,8 @@ package org.graylog.collector.inputs;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
-import org.graylog.collector.config.Configuration;
 import com.typesafe.config.Config;
+import org.graylog.collector.config.Configuration;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;

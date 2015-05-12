@@ -51,8 +51,8 @@ public class PatternChunkSplitterTest {
                     break;
                 case 2:
                     assertEquals("Feb 20 17:05:18 otter GoogleSoftwareUpdateDaemon[32697]: -[KeystoneDaemon logServiceState] GoogleSoftwareUpdate daemon (1.1.0.3659) vending:\n" +
-                            "\t\tcom.google.Keystone.Daemon.UpdateEngine: 2 connection(s)\n" +
-                            "\t\tcom.google.Keystone.Daemon.Administration: 0 connection(s)\n",
+                                    "\t\tcom.google.Keystone.Daemon.UpdateEngine: 2 connection(s)\n" +
+                                    "\t\tcom.google.Keystone.Daemon.Administration: 0 connection(s)\n",
                             chunk);
                     break;
                 case 3:

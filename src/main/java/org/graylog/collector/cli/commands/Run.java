@@ -18,6 +18,8 @@ package org.graylog.collector.cli.commands;
 
 import com.google.common.util.concurrent.Service;
 import com.google.inject.Injector;
+import io.airlift.airline.Command;
+import io.airlift.airline.Option;
 import org.graylog.collector.CollectorVersion;
 import org.graylog.collector.buffer.BufferModule;
 import org.graylog.collector.config.ConfigurationError;
@@ -32,8 +34,6 @@ import org.graylog.collector.serverapi.ServerApiModule;
 import org.graylog.collector.services.CollectorServiceManager;
 import org.graylog.collector.services.ServicesModule;
 import org.graylog.collector.utils.CollectorIdModule;
-import io.airlift.airline.Command;
-import io.airlift.airline.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

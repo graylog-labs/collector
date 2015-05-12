@@ -17,12 +17,12 @@
 package org.graylog.collector.file;
 
 import com.google.common.base.Charsets;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.graylog.collector.Message;
 import org.graylog.collector.MessageBuilder;
 import org.graylog.collector.buffer.Buffer;
 import org.graylog.collector.file.splitters.NewlineChunkSplitter;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

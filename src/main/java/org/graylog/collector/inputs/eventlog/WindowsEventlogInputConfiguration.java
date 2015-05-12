@@ -17,10 +17,10 @@
 package org.graylog.collector.inputs.eventlog;
 
 import com.google.inject.assistedinject.Assisted;
+import com.typesafe.config.Config;
 import org.graylog.collector.config.ConfigurationUtils;
 import org.graylog.collector.inputs.InputConfiguration;
 import org.graylog.collector.inputs.InputService;
-import com.typesafe.config.Config;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;

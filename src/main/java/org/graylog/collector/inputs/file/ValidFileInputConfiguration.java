@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
 public @interface ValidFileInputConfiguration {
     String message() default "{org.graylog.collector.inputs.file.ValidFileInputConfiguration.message}";
 
-    Class<?>[] groups() default { };
+    Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload() default { };
+    Class<? extends Payload>[] payload() default {};
 }

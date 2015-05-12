@@ -38,7 +38,7 @@ public abstract class CollectorRegistrationRequest {
 
     @JsonCreator
     public static CollectorRegistrationRequest create(@JsonProperty("node_id") String nodeId,
-                                                  @JsonProperty("node_details") @Valid CollectorNodeDetailsSummary nodeDetails) {
+                                                      @JsonProperty("node_details") @Valid CollectorNodeDetailsSummary nodeDetails) {
         return new AutoValue_CollectorRegistrationRequest(nodeId, nodeDetails);
     }
 }

@@ -19,8 +19,8 @@ package org.graylog.collector.file;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
-import org.graylog.collector.file.naming.FileNamingStrategy;
 import com.sun.nio.file.SensitivityWatchEventModifier;
+import org.graylog.collector.file.naming.FileNamingStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -17,9 +17,9 @@
 package org.graylog.collector.outputs.stdout;
 
 import com.google.inject.assistedinject.Assisted;
+import com.typesafe.config.Config;
 import org.graylog.collector.config.ConfigurationUtils;
 import org.graylog.collector.outputs.OutputConfiguration;
-import com.typesafe.config.Config;
 
 import javax.inject.Inject;
 

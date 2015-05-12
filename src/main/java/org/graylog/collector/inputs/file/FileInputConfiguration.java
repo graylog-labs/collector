@@ -17,6 +17,7 @@
 package org.graylog.collector.inputs.file;
 
 import com.google.inject.assistedinject.Assisted;
+import com.typesafe.config.Config;
 import org.graylog.collector.config.ConfigurationUtils;
 import org.graylog.collector.config.constraints.IsAccessible;
 import org.graylog.collector.config.constraints.IsOneOf;
@@ -24,7 +25,6 @@ import org.graylog.collector.file.splitters.ContentSplitter;
 import org.graylog.collector.file.splitters.NewlineChunkSplitter;
 import org.graylog.collector.file.splitters.PatternChunkSplitter;
 import org.graylog.collector.inputs.InputConfiguration;
-import com.typesafe.config.Config;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -105,7 +105,7 @@ public class FileInputConfiguration extends InputConfiguration {
     }
 
     public ContentSplitter createContentSplitter() {
-        switch(contentSplitter) {
+        switch (contentSplitter) {
             case "NEWLINE":
                 return new NewlineChunkSplitter();
             case "PATTERN":

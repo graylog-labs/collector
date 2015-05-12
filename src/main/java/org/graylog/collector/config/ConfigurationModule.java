@@ -17,8 +17,8 @@
 package org.graylog.collector.config;
 
 import com.google.inject.Scopes;
-import org.graylog.collector.guice.CollectorModule;
 import com.typesafe.config.Config;
+import org.graylog.collector.guice.CollectorModule;
 
 import java.io.File;
 

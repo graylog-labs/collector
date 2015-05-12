@@ -58,8 +58,10 @@ public class MessageBuilderTest {
         assertEquals(Message.Level.INFO, message.getLevel());
         assertEquals("input-id", message.getInput());
         assertEquals(Sets.newHashSet("output1", "output2"), message.getOutputs());
-        assertEquals(new HashMap<String, Object>(){
-            { put("hello", "world"); }
+        assertEquals(new HashMap<String, Object>() {
+            {
+                put("hello", "world");
+            }
         }, message.getFields().asMap());
     }
 

@@ -16,8 +16,8 @@
  */
 package org.graylog.collector.cli.commands;
 
-import org.graylog.collector.CollectorVersion;
 import io.airlift.airline.Command;
+import org.graylog.collector.CollectorVersion;
 
 @Command(name = "version", description = "Show version information on STDOUT")
 public class Version implements CollectorCommand {

@@ -18,12 +18,12 @@ package org.graylog.collector.file;
 
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.graylog.collector.Message;
 import org.graylog.collector.MessageBuilder;
 import org.graylog.collector.buffer.Buffer;
 import org.graylog.collector.file.splitters.ContentSplitter;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;

@@ -43,7 +43,7 @@ public class ConfigurationParserTest {
     }
 
     @Test
-    public void testParsing() throws Exception{
+    public void testParsing() throws Exception {
         final Config config = ConfigurationParser.parse(configFile);
 
         assertEquals(128, config.getInt("message-buffer-size"));

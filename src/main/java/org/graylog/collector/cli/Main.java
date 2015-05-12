@@ -18,12 +18,12 @@ package org.graylog.collector.cli;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import io.airlift.airline.Cli;
+import io.airlift.airline.ParseException;
 import org.graylog.collector.cli.commands.CollectorCommand;
 import org.graylog.collector.cli.commands.CollectorHelp;
 import org.graylog.collector.cli.commands.Run;
 import org.graylog.collector.cli.commands.Version;
-import io.airlift.airline.Cli;
-import io.airlift.airline.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

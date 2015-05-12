@@ -17,8 +17,8 @@
 package org.graylog.collector.heartbeat;
 
 import com.google.common.util.concurrent.AbstractScheduledService;
-import org.graylog.collector.utils.CollectorId;
 import com.typesafe.config.Config;
+import org.graylog.collector.utils.CollectorId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit.RetrofitError;
