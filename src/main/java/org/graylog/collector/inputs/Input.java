@@ -29,7 +29,7 @@ public interface Input {
     // TODO Check if needed and for what it was used.
     void setReaderFinished(ChunkReader chunkReader);
 
-    public interface Factory<T extends Input, C extends Configuration> {
+    interface Factory<T extends Input, C extends Configuration> {
         T create(C configuration);
     }
 }

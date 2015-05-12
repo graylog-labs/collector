@@ -28,7 +28,7 @@ public interface Output {
 
     void write(Message message);
 
-    public interface Factory<T extends Output, C extends Configuration> {
+    interface Factory<T extends Output, C extends Configuration> {
         T create(C configuration);
     }
 }

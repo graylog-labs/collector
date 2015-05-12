@@ -23,7 +23,7 @@ import java.util.Set;
 
 public class Message {
     public enum Level {
-        EMERGENCY, ALERT, CRITICAL, ERROR, WARNING, NOTICE, INFO, DEBUG;
+        EMERGENCY, ALERT, CRITICAL, ERROR, WARNING, NOTICE, INFO, DEBUG
     }
 
     private final String message;

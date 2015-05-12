@@ -36,7 +36,7 @@ import java.util.concurrent.CountDownLatch;
 public class FileInput extends InputService {
     public enum InitialReadPosition {
         START,
-        END;
+        END
     }
 
     public interface Factory extends InputService.Factory<FileInput, FileInputConfiguration> {
