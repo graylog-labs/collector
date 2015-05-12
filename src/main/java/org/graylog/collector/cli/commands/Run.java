@@ -40,9 +40,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.Map;
 
-@Command(name = "server", description = "Start the collector")
-public class Server implements CollectorCommand {
-    private static final Logger LOG = LoggerFactory.getLogger(Server.class);
+@Command(name = "run", description = "Start the collector")
+public class Run implements CollectorCommand {
+    private static final Logger LOG = LoggerFactory.getLogger(Run.class);
 
     @Option(name = "-f", description = "Path to configuration file.", required = true)
     private final File configFile = null;

@@ -20,7 +20,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.graylog.collector.cli.commands.CollectorCommand;
 import org.graylog.collector.cli.commands.CollectorHelp;
-import org.graylog.collector.cli.commands.Server;
+import org.graylog.collector.cli.commands.Run;
 import org.graylog.collector.cli.commands.Version;
 import io.airlift.airline.Cli;
 import io.airlift.airline.ParseException;
@@ -40,7 +40,7 @@ public class Main {
                 .withDefaultCommand(CollectorHelp.class)
                 .withCommand(CollectorHelp.class)
                 .withCommand(Version.class)
-                .withCommand(Server.class);
+                .withCommand(Run.class);
 
         final Cli<CollectorCommand> cli = cliBuilder.build();
 
