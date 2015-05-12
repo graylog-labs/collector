@@ -10,7 +10,7 @@ we ask you to follow these steps as good as possible:
 
 1. Search the issues of the [graylog2-server](https://github.com/Graylog2/graylog2-server),
    [graylog2-web-interface](https://github.com/Graylog2/graylog2-web-interface)
-   and [graylog-agent](https://github.com/Graylog2/agent) repositories for
+   and [graylog-collector](https://github.com/Graylog2/collector) repositories for
    opened or closed issues to avoid duplicating effort.
 2. Be clear about the issue. It is always better to include too much
    information than too little. Include screenshots explaining the problem
@@ -25,7 +25,7 @@ we ask you to follow these steps as good as possible:
 2. Send the signed agreement to contributor@graylog.com
 3. Search the issues of the [graylog2-server](https://github.com/Graylog2/graylog2-server),
    [graylog2-web-interface](https://github.com/Graylog2/graylog2-web-interface)
-   and [graylog-agent](https://github.com/Graylog2/agent) repositories for
+   and [graylog-collector](https://github.com/Graylog2/collector) repositories for
    opened or closed issues to avoid duplicating effort.
 4. Contact the Graylog, Inc team via [any communication channel](https://www.graylog.org/community-support/)
    (contact form, mailing list, IRC, Github issue tracker) before working
@@ -40,7 +40,7 @@ many feature request issues as you want.
 
 1. Search the issues of the [graylog2-server](https://github.com/Graylog2/graylog2-server),
    [graylog2-web-interface](https://github.com/Graylog2/graylog2-web-interface)
-   and [graylog-agent](https://github.com/Graylog2/agent) repositories for
+   and [graylog-collector](https://github.com/Graylog2/collector) repositories for
    opened or closed issues to avoid duplicating effort.
 2. Explain exactly what feature you’d like to see and always include a use
    case for why you think it is useful.

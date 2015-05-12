@@ -1,0 +1,64 @@
+// Graylog Collector example configuration.
+
+// Url to Graylog server this collector registers at
+server-url = "http://localhost:12900"
+
+// Enable registration with the Graylog server. (enabled by default)
+//enable-registration = true
+
+message-buffer-size = 128
+
+// The id used to identify this collector. Can be either a string which is used as id,
+// or the location of a file if prefixed with "file:". If the file does not exist,
+// an id will be generated and written to that file. If it exists, it is expected
+// to contain a single string without spaces which will be used for the id.
+// Defaults to "file:config/collector-id" if not specified.
+collector-id = "file:config/collector-id"
+
+metrics {
+  enable-logging = false
+  log-duration = "60s"
+}
+
+inputs {
+  local-syslog {
+    type = "file"
+    path = "/var/log/syslog"
+    charset = "utf-8"
+    content-splitter = "newline"
+  }
+  win-application {
+    type = "windows-eventlog"
+    source-name = "Application"
+    poll-interval = 1s
+  }
+  apache-access {
+    type = "file"
+    path = "/var/log/apache2/access.log"
+  }
+  test-log {
+    type = "file"
+    charset = "windows-1252"
+    path = "logs/file.log"
+  }
+}
+
+outputs {
+  gelf-tcp {
+    type = "gelf"
+    protocol = "tcp"
+    host = "127.0.0.1"
+    port = 12201
+    client-tls = false
+    client-tls-cert-chain-file = "/path/to/cert-chain.pem"
+    client-tls-verify-cert = true
+    client-queue-size = 512
+    client-connect-timeout = 5000
+    client-reconnect-delay = 1000
+    client-tcp-no-delay = true
+    client-send-buffer-size = 32768
+  }
+  console {
+    type = "stdout"
+  }
+}

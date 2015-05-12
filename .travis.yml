@@ -15,7 +15,7 @@ deploy:
   skip_cleanup: true
   local-dir: target/assembly
   on:
-    repo: Graylog2/agent
+    repo: Graylog2/collector
     jdk: oraclejdk7
     branch:
       - master

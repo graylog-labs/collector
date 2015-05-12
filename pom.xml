@@ -7,10 +7,10 @@
         <maven>3.0.1</maven>
     </prerequisites>
 
-    <groupId>com.graylog</groupId>
-    <artifactId>graylog-agent</artifactId>
+    <groupId>org.graylog</groupId>
+    <artifactId>graylog-collector</artifactId>
     <version>0.2.0-SNAPSHOT</version>
-    <description>The Graylog Agent</description>
+    <description>The Graylog Collector</description>
     <organization>
         <name>Graylog, Inc.</name>
         <url>https://www.graylog.com/</url>
@@ -25,9 +25,9 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git@github.com:Graylog2/agent.git</connection>
-        <developerConnection>scm:git:git@github.com:Graylog2/agent.git</developerConnection>
-        <url>https://github.com/Graylog2/agent</url>
+        <connection>scm:git:git@github.com:Graylog2/collector.git</connection>
+        <developerConnection>scm:git:git@github.com:Graylog2/collector.git</developerConnection>
+        <url>https://github.com/Graylog2/collector</url>
     </scm>
 
     <properties>
@@ -36,10 +36,10 @@
 
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
 
-        <agent.share-path>/usr/share/graylog-agent</agent.share-path>
-        <agent.script-config>${agent.share-path}/agent-script-config.sh</agent.script-config>
-        <agent.jar-path>${agent.share-path}/${project.artifactId}-${project.version}.jar</agent.jar-path>
-        <agent.jvm-opts>-Xms12m -Xmx64m</agent.jvm-opts>
+        <collector.share-path>/usr/share/graylog-collector</collector.share-path>
+        <collector.script-config>${collector.share-path}/collector-script-config.sh</collector.script-config>
+        <collector.jar-path>${collector.share-path}/${project.artifactId}-${project.version}.jar</collector.jar-path>
+        <collector.jvm-opts>-Xms12m -Xmx64m</collector.jvm-opts>
 
         <sigar.version>1.6.4</sigar.version>
         <jackson.version>2.5.3</jackson.version>
@@ -220,7 +220,7 @@
                 <version>2.5.3</version>
                 <configuration>
                     <descriptors>
-                        <descriptor>src/main/assembly/agent.xml</descriptor>
+                        <descriptor>src/main/assembly/collector.xml</descriptor>
                     </descriptors>
                     <appendAssemblyId>false</appendAssemblyId>
                     <outputDirectory>${project.build.directory}/assembly</outputDirectory>
@@ -254,7 +254,7 @@
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.graylog.agent.cli.Main</mainClass>
+                                    <mainClass>org.graylog.collector.cli.Main</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
