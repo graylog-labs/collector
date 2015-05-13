@@ -219,7 +219,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         // the reader service should detect the file modifcation event, create a chunkreader for it and eventually
         // a message should appear in the buffer
         // let's wait for that
-        final Message msg = buffer.getMessageQueue().poll(500, TimeUnit.MILLISECONDS);
+        final Message msg = buffer.getMessageQueue().poll(10, TimeUnit.SECONDS);
         assertNotNull("file reader should have created a message", msg);
         assertEquals("message content matches", "hellotest", msg.getMessage());
         assertEquals("no more messages have been added to the buffer", 0, buffer.getMessageQueue().size());
