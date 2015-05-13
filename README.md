@@ -32,7 +32,6 @@ inputs {
 outputs {
   gelf-tcp {
     type = "gelf"
-    protocol = "tcp"
     host = "127.0.0.1"
     port = 12201
     client-queue-size = 512
