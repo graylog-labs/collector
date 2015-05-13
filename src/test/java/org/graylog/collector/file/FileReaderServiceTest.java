@@ -24,7 +24,9 @@ import org.graylog.collector.MessageBuilder;
 import org.graylog.collector.file.naming.NumberSuffixStrategy;
 import org.graylog.collector.file.splitters.NewlineChunkSplitter;
 import org.graylog.collector.inputs.file.FileInput;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,12 +56,13 @@ import static org.mockito.Mockito.when;
 public class FileReaderServiceTest extends MultithreadedBaseTest {
     private static final Logger log = LoggerFactory.getLogger(FileReaderServiceTest.class);
 
-    private static final FileSystem fs = FileSystems.getDefault();
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
     public void testObserverCallbacks() throws IOException, InterruptedException {
-        Path path = fs.getPath("/tmp", "logfile.log");
-        File file = path.toFile();
+        final File file = temporaryFolder.newFile();
+        final Path path = file.toPath();
         // make sure the file doesn't exist prior to this test
         Files.deleteIfExists(path);
 
@@ -140,8 +143,8 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
 
     @Test
     public void fileCreatedAfterStartIsRead() throws IOException, InterruptedException {
-        Path path = fs.getPath("/tmp", "logfile.log");
-        File file = path.toFile();
+        final File file = temporaryFolder.newFile();
+        final Path path = file.toPath();
         // make sure the file doesn't exist prior to this test
         Files.deleteIfExists(path);
 
@@ -180,8 +183,8 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
 
     @Test
     public void fileCreatedAfterStartIsReadAfterPermissionsFixed() throws IOException, InterruptedException {
-        Path path = fs.getPath("/tmp", "logfile.log");
-        File file = path.toFile();
+        final File file = temporaryFolder.newFile();
+        final Path path = file.toPath();
         // make sure the file doesn't exist prior to this test
         Files.deleteIfExists(path);
 
