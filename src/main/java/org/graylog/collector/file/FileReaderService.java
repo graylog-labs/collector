@@ -134,6 +134,10 @@ public class FileReaderService extends AbstractService {
         chunkReaderFuture = scheduler.scheduleAtFixedRate(chunkReader, 0, 250, TimeUnit.MILLISECONDS);
     }
 
+    private boolean followingFile() {
+        return chunkReaderFuture != null;
+    }
+
     @Override
     protected void doStop() {
         fileObserver.stopAsync();
@@ -160,7 +164,7 @@ public class FileReaderService extends AbstractService {
             if (path.equals(monitoredFile)) {
                 // a file with the same name as the one we should be monitoring has been created, start reading it
                 // TODO if there is a chunkreader already, check the fileKey of the underlying file
-                if (chunkReaderFuture != null) {
+                if (followingFile()) {
                     chunkReaderFuture.cancel(false);
                     chunkReaderFuture = null;
                     chunkReader = null;
@@ -190,7 +194,16 @@ public class FileReaderService extends AbstractService {
 
         @Override
         public void pathModified(Path path) {
-            // TODO do we need this?
+            if (!followingFile() && path.equals(monitoredFile) && monitoredFile.toFile().exists()) {
+                // Start following the modified file now. If we did not follow it before, there might have been an
+                // error regarding permissions or something similar.
+                try {
+                    log.trace("Start following modified file {}", monitoredFile);
+                    followFile();
+                } catch (IOException e) {
+                    log.error("Cannot read modified file " + monitoredFile, e);
+                }
+            }
         }
 
         @Override
