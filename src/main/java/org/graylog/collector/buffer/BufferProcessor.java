@@ -18,6 +18,7 @@ package org.graylog.collector.buffer;
 
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import org.graylog.collector.Message;
+import org.graylog.collector.utils.CollectorId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,12 +30,14 @@ public class BufferProcessor extends AbstractExecutionThreadService {
 
     private final Buffer buffer;
     private final Set<BufferConsumer> consumers;
+    private final CollectorId collectorId;
     private Thread thread;
 
     @Inject
-    public BufferProcessor(Buffer buffer, Set<BufferConsumer> consumers) {
+    public BufferProcessor(Buffer buffer, Set<BufferConsumer> consumers, CollectorId collectorId) {
         this.buffer = buffer;
         this.consumers = consumers;
+        this.collectorId = collectorId;
     }
 
     @Override
@@ -53,6 +56,10 @@ public class BufferProcessor extends AbstractExecutionThreadService {
             final Message message = buffer.remove();
 
             if (message != null) {
+                // It is a bit disgusting to mutate the message object here, but for now the simplest solution for
+                // adding common fields to it.
+                decorateMessage(message);
+
                 LOG.debug("Read message from buffer {}", message);
 
                 for (final BufferConsumer consumer : consumers) {
@@ -61,5 +68,10 @@ public class BufferProcessor extends AbstractExecutionThreadService {
                 }
             }
         }
+    }
+
+    private void decorateMessage(Message message) {
+        message.getFields().put("gl2_source_collector", collectorId.toString());
+        message.getFields().put("gl2_source_collector_input", message.getInput());
     }
 }
