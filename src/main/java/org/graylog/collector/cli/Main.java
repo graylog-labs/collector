@@ -26,8 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Main {
-    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+    static {
+        // Hijack java.util.logging, see https://logging.apache.org/log4j/log4j-2.2/log4j-jul/index.html
+        System.setProperty("java.util.logging.manager", org.apache.logging.log4j.jul.LogManager.class.getCanonicalName());
+    }
 
+    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
     private static CollectorCommand command = null;
 
     public static void main(String[] args) {
