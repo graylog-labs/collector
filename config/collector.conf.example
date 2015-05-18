@@ -1,6 +1,6 @@
 // Graylog Collector example configuration.
 
-// Url to Graylog server this collector registers at
+// URL to REST API of Graylog server this collector registers at
 server-url = "http://localhost:12900"
 
 // Enable registration with the Graylog server. (enabled by default)
