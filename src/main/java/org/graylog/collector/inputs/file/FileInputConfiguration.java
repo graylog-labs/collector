@@ -156,6 +156,8 @@ public class FileInputConfiguration extends InputConfiguration {
                 if (!isNullOrEmpty(contentSplitterPattern)) {
                     put("content-splitter-pattern", getContentSplitterPattern());
                 }
+                put("reader-buffer-size", String.valueOf(getReaderBufferSize()));
+                put("reader-interval", String.valueOf(getReaderInterval()));
             }
         });
     }
