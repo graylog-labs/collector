@@ -50,6 +50,8 @@ public class FileReaderService extends AbstractService {
     private final ContentSplitter contentSplitter;
     private final Buffer buffer;
     private final Charset charset;
+    private final int readerBufferSize;
+    private final long readerInterval;
     private FileObserver fileObserver;
     private ChunkReader chunkReader;
     private ArrayBlockingQueue<FileChunk> chunkQueue;
@@ -67,7 +69,9 @@ public class FileReaderService extends AbstractService {
                              FileInput input,
                              MessageBuilder messageBuilder,
                              ContentSplitter contentSplitter,
-                             Buffer buffer) {
+                             Buffer buffer,
+                             int readerBufferSize,
+                             long readerInterval) {
         // TODO needs to be an absolute path because otherwise the FileObserver does weird things. Investigate what's wrong with it.
         this.monitoredFile = monitoredFile.toAbsolutePath();
         this.namingStrategy = namingStrategy;
@@ -78,6 +82,8 @@ public class FileReaderService extends AbstractService {
         this.contentSplitter = contentSplitter;
         this.buffer = buffer;
         this.charset = charset;
+        this.readerBufferSize = readerBufferSize;
+        this.readerInterval = readerInterval;
         scheduler = Executors.newSingleThreadScheduledExecutor(
                 new ThreadFactoryBuilder()
                         .setDaemon(false)
@@ -127,11 +133,11 @@ public class FileReaderService extends AbstractService {
                 monitoredFile,
                 fileChannel,
                 chunkQueue,
-                1024,
+                readerBufferSize,
                 followMode,
                 initialReadPosition);
 
-        chunkReaderFuture = scheduler.scheduleAtFixedRate(chunkReader, 0, 250, TimeUnit.MILLISECONDS);
+        chunkReaderFuture = scheduler.scheduleAtFixedRate(chunkReader, 0, readerInterval, TimeUnit.MILLISECONDS);
     }
 
     private boolean followingFile() {

@@ -78,7 +78,9 @@ public class FileInput extends InputService {
                 this,
                 messageBuilder,
                 configuration.createContentSplitter(),
-                buffer
+                buffer,
+                configuration.getReaderBufferSize(),
+                configuration.getReaderInterval()
         );
 
         readerService.startAsync();

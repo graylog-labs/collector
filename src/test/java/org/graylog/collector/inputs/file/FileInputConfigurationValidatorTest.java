@@ -25,6 +25,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -72,6 +73,50 @@ public class FileInputConfigurationValidatorTest {
         assertEquals("Invalid charset should show the correct message",
                 "Invalid character set value: \"__foo\"",
                 validateCharset("__foo").iterator().next().getMessage());
+    }
+
+    @Test
+    public void testReaderBufferSize() throws Exception {
+        final Config config = mock(Config.class);
+
+        when(config.hasPath("path")).thenReturn(true);
+        when(config.getString("path")).thenReturn("target/foo.txt");
+
+        when(config.hasPath("reader-buffer-size")).thenReturn(true);
+        when(config.getInt("reader-buffer-size")).thenReturn(1024);
+
+        assertEquals(0, validateConfig(config).size());
+
+        when(config.getInt("reader-buffer-size")).thenReturn(0);
+
+        assertEquals("Invalid buffer size should throw an error", 1, validateConfig(config).size());
+        assertEquals("Too small reader buffer should show correct error message",
+                "Reader buffer size too small: \"0\"",
+                validateConfig(config).iterator().next().getMessage());
+    }
+
+    @Test
+    public void testReaderInterval() throws Exception {
+        final Config config = mock(Config.class);
+
+        when(config.hasPath("path")).thenReturn(true);
+        when(config.getString("path")).thenReturn("target/foo.txt");
+
+        when(config.hasPath("reader-interval")).thenReturn(true);
+        when(config.getDuration("reader-interval", TimeUnit.MILLISECONDS)).thenReturn(250L);
+
+        assertEquals(0, validateConfig(config).size());
+
+        when(config.getDuration("reader-interval", TimeUnit.MILLISECONDS)).thenReturn(0L);
+
+        assertEquals("Invalid interval should throw an error", 1, validateConfig(config).size());
+        assertEquals("Too small reader interval should show correct error message",
+                "Reader interval too small: \"0\"",
+                validateConfig(config).iterator().next().getMessage());
+    }
+
+    private Set<ConstraintViolation<FileInputConfiguration>> validateConfig(Config config) {
+        return validator.validate(new FileInputConfiguration("id", config, null));
     }
 
     private Set<ConstraintViolation<FileInputConfiguration>> validate(String contentSplitter, String contentSplitterPattern) {

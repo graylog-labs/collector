@@ -34,8 +34,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -81,7 +79,9 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
                 mockInput,
                 null,
                 new NewlineChunkSplitter(),
-                buffer);
+                buffer,
+                1024,
+                250L);
 
         final FileObserver.Listener origChangeListener = readerService.getChangeListener();
         final FileObserver.Listener listener = new FileObserver.Listener() {
@@ -161,7 +161,9 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
                 mockInput,
                 messageBuilder,
                 new NewlineChunkSplitter(),
-                buffer);
+                buffer,
+                1024,
+                250L);
 
         readerService.startAsync();
         readerService.awaitRunning();
@@ -201,7 +203,9 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
                 mockInput,
                 messageBuilder,
                 new NewlineChunkSplitter(),
-                buffer);
+                buffer,
+                1024,
+                250L);
 
         readerService.startAsync();
         readerService.awaitRunning();

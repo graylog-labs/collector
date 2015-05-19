@@ -33,6 +33,7 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
@@ -59,6 +60,10 @@ public class FileInputConfiguration extends InputConfiguration {
     @NotNull
     private final String charsetString;
 
+    private final int readerBufferSize;
+    private final long readerInterval;
+
+
     @Inject
     public FileInputConfiguration(@Assisted String id,
                                   @Assisted Config config,
@@ -84,6 +89,16 @@ public class FileInputConfiguration extends InputConfiguration {
             this.charsetString = config.getString("charset");
         } else {
             this.charsetString = "UTF-8";
+        }
+        if (config.hasPath("reader-buffer-size")) {
+            this.readerBufferSize = config.getInt("reader-buffer-size");
+        } else {
+            this.readerBufferSize = 1024;
+        }
+        if (config.hasPath("reader-interval")) {
+            this.readerInterval = config.getDuration("reader-interval", TimeUnit.MILLISECONDS);
+        } else {
+            this.readerInterval = 250L;
         }
     }
 
@@ -121,6 +136,14 @@ public class FileInputConfiguration extends InputConfiguration {
 
     public Charset getCharset() {
         return Charset.forName(charsetString);
+    }
+
+    public int getReaderBufferSize() {
+        return readerBufferSize;
+    }
+
+    public long getReaderInterval() {
+        return readerInterval;
     }
 
     @Override

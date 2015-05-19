@@ -43,6 +43,15 @@ public class FileInputConfigurationValidator implements ConstraintValidator<Vali
             return false;
         }
 
+        if (config.getReaderBufferSize() < 1) {
+            setMessageTemplate(context, "{org.graylog.collector.inputs.file.ValidFileInputConfiguration.readerBufferSizeTooSmall.message}", String.valueOf(config.getReaderBufferSize()));
+            return false;
+        }
+        if (config.getReaderInterval() < 1) {
+            setMessageTemplate(context, "{org.graylog.collector.inputs.file.ValidFileInputConfiguration.readerIntervalTooSmall.message}", String.valueOf(config.getReaderInterval()));
+            return false;
+        }
+
         switch (config.getContentSplitter()) {
             case "PATTERN":
                 if (config.getContentSplitterPattern() != null && !config.getContentSplitterPattern().isEmpty()) {
