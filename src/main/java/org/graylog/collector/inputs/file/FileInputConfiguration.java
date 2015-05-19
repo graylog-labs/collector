@@ -93,12 +93,12 @@ public class FileInputConfiguration extends InputConfiguration {
         if (config.hasPath("reader-buffer-size")) {
             this.readerBufferSize = config.getInt("reader-buffer-size");
         } else {
-            this.readerBufferSize = 1024;
+            this.readerBufferSize = 102400;
         }
         if (config.hasPath("reader-interval")) {
             this.readerInterval = config.getDuration("reader-interval", TimeUnit.MILLISECONDS);
         } else {
-            this.readerInterval = 250L;
+            this.readerInterval = 100L;
         }
     }
 
