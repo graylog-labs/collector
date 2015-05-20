@@ -1,6 +1,10 @@
 Graylog Collector ChangeLog
 ===========================
 
+## v0.2.1 (2015-05-20)
+
+* Fixed problem with release infrastructure.
+
 ## v0.2.0 (2015-05-20)
 
 * Support for reading Windows eventlog.
