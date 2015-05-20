@@ -94,17 +94,21 @@ public class NewlineChunkSplitterTest {
     public void testEncodings() throws Exception {
         final NewlineChunkSplitter splitter = new NewlineChunkSplitter();
 
-        final String logLines = "Hällo Wörld\nBüe\n";
+        // "Hällo Wörld\nBüe\n" in ISO-8859-1
+        final byte[] bytes = {
+                0x48, (byte) 0xe4, 0x6c, 0x6c, 0x6f, 0x20, 0x57, (byte) 0xf6, 0x72, 0x6c, 0x64, 0x0a,
+                0x42, (byte) 0xfc, 0x65, 0x0a
+        };
 
         // With correct encoding
-        final ByteBuf isoBuffer = Unpooled.copiedBuffer(logLines, Charsets.ISO_8859_1);
+        final ByteBuf isoBuffer = Unpooled.copiedBuffer(bytes);
         final Iterator<String> isoIterator = splitter.split(isoBuffer, ISO_8859_1).iterator();
 
         assertEquals("Hällo Wörld", isoIterator.next());
         assertEquals("Büe", isoIterator.next());
 
         // With wrong encoding
-        final ByteBuf isoBuffer2 = Unpooled.copiedBuffer(logLines, Charsets.ISO_8859_1);
+        final ByteBuf isoBuffer2 = Unpooled.copiedBuffer(bytes);
         final Iterator<String> wrongIterator = splitter.split(isoBuffer2, UTF_8).iterator();
 
         assertNotEquals("Hällo Wörld", wrongIterator.next());
