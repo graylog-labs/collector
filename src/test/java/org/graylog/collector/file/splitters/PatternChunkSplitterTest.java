@@ -29,7 +29,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 public class PatternChunkSplitterTest {
-
     @Test
     public void successfulSplit() {
         final PatternChunkSplitter splitter = new PatternChunkSplitter("^(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)");
@@ -62,25 +61,29 @@ public class PatternChunkSplitterTest {
         }
 
         assertEquals("the last chunk should have triggered a message (no follow mode active)", 3, messageNum);
-
-
     }
 
     @Test
     public void testEncodings() throws Exception {
         final PatternChunkSplitter splitter = new PatternChunkSplitter("^(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)");
 
-        String logLines = "Feb 20 17:05:18 Hällö Wörld\nFeb 20 17:05:18 Büe\n";
+        // "Feb 20 17:05:18 Hällö Wörld\nFeb 20 17:05:18 Büe\n" in ISO-8859-1 encoding
+        final byte[] bytes = new byte[]{
+                0x46, 0x65, 0x62, 0x20, 0x32, 0x30, 0x20, 0x31, 0x37, 0x3a, 0x30, 0x35, 0x3a, 0x31, 0x38, 0x20,
+                0x48, (byte) 0xe4, 0x6c, 0x6c, (byte) 0xf6, 0x20, 0x57, (byte) 0xf6, 0x72, 0x6c, 0x64, 0x0a,
+                0x46, 0x65, 0x62, 0x20, 0x32, 0x30, 0x20, 0x31, 0x37, 0x3a, 0x30, 0x35, 0x3a, 0x31, 0x38, 0x20,
+                0x42, (byte) 0xfc, 0x65, 0x0a
+        };
 
         // With correct encoding
-        final ByteBuf buffer = Unpooled.copiedBuffer(logLines, ISO_8859_1);
+        final ByteBuf buffer = Unpooled.copiedBuffer(bytes);
         final Iterator<String> iterator = splitter.splitRemaining(buffer, ISO_8859_1).iterator();
 
         assertEquals("Feb 20 17:05:18 Hällö Wörld\n", iterator.next());
         assertEquals("Feb 20 17:05:18 Büe\n", iterator.next());
 
         // With wrong encoding
-        final ByteBuf buffer2 = Unpooled.copiedBuffer(logLines, ISO_8859_1);
+        final ByteBuf buffer2 = Unpooled.copiedBuffer(bytes);
         final Iterator<String> iterator2 = splitter.splitRemaining(buffer2, UTF_8).iterator();
 
         assertNotEquals("Feb 20 17:05:18 Hällö Wörld\n", iterator2.next());

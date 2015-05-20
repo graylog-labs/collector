@@ -98,7 +98,7 @@ public class PatternChunkSplitter extends ContentSplitter {
                     }
 
                     private String asUtf8String(String string) {
-                        return new String(string.getBytes(Charsets.UTF_8));
+                        return new String(string.getBytes(Charsets.UTF_8), Charsets.UTF_8);
                     }
                 };
             }
