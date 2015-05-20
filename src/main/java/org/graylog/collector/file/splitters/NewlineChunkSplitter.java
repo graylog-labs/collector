@@ -53,7 +53,7 @@ public class NewlineChunkSplitter extends ContentSplitter {
                             if (readByte == '\r') {
                                 buffer.readByte(); // the \n byte if previous was \r
                             }
-                            return new String(fullLine.toString(charset).getBytes(Charsets.UTF_8));
+                            return new String(fullLine.toString(charset).getBytes(Charsets.UTF_8), Charsets.UTF_8);
                         } finally {
                             buffer.discardReadBytes();
                         }
