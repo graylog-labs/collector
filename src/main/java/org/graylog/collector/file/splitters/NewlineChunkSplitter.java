@@ -16,7 +16,6 @@
  */
 package org.graylog.collector.file.splitters;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.AbstractIterator;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufProcessor;
@@ -53,7 +52,7 @@ public class NewlineChunkSplitter extends ContentSplitter {
                             if (readByte == '\r') {
                                 buffer.readByte(); // the \n byte if previous was \r
                             }
-                            return new String(fullLine.toString(charset).getBytes(Charsets.UTF_8), Charsets.UTF_8);
+                            return fullLine.toString(charset);
                         } finally {
                             buffer.discardReadBytes();
                         }

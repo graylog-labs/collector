@@ -16,7 +16,6 @@
  */
 package org.graylog.collector.file.splitters;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.AbstractIterator;
 import io.netty.buffer.ByteBuf;
 
@@ -74,7 +73,7 @@ public class PatternChunkSplitter extends ContentSplitter {
                                 final String substring = inputAsString.substring(positionInString, firstByte);
                                 positionInString = firstByte;
                                 buffer.skipBytes(substring.getBytes(charset).length); // TODO performance
-                                return asUtf8String(substring);
+                                return substring;
                             } else {
                                 if (includeRemainingData) {
                                     return getRemainingContent();
@@ -94,11 +93,7 @@ public class PatternChunkSplitter extends ContentSplitter {
 
                     private String getRemainingContent() {
                         final ByteBuf channelBuffer = buffer.readBytes(buffer.readableBytes());
-                        return asUtf8String(channelBuffer.toString(charset));
-                    }
-
-                    private String asUtf8String(String string) {
-                        return new String(string.getBytes(Charsets.UTF_8), Charsets.UTF_8);
+                        return channelBuffer.toString(charset);
                     }
                 };
             }
