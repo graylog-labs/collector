@@ -1,6 +1,6 @@
 #!/bin/bash
 
-JAVA_DEFAULT_OPTS="${collector.jvm-opts}"
+JAVA_DEFAULT_OPTS="${collector.jvm-opts} -Djava.library.path=${collector.share-path}/lib/sigar"
 COLLECTOR_DEFAULT_JAR="${collector.jar-path}"
 
 # For Debian/Ubuntu based systems.

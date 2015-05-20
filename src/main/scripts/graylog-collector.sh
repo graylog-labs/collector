@@ -4,7 +4,7 @@ COLLECTOR_BIN=$(readlink -f $0)
 COLLECTOR_ROOT="$(dirname $(dirname $COLLECTOR_BIN))"
 COLLECTOR_DEFAULT_JAR="$COLLECTOR_ROOT/graylog-collector.jar"
 
-JAVA_DEFAULT_OPTS="${collector.jvm-opts}"
+JAVA_DEFAULT_OPTS="${collector.jvm-opts} -Djava.library.path=$COLLECTOR_ROOT/lib/sigar"
 
 if [ -f "${collector.script-config}" ]; then
     source "${collector.script-config}"
