@@ -27,6 +27,12 @@
             <outputDirectory>/config/</outputDirectory>
         </file>
         <file>
+            <source>${project.build.directory}/graylog-collector-script-config.sh</source>
+            <destName>graylog-collector-script-config.sh</destName>
+            <outputDirectory>/bin/</outputDirectory>
+            <fileMode>0644</fileMode>
+        </file>
+        <file>
             <source>${project.build.directory}/graylog-collector.sh</source>
             <destName>graylog-collector</destName>
             <outputDirectory>/bin/</outputDirectory>

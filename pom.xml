@@ -37,8 +37,8 @@
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
 
         <collector.share-path>/usr/share/graylog-collector</collector.share-path>
-        <collector.script-config>${collector.share-path}/collector-script-config.sh</collector.script-config>
-        <collector.jar-path>${collector.share-path}/${project.artifactId}-${project.version}.jar</collector.jar-path>
+        <collector.script-config>${collector.share-path}/graylog-collector-script-config.sh</collector.script-config>
+        <collector.jar-path>${collector.share-path}/${project.artifactId}.jar</collector.jar-path>
         <collector.jvm-opts>-Xms12m -Xmx64m</collector.jvm-opts>
 
         <sigar.version>1.6.4</sigar.version>
