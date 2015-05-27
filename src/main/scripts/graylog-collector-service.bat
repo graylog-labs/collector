@@ -46,8 +46,8 @@ ECHO Usage: %~nx0 install^|uninstall^|manage^|start^|stop SERVICE_NAME
 ECHO.
 ECHO Example:
 ECHO.
-ECHO * Install Collector as service with service name "GA"
-ECHO     graylog-collector-service.bat install GA
+ECHO * Install Collector as service with service name "GC"
+ECHO     graylog-collector-service.bat install GC
 GOTO:EOF
 
 :actionInstallCheck
