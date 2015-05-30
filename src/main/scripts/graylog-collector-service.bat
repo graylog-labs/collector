@@ -1,4 +1,10 @@
 :: Graylog Collector service management for Windows.
+::
+:: ATTENTION
+::
+:: Please be REALLY careful when changing this script to make sure it runs
+:: on different Windows versions. Especially quoting seems to be a problem.
+:: See the history of this file for previous fixes.
 
 @ECHO OFF
 
@@ -31,7 +37,7 @@ FOR %%D in ("%COLLECTOR_BIN_DIR%..") DO SET COLLECTOR_ROOT=%%~dpfD
 IF errorlevel 1 (SET ARCH=x86) ELSE (SET ARCH=x64)
 
 :: Use the correct executable based on the architecture.
-SET PROCRUN="%COLLECTOR_BIN_DIR%\windows\graylog-collector-service-%ARCH%.exe"
+SET PROCRUN=%COLLECTOR_BIN_DIR%\windows\graylog-collector-service-%ARCH%.exe
 
 :: Dispatch the supported commands, show usage otherwise.
 IF /i %ACTION% == install GOTO actionInstallCheck
@@ -89,7 +95,9 @@ SET COLLECTOR_PID_FILE="%SERVICE_NAME%.pid"
 SET COLLECTOR_LOG_DIR="%COLLECTOR_ROOT%\logs"
 SET COLLECTOR_LOG_OPTIONS=--LogPath "%COLLECTOR_LOG_DIR%" --LogPrefix "graylog-collector" --StdError auto --StdOutput auto
 
-"%PROCRUN%" //IS//%SERVICE_NAME% --Classpath "%COLLECTOR_JAR%" --Jvm "%JVM_DLL%" --JvmMs %COLLECTOR_JVM_MS% --JvmMx %COLLECTOR_JVM_MX% --JvmOptions %COLLECTOR_JVM_OPTIONS: =#% --StartPath "%COLLECTOR_ROOT%" --Startup %COLLECTOR_STARTUP% --StartMode %COLLECTOR_MODE% --StartClass %COLLECTOR_CLASS% --StartMethod %COLLECTOR_START_METHOD% --StartParams %COLLECTOR_START_PARAMS% --StopMode %COLLECTOR_MODE% --StopClass %COLLECTOR_CLASS% --StopMethod %COLLECTOR_STOP_METHOD% --StopTimeout %COLLECTOR_STOP_TIMEOUT% --PidFile "%COLLECTOR_PID_FILE%" --DisplayName "Graylog Collector (%SERVICE_NAME%)" --Description "Graylog Collector %COLLECTOR_VERSION% service. See http://www.graylog.org/ for details." %COLLECTOR_LOG_OPTIONS%
+SET COLLECTOR_JVM_OPTIONS=%COLLECTOR_JVM_OPTIONS: =;%
+
+"%PROCRUN%" //IS//%SERVICE_NAME% --Classpath "%COLLECTOR_JAR%" --Jvm "%JVM_DLL%" --JvmMs %COLLECTOR_JVM_MS% --JvmMx %COLLECTOR_JVM_MX% --JvmOptions %COLLECTOR_JVM_OPTIONS% --StartPath "%COLLECTOR_ROOT%" --Startup %COLLECTOR_STARTUP% --StartMode %COLLECTOR_MODE% --StartClass %COLLECTOR_CLASS% --StartMethod %COLLECTOR_START_METHOD% --StartParams %COLLECTOR_START_PARAMS% --StopMode %COLLECTOR_MODE% --StopClass %COLLECTOR_CLASS% --StopMethod %COLLECTOR_STOP_METHOD% --StopTimeout %COLLECTOR_STOP_TIMEOUT% --PidFile "%COLLECTOR_PID_FILE%" --DisplayName "Graylog Collector (%SERVICE_NAME%)" --Description "Graylog Collector %COLLECTOR_VERSION% service. See http://www.graylog.org/ for details." %COLLECTOR_LOG_OPTIONS%
 
 IF NOT errorlevel 1 GOTO actionInstallSuccess
 ECHO ERROR: Failed to install service: %SERVICE_NAME%
@@ -140,3 +148,5 @@ GOTO:EOF
 :actionStopSuccess
 ECHO Service '%SERVICE_NAME%' has been stopped
 GOTO:EOF
+
+ENDLOCAL
