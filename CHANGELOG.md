@@ -1,6 +1,10 @@
 Graylog Collector ChangeLog
 ===========================
 
+## v0.2.2 (2015-06-02)
+
+* Improve Windows batch script compatibility. (#15)
+
 ## v0.2.1 (2015-05-20)
 
 * Fixed problem with release infrastructure.
