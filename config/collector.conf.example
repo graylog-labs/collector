@@ -15,11 +15,6 @@ message-buffer-size = 128
 // Defaults to "file:config/collector-id" if not specified.
 collector-id = "file:config/collector-id"
 
-metrics {
-  enable-logging = false
-  log-duration = "60s"
-}
-
 inputs {
   local-syslog {
     type = "file"
