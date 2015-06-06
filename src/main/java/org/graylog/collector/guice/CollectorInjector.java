@@ -19,10 +19,11 @@ package org.graylog.collector.guice;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.Stage;
 
 public class CollectorInjector {
     public static Injector createInjector(Module... modules) {
-        final Injector injector = Guice.createInjector(new CollectorModule() {
+        final Injector injector = Guice.createInjector(Stage.PRODUCTION, new CollectorModule() {
             @Override
             protected void configure() {
                 binder().requireExplicitBindings();
