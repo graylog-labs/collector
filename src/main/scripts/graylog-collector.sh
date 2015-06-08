@@ -1,6 +1,18 @@
 #!/bin/bash
 
-COLLECTOR_BIN=$(readlink -f $0)
+# resolve links - $0 may be a softlink
+COLLECTOR_BIN="$0"
+
+while [ -h "$COLLECTOR_BIN" ]; do
+    ls=$(ls -ld "$COLLECTOR_BIN")
+    link=$(expr "$ls" : '.*-> \(.*\)$')
+    if expr "$link" : '/.*' > /dev/null; then
+        COLLECTOR_BIN="$link"
+    else
+        COLLECTOR_BIN=$(dirname "$COLLECTOR_BIN")/"$link"
+    fi
+done
+
 COLLECTOR_ROOT="$(dirname $(dirname $COLLECTOR_BIN))"
 COLLECTOR_DEFAULT_JAR="$COLLECTOR_ROOT/graylog-collector.jar"
 
