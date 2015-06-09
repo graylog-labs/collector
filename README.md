@@ -10,6 +10,11 @@ This is the Graylog Collector.
 * [v0.2.2 TGZ](https://packages.graylog2.org/releases/graylog-collector/graylog-collector-0.2.2.tgz)
 * [v0.2.2 ZIP](https://packages.graylog2.org/releases/graylog-collector/graylog-collector-0.2.2.zip)
 
+## Documentation
+
+The latest documentation for the Collector can be found on
+[docs.graylog.org](http://docs.graylog.org/en/latest/pages/collector.html).
+
 ## Usage
 
 
