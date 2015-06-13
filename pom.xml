@@ -303,6 +303,11 @@
                         <include>**/src/main/java/**</include>
                         <include>**/src/test/java/**</include>
                     </includes>
+                    <excludes>
+                        <!-- Os has been included from https://github.com/aurbroszniowski/os-platform-finder / Apache License 2 -->
+                        <exclude>**/src/main/java/org/graylog/collector/utils/Os.java</exclude>
+                        <exclude>**/src/test/java/org/graylog/collector/utils/OsTest.java</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
