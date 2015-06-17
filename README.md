@@ -15,6 +15,10 @@ This is the Graylog Collector.
 The latest documentation for the Collector can be found on
 [docs.graylog.org](http://docs.graylog.org/en/latest/pages/collector.html).
 
+## Feature Requests
+
+Please use our [Product Ideas](https://www.graylog.org/product-ideas/) page to create feature requests.
+
 ## Usage
 
 

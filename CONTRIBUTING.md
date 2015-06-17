@@ -38,9 +38,7 @@ we ask you to follow these steps as good as possible:
 We are always happy about any feature request! Do not hesitate to create as
 many feature request issues as you want.
 
-1. Search the issues of the [graylog2-server](https://github.com/Graylog2/graylog2-server),
-   [graylog2-web-interface](https://github.com/Graylog2/graylog2-web-interface)
-   and [graylog-collector](https://github.com/Graylog2/collector) repositories for
-   opened or closed issues to avoid duplicating effort.
+1. Search the existing feature requests in our [Product Ideas](https://www.graylog.org/product-ideas/)
+   page to avoid creating duplicate ones.
 2. Explain exactly what feature you’d like to see and always include a use
    case for why you think it is useful.
