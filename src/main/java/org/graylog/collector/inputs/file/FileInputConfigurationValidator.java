@@ -17,15 +17,20 @@
 package org.graylog.collector.inputs.file;
 
 import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class FileInputConfigurationValidator implements ConstraintValidator<ValidFileInputConfiguration, FileInputConfiguration> {
+    private static final Logger LOG = LoggerFactory.getLogger(FileInputConfigurationValidator.class);
+
     @Override
     public void initialize(ValidFileInputConfiguration constraintAnnotation) {
 
@@ -33,6 +38,8 @@ public class FileInputConfigurationValidator implements ConstraintValidator<Vali
 
     @Override
     public boolean isValid(FileInputConfiguration config, ConstraintValidatorContext context) {
+        showWarnings(config);
+
         try {
             Charset.forName(config.getCharsetString());
         } catch (UnsupportedCharsetException e) {
@@ -67,6 +74,22 @@ public class FileInputConfigurationValidator implements ConstraintValidator<Vali
                 return false;
             default:
                 return true;
+        }
+    }
+
+    private void showWarnings(FileInputConfiguration config) {
+        final File file = config.getPath();
+
+        if (file == null) {
+            return;
+        }
+
+        if (!file.getParentFile().canRead()) {
+            LOG.warn("Configured directory {} does not exist or is not accessible.", file.getParent());
+        }
+
+        if (!file.canRead()) {
+            LOG.warn("Configured log file {} does not exist yet or is not accessible.", file.toString());
         }
     }
 
