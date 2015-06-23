@@ -80,11 +80,12 @@ GOTO:EOF
 
 :actionInstall
 SET COLLECTOR_VERSION=${project.version}
-SET COLLECTOR_JAR="%COLLECTOR_ROOT%\${project.artifactId}.jar"
+SET COLLECTOR_JAR=%COLLECTOR_ROOT%\${project.artifactId}.jar
 SET COLLECTOR_CLASS=org.graylog.collector.cli.Main
 SET COLLECTOR_JVM_MS=12m
 SET COLLECTOR_JVM_MX=64m
-SET COLLECTOR_JVM_OPTIONS=-Djava.library.path=%COLLECTOR_ROOT%\lib\sigar -Dfile.encoding=UTF-8 ${collector.jvm-opts}
+SET COLLECTOR_JVM_OPTIONS=-Dfile.encoding=UTF-8 ${collector.jvm-opts}
+SET COLLECTOR_CLASSPATH=%COLLECTOR_JAR%;%COLLECTOR_ROOT%\lib\sigar
 SET COLLECTOR_STOP_TIMEOUT=0
 SET COLLECTOR_STARTUP=auto
 SET COLLECTOR_MODE=jvm
@@ -92,12 +93,12 @@ SET COLLECTOR_START_METHOD=main
 SET COLLECTOR_START_PARAMS="run;-f;%COLLECTOR_ROOT%\config\collector.conf"
 SET COLLECTOR_STOP_METHOD=stop
 SET COLLECTOR_PID_FILE="%SERVICE_NAME%.pid"
-SET COLLECTOR_LOG_DIR="%COLLECTOR_ROOT%\logs"
+SET COLLECTOR_LOG_DIR=%COLLECTOR_ROOT%\logs
 SET COLLECTOR_LOG_OPTIONS=--LogPath "%COLLECTOR_LOG_DIR%" --LogPrefix "graylog-collector" --StdError auto --StdOutput auto
 
 SET COLLECTOR_JVM_OPTIONS=%COLLECTOR_JVM_OPTIONS: =;%
 
-"%PROCRUN%" //IS//%SERVICE_NAME% --Classpath "%COLLECTOR_JAR%" --Jvm "%JVM_DLL%" --JvmMs %COLLECTOR_JVM_MS% --JvmMx %COLLECTOR_JVM_MX% --JvmOptions %COLLECTOR_JVM_OPTIONS% --StartPath "%COLLECTOR_ROOT%" --Startup %COLLECTOR_STARTUP% --StartMode %COLLECTOR_MODE% --StartClass %COLLECTOR_CLASS% --StartMethod %COLLECTOR_START_METHOD% --StartParams %COLLECTOR_START_PARAMS% --StopMode %COLLECTOR_MODE% --StopClass %COLLECTOR_CLASS% --StopMethod %COLLECTOR_STOP_METHOD% --StopTimeout %COLLECTOR_STOP_TIMEOUT% --PidFile "%COLLECTOR_PID_FILE%" --DisplayName "Graylog Collector (%SERVICE_NAME%)" --Description "Graylog Collector %COLLECTOR_VERSION% service. See http://www.graylog.org/ for details." %COLLECTOR_LOG_OPTIONS%
+"%PROCRUN%" //IS//%SERVICE_NAME% --Classpath "%COLLECTOR_CLASSPATH%" --Jvm "%JVM_DLL%" --JvmMs %COLLECTOR_JVM_MS% --JvmMx %COLLECTOR_JVM_MX% --JvmOptions %COLLECTOR_JVM_OPTIONS% --StartPath "%COLLECTOR_ROOT%" --Startup %COLLECTOR_STARTUP% --StartMode %COLLECTOR_MODE% --StartClass %COLLECTOR_CLASS% --StartMethod %COLLECTOR_START_METHOD% --StartParams %COLLECTOR_START_PARAMS% --StopMode %COLLECTOR_MODE% --StopClass %COLLECTOR_CLASS% --StopMethod %COLLECTOR_STOP_METHOD% --StopTimeout %COLLECTOR_STOP_TIMEOUT% --PidFile "%COLLECTOR_PID_FILE%" --DisplayName "Graylog Collector (%SERVICE_NAME%)" --Description "Graylog Collector %COLLECTOR_VERSION% service. See http://www.graylog.org/ for details." %COLLECTOR_LOG_OPTIONS%
 
 IF NOT errorlevel 1 GOTO actionInstallSuccess
 ECHO ERROR: Failed to install service: %SERVICE_NAME%

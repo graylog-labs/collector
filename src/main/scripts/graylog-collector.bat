@@ -19,8 +19,8 @@ set COLLECTOR_BIN_DIR=%~dp0
 :: Get root directory of the Collector.
 FOR %%D in ("%COLLECTOR_BIN_DIR%..") DO SET COLLECTOR_ROOT=%%~dpfD
 
-SET COLLECTOR_JAR="%COLLECTOR_ROOT%\${project.artifactId}.jar"
-SET COLLECTOR_JVM_OPTIONS=-Djava.library.path=%COLLECTOR_ROOT%\lib\sigar -Dfile.encoding=UTF-8 ${collector.jvm-opts}
+SET COLLECTOR_JAR=%COLLECTOR_ROOT%\${project.artifactId}.jar
+SET COLLECTOR_JVM_OPTIONS=-Djava.library.path="%COLLECTOR_ROOT%\lib\sigar" -Dfile.encoding=UTF-8 ${collector.jvm-opts}
 
 "%JAVA_HOME%\bin\java" %COLLECTOR_JVM_OPTIONS% -jar "%COLLECTOR_JAR%" %*
 
