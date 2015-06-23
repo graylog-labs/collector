@@ -1,6 +1,11 @@
 Graylog Collector ChangeLog
 ===========================
 
+## v0.2.3 (2015-06-23)
+
+* Replace readlink usage with manually resolving symbolic links. (#20)
+* Do not stop the collector if the configured file does not exist. (#33)
+
 ## v0.2.2 (2015-06-02)
 
 * Improve Windows batch script compatibility. (#15)
