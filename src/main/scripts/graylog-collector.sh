@@ -16,7 +16,7 @@ done
 COLLECTOR_ROOT="$(dirname $(dirname $COLLECTOR_BIN))"
 COLLECTOR_DEFAULT_JAR="$COLLECTOR_ROOT/graylog-collector.jar"
 
-JAVA_DEFAULT_OPTS="${collector.jvm-opts} -Djava.library.path=$COLLECTOR_ROOT/lib/sigar"
+COLLECTOR_JAVA_DEFAULT_OPTS="${collector.jvm-opts} -Djava.library.path=$COLLECTOR_ROOT/lib/sigar"
 
 if [ -f "${collector.script-config}" ]; then
     . "${collector.script-config}"
@@ -25,7 +25,7 @@ fi
 COLLECTOR_JAR=${COLLECTOR_JAR:="$COLLECTOR_DEFAULT_JAR"}
 
 JAVA_CMD=${JAVA_CMD:=$(which java)}
-JAVA_OPTS="${JAVA_OPTS:="$JAVA_DEFAULT_OPTS"}"
+JAVA_OPTS="${JAVA_OPTS:="$COLLECTOR_JAVA_DEFAULT_OPTS"}"
 
 die() {
     echo $*
