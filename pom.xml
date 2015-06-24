@@ -9,7 +9,7 @@
 
     <groupId>org.graylog</groupId>
     <artifactId>graylog-collector</artifactId>
-    <version>0.2.4-SNAPSHOT</version>
+    <version>0.2.4</version>
     <description>The Graylog Collector</description>
     <organization>
         <name>Graylog, Inc.</name>

@@ -1,6 +1,11 @@
 Graylog Collector ChangeLog
 ===========================
 
+## v0.2.4 (2015-06-24)
+
+* Fix several quoting issues for Windows start/service scripts. (#28)
+* Rename some variables in Linux startup scripts.
+
 ## v0.2.3 (2015-06-23)
 
 * Replace readlink usage with manually resolving symbolic links. (#20)
