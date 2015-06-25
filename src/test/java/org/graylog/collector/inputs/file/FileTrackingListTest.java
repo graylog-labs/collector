@@ -81,4 +81,21 @@ public class FileTrackingListTest {
         assertTrue(trackedFiles.contains(Paths.get(file3)));
         assertFalse(trackedFiles.contains(Paths.get(file4)));
     }
+
+    @Test
+    public void testTrackingListWithGlobEdgeCases() throws Exception {
+        final String file1 = "/var/log/ups?art/graylog-collector.log";
+
+        final FileTrackingList list = new FileTrackingList("/var/log/ups\\?art/*.{log,gz}", new FileTrackingList.FileTreeWalker() {
+            @Override
+            public void walk(Path basePath, FileVisitor<Path> visitor) throws IOException {
+                visitor.visitFile(Paths.get(file1), attributes);
+            }
+        });
+
+        final Set<Path> trackedFiles = list.getTrackedFiles();
+
+        assertEquals(1, trackedFiles.size());
+        assertTrue(trackedFiles.contains(Paths.get(file1)));
+    }
 }
