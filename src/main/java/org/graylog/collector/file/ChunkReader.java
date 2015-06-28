@@ -161,4 +161,24 @@ public class ChunkReader implements Runnable {
             locked.set(false);
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ChunkReader that = (ChunkReader) o;
+
+        if (!fileInput.equals(that.fileInput)) return false;
+        return path.equals(that.path);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = fileInput.hashCode();
+        result = 31 * result + path.hashCode();
+        return result;
+    }
+
 }

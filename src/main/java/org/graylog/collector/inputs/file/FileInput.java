@@ -102,6 +102,22 @@ public class FileInput extends InputService {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        FileInput fileInput = (FileInput) o;
+
+        return configuration.equals(fileInput.configuration);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return configuration.hashCode();
+    }
+
+    @Override
     public String toString() {
         return ConfigurationUtils.toString(configuration, this);
     }
