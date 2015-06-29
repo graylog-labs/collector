@@ -17,7 +17,9 @@
 package org.graylog.collector.file;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import com.sun.nio.file.SensitivityWatchEventModifier;
 import org.graylog.collector.file.naming.FileNamingStrategy;
@@ -32,7 +34,8 @@ import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
@@ -44,7 +47,28 @@ public class FileObserver extends AbstractExecutionThreadService {
     private static final Logger log = LoggerFactory.getLogger(FileObserver.class);
 
     private final WatchService watcher;
-    private final Map<WatchKey, WatchEntry> keys;
+    private final ConcurrentMap<WatchKey, WatchPath> keys = Maps.newConcurrentMap();
+
+    private class WatchPath {
+        private final Path path;
+        private final Set<WatchEntry> entries = Sets.newConcurrentHashSet();
+
+        public WatchPath(Path path) {
+            this.path = path;
+        }
+
+        public Path getPath() {
+            return path;
+        }
+
+        public void addEntry(WatchEntry entry) {
+            entries.add(entry);
+        }
+
+        public Set<WatchEntry> getEntries() {
+            return ImmutableSet.copyOf(entries);
+        }
+    }
 
     private class WatchEntry {
         public Path path;
@@ -55,6 +79,22 @@ public class FileObserver extends AbstractExecutionThreadService {
             this.namingStrategy = namingStrategy;
             this.path = path;
             this.listener = listener;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            WatchEntry that = (WatchEntry) o;
+
+            return path.equals(that.path);
+
+        }
+
+        @Override
+        public int hashCode() {
+            return path.hashCode();
         }
     }
 
@@ -67,7 +107,6 @@ public class FileObserver extends AbstractExecutionThreadService {
             // shouldn't happen
         }
         watcher = tmp;
-        keys = Maps.newConcurrentMap();
     }
 
     public void observePath(Listener listener, Path path, FileNamingStrategy namingStrategy) throws IOException {
@@ -82,7 +121,8 @@ public class FileObserver extends AbstractExecutionThreadService {
         final WatchKey key = directory.register(watcher, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY},
                 SensitivityWatchEventModifier.HIGH);
         log.debug("Watching directory {} for file {}", directory, path);
-        keys.put(key, new WatchEntry(path, namingStrategy, listener));
+        keys.putIfAbsent(key, new WatchPath(directory));
+        keys.get(key).addEntry(new WatchEntry(path, namingStrategy, listener));
     }
 
     @Override
@@ -94,12 +134,13 @@ public class FileObserver extends AbstractExecutionThreadService {
             } catch (InterruptedException e) {
                 return;
             }
-            if (key == null) {
+            if (key == null || !key.isValid()) {
                 // nothing to do
                 continue;
             }
 
-            final WatchEntry watchEntry = keys.get(key);
+            final WatchPath watchPath = keys.get(key);
+            final Set<WatchEntry> watchEntries = watchPath.getEntries();
             for (WatchEvent<?> event : key.pollEvents()) {
                 if (event.kind() == OVERFLOW) {
                     log.error("Too many changes occurred when watching files, we lost updates.");
@@ -107,30 +148,37 @@ public class FileObserver extends AbstractExecutionThreadService {
                 }
                 @SuppressWarnings("unchecked")
                 final WatchEvent<Path> ev = (WatchEvent<Path>) event;
-                Path path = ev.context();
-                path = path.resolve(watchEntry.path);
-                log.debug("Event {} for path {} received", ev.kind(), path);
+                final Path path = watchPath.getPath().resolve(ev.context());
 
-                if (!watchEntry.namingStrategy.pathMatches(path)) {
-                    // this file path does not belong to the set of files we are interested in
-                    log.trace("Ignoring change [] to path []. Does not fit naming scheme.", ev.kind().name(), path.toString());
-                }
-                if (ev.kind() == ENTRY_CREATE) {
-                    watchEntry.listener.pathCreated(path);
-                }
-                if (ev.kind() == ENTRY_DELETE) {
-                    watchEntry.listener.pathRemoved(path);
-                }
-                if (ev.kind() == ENTRY_MODIFY) {
-                    watchEntry.listener.pathModified(path);
+                for (final WatchEntry watchEntry : watchEntries) {
+                    log.debug("Event {} for path {} received", ev.kind(), path);
+
+                    if (!watchEntry.namingStrategy.pathMatches(path)) {
+                        // this file path does not belong to the set of files we are interested in
+                        log.trace("Ignoring change {} to path {}. Does not fit naming scheme.", ev.kind().name(), path.toString());
+                        continue;
+                    }
+                    if (ev.kind() == ENTRY_CREATE) {
+                        watchEntry.listener.pathCreated(path);
+                    }
+                    if (ev.kind() == ENTRY_DELETE) {
+                        watchEntry.listener.pathRemoved(path);
+                    }
+                    if (ev.kind() == ENTRY_MODIFY) {
+                        watchEntry.listener.pathModified(path);
+                    }
                 }
             }
 
             final boolean valid = key.reset();
             if (!valid) {
-                watchEntry.listener.cannotObservePath(watchEntry.path);
+                for (WatchEntry watchEntry : watchEntries) {
+                    watchEntry.listener.cannotObservePath(watchEntry.path);
+                }
             }
         }
+
+        watcher.close();
     }
 
     public interface Listener {
