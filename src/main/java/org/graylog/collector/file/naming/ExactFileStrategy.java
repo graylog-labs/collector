@@ -16,21 +16,43 @@
  */
 package org.graylog.collector.file.naming;
 
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+
+import javax.annotation.Nullable;
 import java.nio.file.Path;
+import java.util.Set;
 
 public class ExactFileStrategy implements FileNamingStrategy {
 
-    private final Path basePath;
+    private final Iterable<Path> basePaths;
 
     public ExactFileStrategy(Path basePath) {
-        this.basePath = basePath.normalize();
+        this(ImmutableSet.of(basePath));
+    }
+
+    public ExactFileStrategy(Set<Path> basePaths) {
+        this.basePaths = Iterables.transform(basePaths, new Function<Path, Path>() {
+            @Nullable
+            @Override
+            public Path apply(Path path) {
+                return path.normalize().toAbsolutePath();
+            }
+        });
     }
 
     @Override
-    public boolean pathMatches(Path path) {
-        path = path.normalize();
-        path = basePath.getParent().resolve(path);
+    public boolean pathMatches(final Path path) {
+        return Iterables.any(basePaths, new Predicate<Path>() {
+            @Override
+            public boolean apply(@Nullable Path basePath) {
+                Path normalizedPath = path.normalize();
+                normalizedPath = basePath.getParent().resolve(normalizedPath);
 
-        return basePath.equals(path);
+                return basePath.equals(normalizedPath);
+            }
+        });
     }
 }
