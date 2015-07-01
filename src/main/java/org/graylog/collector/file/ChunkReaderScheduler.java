@@ -27,8 +27,8 @@ import java.io.IOException;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -43,8 +43,8 @@ public class ChunkReaderScheduler {
     private final boolean followMode;
     private final FileInput.InitialReadPosition initialReadPosition;
     private final ArrayBlockingQueue<FileChunk> chunkQueue;
-    private final Map<Path, ChunkReader> chunkReaders = Maps.newHashMap();
-    private final Map<Path, ScheduledFuture<?>> chunkReaderFutures = Maps.newHashMap();
+    private final ConcurrentMap<Path, ChunkReader> chunkReaders = Maps.newConcurrentMap();
+    private final ConcurrentMap<Path, ScheduledFuture<?>> chunkReaderFutures = Maps.newConcurrentMap();
     private final ScheduledExecutorService scheduler;
 
     public ChunkReaderScheduler(final Input input,
@@ -68,31 +68,37 @@ public class ChunkReaderScheduler {
                         .build());
     }
 
-    public synchronized boolean isFollowingFile(Path file) {
-        // TODO if there is a chunkreader already, check the fileKey of the underlying file
-        return chunkReaders.containsKey(file) && chunkReaderFutures.containsKey(file);
+    public boolean isFollowingFile(Path file) {
+        synchronized (this) {
+            // TODO if there is a chunkreader already, check the fileKey of the underlying file
+            return chunkReaders.containsKey(file) && chunkReaderFutures.containsKey(file);
+        }
     }
 
-    public synchronized void followFile(Path file) throws IOException {
+    public void followFile(Path file) throws IOException {
         final AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(file, StandardOpenOption.READ);
         final ChunkReader chunkReader = new ChunkReader(input, file, fileChannel, chunkQueue, readerBufferSize, followMode, initialReadPosition);
         final ScheduledFuture<?> chunkReaderFuture = scheduler.scheduleAtFixedRate(chunkReader, 0, readerInterval, TimeUnit.MILLISECONDS);
 
         log.debug("Following file {}", file);
 
-        chunkReaders.put(file, chunkReader);
-        chunkReaderFutures.put(file, chunkReaderFuture);
+        synchronized (this) {
+            chunkReaders.put(file, chunkReader);
+            chunkReaderFutures.put(file, chunkReaderFuture);
+        }
     }
 
-    public synchronized void cancelFile(Path file) {
-        final ScheduledFuture<?> future = chunkReaderFutures.remove(file);
+    public void cancelFile(Path file) {
+        synchronized (this) {
+            final ScheduledFuture<?> future = chunkReaderFutures.remove(file);
 
-        if (future != null) {
-            log.debug("Cancel file {}", file);
+            if (future != null) {
+                log.debug("Cancel file {}", file);
 
-            future.cancel(false);
+                future.cancel(false);
+            }
+
+            chunkReaders.remove(file);
         }
-
-        chunkReaders.remove(file);
     }
 }

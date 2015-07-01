@@ -21,7 +21,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 import java.nio.file.Path;
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Stores {@link ByteBuf} chunks for a path. It appends new buffers to existing ones.
@@ -29,7 +29,7 @@ import java.util.Map;
  * This class is thread-safe.
  */
 public class ChunkBufferStore {
-    private final Map<Path, ByteBuf> buffersPerFile = Maps.newHashMap();
+    private final ConcurrentMap<Path, ByteBuf> buffersPerFile = Maps.newConcurrentMap();
 
     public ChunkBufferStore() {
     }
@@ -40,7 +40,7 @@ public class ChunkBufferStore {
      * @param path the path
      * @return the buffer for the given path or null
      */
-    public synchronized ByteBuf get(final Path path) {
+    public ByteBuf get(final Path path) {
         return buffersPerFile.get(path);
     }
 
@@ -51,13 +51,15 @@ public class ChunkBufferStore {
      * @param path the path
      * @param chunk the buffer
      */
-    public synchronized void put(final Path path, final ByteBuf chunk) {
-        final ByteBuf buf = get(path);
+    public void put(final Path path, final ByteBuf chunk) {
+        synchronized (this) {
+            final ByteBuf buf = get(path);
 
-        if (buf == null) {
-            buffersPerFile.put(path, chunk);
-        } else {
-            buffersPerFile.put(path, Unpooled.wrappedBuffer(buf, chunk));
+            if (buf == null) {
+                buffersPerFile.put(path, chunk);
+            } else {
+                buffersPerFile.put(path, Unpooled.wrappedBuffer(buf, chunk));
+            }
         }
     }
 }
