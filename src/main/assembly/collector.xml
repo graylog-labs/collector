@@ -43,12 +43,14 @@
             <destName>graylog-collector.bat</destName>
             <outputDirectory>/bin/</outputDirectory>
             <fileMode>0755</fileMode>
+            <lineEnding>dos</lineEnding>
         </file>
         <file>
             <source>${project.build.directory}/graylog-collector-service.bat</source>
             <destName>graylog-collector-service.bat</destName>
             <outputDirectory>/bin/</outputDirectory>
             <fileMode>0755</fileMode>
+            <lineEnding>dos</lineEnding>
         </file>
         <file>
             <source>${project.build.directory}/${project.artifactId}-${project.version}.jar</source>
