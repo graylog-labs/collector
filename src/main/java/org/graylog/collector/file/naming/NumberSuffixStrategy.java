@@ -16,39 +16,61 @@
  */
 package org.graylog.collector.file.naming;
 
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+
+import javax.annotation.Nullable;
 import java.nio.file.Path;
+import java.util.Set;
 
 public class NumberSuffixStrategy implements FileNamingStrategy {
 
-    private final Path basePath;
+    private final Iterable<Path> basePaths;
 
     public NumberSuffixStrategy(Path basePath) {
-        this.basePath = basePath.normalize();
+        this(ImmutableSet.of(basePath));
+    }
+
+    public NumberSuffixStrategy(Set<Path> basePaths) {
+        this.basePaths = Iterables.transform(basePaths, new Function<Path, Path>() {
+            @Nullable
+            @Override
+            public Path apply(Path path) {
+                return path.normalize().toAbsolutePath();
+            }
+        });
     }
 
     @Override
-    public boolean pathMatches(Path path) {
-        path = path.normalize();
-        path = basePath.getParent().resolve(path);
-        // only allow files in the same directory
-        if (!basePath.getParent().equals(path.getParent())) {
-            return false;
-        }
-        final String filename = path.getFileName().toString();
-        final String baseFilename = this.basePath.getFileName().toString();
+    public boolean pathMatches(final Path path) {
+        return Iterables.any(basePaths, new Predicate<Path>() {
+            @Override
+            public boolean apply(@Nullable Path basePath) {
+                Path normalizedPath = path.normalize();
+                normalizedPath = basePath.getParent().resolve(normalizedPath);
+                // only allow files in the same directory
+                if (!basePath.getParent().equals(normalizedPath.getParent())) {
+                    return false;
+                }
+                final String filename = normalizedPath.getFileName().toString();
+                final String baseFilename = basePath.getFileName().toString();
 
-        // same files are a match
-        if (filename.equals(baseFilename)) {
-            return true;
-        }
+                // same files are a match
+                if (filename.equals(baseFilename)) {
+                    return true;
+                }
 
-        // do the files have a common beginning? if not, they aren't related.
-        if (!filename.startsWith(baseFilename)) {
-            return false;
-        }
+                // do the files have a common beginning? if not, they aren't related.
+                if (!filename.startsWith(baseFilename)) {
+                    return false;
+                }
 
-        // check for number suffix
-        final String onlySuffix = filename.substring(baseFilename.length());
-        return onlySuffix.matches("^\\.\\d+$");
+                // check for number suffix
+                final String onlySuffix = filename.substring(baseFilename.length());
+                return onlySuffix.matches("^\\.\\d+$");
+            }
+        });
     }
 }

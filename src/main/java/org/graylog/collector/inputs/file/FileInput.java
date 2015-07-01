@@ -16,11 +16,13 @@
  */
 package org.graylog.collector.inputs.file;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.assistedinject.Assisted;
 import org.graylog.collector.MessageBuilder;
 import org.graylog.collector.buffer.Buffer;
 import org.graylog.collector.config.ConfigurationUtils;
 import org.graylog.collector.file.ChunkReader;
+import org.graylog.collector.file.FileObserver;
 import org.graylog.collector.file.FileReaderService;
 import org.graylog.collector.file.naming.NumberSuffixStrategy;
 import org.graylog.collector.inputs.InputService;
@@ -67,12 +69,14 @@ public class FileInput extends InputService {
 
     @Override
     protected void run() throws Exception {
-        final Path path = configuration.getPath().toPath();
+        // TODO needs to be an absolute path because otherwise the FileObserver does weird things. Investigate what's wrong with it.
+        final Path path = configuration.getPath().toPath().toAbsolutePath();
         final MessageBuilder messageBuilder = new MessageBuilder().input(getId()).outputs(getOutputs()).source(Utils.getHostname());
+        final ImmutableSet<Path> paths = ImmutableSet.of(path);
         final FileReaderService readerService = new FileReaderService(
-                path,
+                paths,
                 configuration.getCharset(),
-                new NumberSuffixStrategy(path),
+                new NumberSuffixStrategy(paths),
                 true,
                 InitialReadPosition.END,
                 this,
@@ -80,7 +84,8 @@ public class FileInput extends InputService {
                 configuration.createContentSplitter(),
                 buffer,
                 configuration.getReaderBufferSize(),
-                configuration.getReaderInterval()
+                configuration.getReaderInterval(),
+                new FileObserver()
         );
 
         readerService.startAsync();
@@ -99,6 +104,22 @@ public class FileInput extends InputService {
     @Override
     public void setReaderFinished(ChunkReader chunkReader) {
         // TODO Check if needed and for what it was used.
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        FileInput fileInput = (FileInput) o;
+
+        return configuration.equals(fileInput.configuration);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return configuration.hashCode();
     }
 
     @Override

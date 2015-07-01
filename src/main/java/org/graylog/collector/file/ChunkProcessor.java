@@ -19,7 +19,6 @@ package org.graylog.collector.file;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import org.graylog.collector.Message;
 import org.graylog.collector.MessageBuilder;
 import org.graylog.collector.buffer.Buffer;
@@ -70,7 +69,7 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
         }
     }
 
-    private Map<Path, ByteBuf> buffersPerFile = Maps.newHashMap();
+    private ChunkBufferStore chunkBufferStore = new ChunkBufferStore();
     private Map<Path, ImmutablePair<String, Boolean>> pathConfig = Maps.newHashMap();
 
     public ChunkProcessor(Buffer buffer, MessageBuilder messageBuilder, BlockingQueue<FileChunk> chunkQueue, ContentSplitter splitter, final Charset charset) {
@@ -92,7 +91,7 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
         if (chunk.isFinalChunk()) {
             // we've reached the EOF and aren't in follow mode
             log.debug("[{}] Processing final chunk.", path);
-            final ByteBuf channelBuffer = buffersPerFile.get(path);
+            final ByteBuf channelBuffer = chunkBufferStore.get(path);
             final Iterable<String> messages = splitter.splitRemaining(channelBuffer, charset);
 
             createMessages(path, messages);
@@ -103,17 +102,9 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
         }
         log.debug("[{}] Processing {} bytes chunk (pos {})", new Object[]{path, chunk.getChunkBuffer().readableBytes(), chunk.getId()});
 
-        final ByteBuf byteBuf = buffersPerFile.get(path);
-        ByteBuf combinedBuffer;
-        if (byteBuf == null) {
-            combinedBuffer = chunk.getChunkBuffer();
-        } else {
-            combinedBuffer = Unpooled.wrappedBuffer(byteBuf, chunk.getChunkBuffer());
-        }
-        buffersPerFile.put(path, combinedBuffer);
-        Iterable<String> messages = splitter.split(combinedBuffer, charset, false);
+        chunkBufferStore.put(path, chunk.getChunkBuffer());
 
-        createMessages(path, messages);
+        createMessages(path, splitter.split(chunkBufferStore.get(path), charset, false));
     }
 
     private void createMessages(Path path, Iterable<String> messages) {

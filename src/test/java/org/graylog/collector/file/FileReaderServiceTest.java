@@ -17,6 +17,7 @@
 package org.graylog.collector.file;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Service;
 import org.graylog.collector.Message;
@@ -37,18 +38,19 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.HashSet;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class FileReaderServiceTest extends MultithreadedBaseTest {
@@ -58,81 +60,35 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
-    public void testObserverCallbacks() throws IOException, InterruptedException {
-        final File file = temporaryFolder.newFile();
-        final Path path = file.toPath();
-        // make sure the file doesn't exist prior to this test
-        Files.deleteIfExists(path);
+    public void testObserverCallbacks() throws Exception {
+        final Path path = temporaryFolder.newFile().toPath();
 
-        final CountDownLatch createLatch = new CountDownLatch(1);
-        final CountDownLatch deleteLatch = new CountDownLatch(1);
+        final FileObserver fileObserver = spy(new FileObserver());
+        final NumberSuffixStrategy namingStrategy = new NumberSuffixStrategy(path);
 
-        final FileInput mockInput = mockFileInput();
-
-        final CollectingBuffer buffer = new CollectingBuffer();
         final FileReaderService readerService = new FileReaderService(
-                path,
+                ImmutableSet.of(path),
                 Charsets.UTF_8,
-                new NumberSuffixStrategy(path),
+                namingStrategy,
                 true,
                 FileInput.InitialReadPosition.START,
-                mockInput,
+                mockFileInput(),
                 null,
                 new NewlineChunkSplitter(),
-                buffer,
+                new CollectingBuffer(),
                 1024,
-                250L);
-
-        final FileObserver.Listener origChangeListener = readerService.getChangeListener();
-        final FileObserver.Listener listener = new FileObserver.Listener() {
-            @Override
-            public void pathCreated(Path path) {
-                log.info("Path created {}", path);
-                origChangeListener.pathCreated(path);
-                createLatch.countDown();
-            }
-
-            @Override
-            public void pathRemoved(Path path) {
-                log.info("Path removed {}", path);
-                origChangeListener.pathRemoved(path);
-                deleteLatch.countDown();
-            }
-
-            @Override
-            public void pathModified(Path path) {
-                log.info("Path modified {}", path);
-                origChangeListener.pathModified(path);
-            }
-
-            @Override
-            public void cannotObservePath(Path path) {
-                log.info("Cannot observe {}", path);
-                origChangeListener.cannotObservePath(path);
-            }
-        };
-        readerService.setChangeListener(listener);
+                250L,
+                fileObserver);
 
         readerService.startAsync();
-        readerService.awaitRunning();
+        readerService.awaitRunning(1, TimeUnit.MINUTES);
 
         assertEquals("service should be running", Service.State.RUNNING, readerService.state());
 
-        final boolean newFile = file.createNewFile();
-        log.debug("Created new file {} with key {}", file.getPath(),
-                Files.readAttributes(path, BasicFileAttributes.class).fileKey());
-        assertTrue("Created monitored file", newFile);
-
-        // OS X is using a poll service here, the default poll frequency is 10s (we set it to 2, but that's platform specific)
-        final boolean awaitCreate = createLatch.await(10, TimeUnit.SECONDS);
-        assertTrue("Monitored creation change event must be delivered.", awaitCreate);
-
-        assertTrue("Must be able to remove log file", file.delete());
-        final boolean awaitRemove = deleteLatch.await(10, TimeUnit.SECONDS);
-        assertTrue("Monitored removal change event must be delivered.", awaitRemove);
+        verify(fileObserver).observePath(any(FileObserver.Listener.class), eq(path), eq(namingStrategy));
 
         readerService.stopAsync();
-        readerService.awaitTerminated();
+        readerService.awaitTerminated(1, TimeUnit.MINUTES);
     }
 
     private FileInput mockFileInput() {
@@ -153,7 +109,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         final CollectingBuffer buffer = new CollectingBuffer();
         final MessageBuilder messageBuilder = new MessageBuilder().input("input-id").outputs(new HashSet<String>()).source("test");
         final FileReaderService readerService = new FileReaderService(
-                path,
+                ImmutableSet.of(path),
                 Charsets.UTF_8,
                 new NumberSuffixStrategy(path),
                 true,
@@ -163,7 +119,8 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
                 new NewlineChunkSplitter(),
                 buffer,
                 1024,
-                250L);
+                250L,
+                new FileObserver());
 
         readerService.startAsync();
         readerService.awaitRunning();
@@ -195,7 +152,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         final CollectingBuffer buffer = new CollectingBuffer();
         final MessageBuilder messageBuilder = new MessageBuilder().input("input-id").outputs(new HashSet<String>()).source("test");
         final FileReaderService readerService = new FileReaderService(
-                path,
+                ImmutableSet.of(path),
                 Charsets.UTF_8,
                 new NumberSuffixStrategy(path),
                 true,
@@ -205,7 +162,8 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
                 new NewlineChunkSplitter(),
                 buffer,
                 1024,
-                250L);
+                250L,
+                new FileObserver());
 
         readerService.startAsync();
         readerService.awaitRunning();
@@ -229,6 +187,65 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         final Message msg = buffer.getMessageQueue().poll(10, TimeUnit.SECONDS);
         assertNotNull("file reader should have created a message", msg);
         assertEquals("message content matches", "hellotest", msg.getMessage());
+        assertEquals("no more messages have been added to the buffer", 0, buffer.getMessageQueue().size());
+
+        readerService.stopAsync();
+        readerService.awaitTerminated();
+    }
+
+    @Test
+    public void followMultipleFiles() throws IOException, InterruptedException {
+        final Path path1 = temporaryFolder.newFile().toPath();
+        final Path path2 = temporaryFolder.newFile().toPath();
+        final Path path3 = temporaryFolder.newFile().toPath();
+
+        log.info("FILE 1 - {}", path1);
+        log.info("FILE 2 - {}", path2);
+        log.info("FILE 3 - {}", path3);
+
+        final ImmutableSet<Path> paths = ImmutableSet.of(path1, path2, path3);
+
+        // Delete the second file before starting.
+        Files.deleteIfExists(path2);
+
+        final CollectingBuffer buffer = new CollectingBuffer();
+        final MessageBuilder messageBuilder = new MessageBuilder().input("input-id").outputs(new HashSet<String>()).source("test");
+        final FileReaderService readerService = new FileReaderService(
+                paths,
+                Charsets.UTF_8,
+                new NumberSuffixStrategy(paths),
+                true,
+                FileInput.InitialReadPosition.START,
+                mockFileInput(),
+                messageBuilder,
+                new NewlineChunkSplitter(),
+                buffer,
+                1024,
+                250L,
+                new FileObserver());
+
+        readerService.startAsync();
+        readerService.awaitRunning();
+
+        Files.write(path1, "file1\n".getBytes());
+
+        final Message msg1 = buffer.getMessageQueue().poll(20, TimeUnit.SECONDS);
+        assertNotNull("file reader should have created a message", msg1);
+        assertEquals("message content matches", "file1", msg1.getMessage());
+        assertEquals("no more messages have been added to the buffer", 0, buffer.getMessageQueue().size());
+
+        Files.write(path2, "file2\n".getBytes(), StandardOpenOption.CREATE_NEW, StandardOpenOption.APPEND, StandardOpenOption.WRITE);
+
+        final Message msg2 = buffer.getMessageQueue().poll(20, TimeUnit.SECONDS);
+        assertNotNull("file reader should have created a message", msg2);
+        assertEquals("message content matches", "file2", msg2.getMessage());
+        assertEquals("no more messages have been added to the buffer", 0, buffer.getMessageQueue().size());
+
+        Files.write(path3, "file3\n".getBytes());
+
+        final Message msg3 = buffer.getMessageQueue().poll(20, TimeUnit.SECONDS);
+        assertNotNull("file reader should have created a message", msg3);
+        assertEquals("message content matches", "file3", msg3.getMessage());
         assertEquals("no more messages have been added to the buffer", 0, buffer.getMessageQueue().size());
 
         readerService.stopAsync();
