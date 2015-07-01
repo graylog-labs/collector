@@ -1,6 +1,10 @@
 Graylog Collector ChangeLog
 ===========================
 
+## v0.2.5 (2015-07-01)
+
+* Fix classpath for Windows service to unbreak Sigar. (#39)
+
 ## v0.2.4 (2015-06-24)
 
 * Fix several quoting issues for Windows start/service scripts. (#28)
