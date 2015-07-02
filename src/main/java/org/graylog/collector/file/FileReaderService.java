@@ -159,7 +159,8 @@ public class FileReaderService extends AbstractService {
         @Override
         public void pathRemoved(Path path) {
             if (path.equals(monitoredFile)) {
-                // TODO someone removed our file, stop trying to read from it (reads might already have produced errors)
+                // File got removed, stop following it.
+                chunkReaderScheduler.cancelFile(path);
             } else {
                 // TODO logrotate removed some file, check if we have read all data in it already, else send a warning that we
                 // might have lost data
