@@ -43,8 +43,7 @@ public class ChunkReaderScheduler {
     private final boolean followMode;
     private final FileInput.InitialReadPosition initialReadPosition;
     private final ArrayBlockingQueue<FileChunk> chunkQueue;
-    private final ConcurrentMap<Path, ChunkReader> chunkReaders = Maps.newConcurrentMap();
-    private final ConcurrentMap<Path, ScheduledFuture<?>> chunkReaderFutures = Maps.newConcurrentMap();
+    private final ConcurrentMap<Path, ChunkReaderTask> chunkReaderTasks = Maps.newConcurrentMap();
     private final ScheduledExecutorService scheduler;
 
     public ChunkReaderScheduler(final Input input,
@@ -69,36 +68,52 @@ public class ChunkReaderScheduler {
     }
 
     public boolean isFollowingFile(Path file) {
-        synchronized (this) {
-            // TODO if there is a chunkreader already, check the fileKey of the underlying file
-            return chunkReaders.containsKey(file) && chunkReaderFutures.containsKey(file);
-        }
+        // TODO if there is a chunkreader already, check the fileKey of the underlying file
+        return chunkReaderTasks.containsKey(file);
     }
 
     public void followFile(Path file) throws IOException {
-        final AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(file, StandardOpenOption.READ);
-        final ChunkReader chunkReader = new ChunkReader(input, file, fileChannel, chunkQueue, readerBufferSize, followMode, initialReadPosition);
-        final ScheduledFuture<?> chunkReaderFuture = scheduler.scheduleAtFixedRate(chunkReader, 0, readerInterval, TimeUnit.MILLISECONDS);
-
-        log.debug("Following file {}", file);
-
         synchronized (this) {
-            chunkReaders.put(file, chunkReader);
-            chunkReaderFutures.put(file, chunkReaderFuture);
+            if (isFollowingFile(file)) {
+                log.debug("Not following file {} because it's already followed.", file);
+                return;
+            }
+
+            log.debug("Following file {}", file);
+
+            final AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(file, StandardOpenOption.READ);
+            final ChunkReader chunkReader = new ChunkReader(input, file, fileChannel, chunkQueue, readerBufferSize, followMode, initialReadPosition);
+            final ScheduledFuture<?> chunkReaderFuture = scheduler.scheduleAtFixedRate(chunkReader, 0, readerInterval, TimeUnit.MILLISECONDS);
+
+            chunkReaderTasks.putIfAbsent(file, new ChunkReaderTask(chunkReaderFuture, fileChannel));
         }
     }
 
     public void cancelFile(Path file) {
-        synchronized (this) {
-            final ScheduledFuture<?> future = chunkReaderFutures.remove(file);
+        final ChunkReaderTask task = chunkReaderTasks.remove(file);
 
-            if (future != null) {
-                log.debug("Cancel file {}", file);
-
-                future.cancel(false);
+        if (task != null) {
+            log.debug("Cancel file {}", file);
+            try {
+                task.cancel();
+            } catch (IOException e) {
+                log.error("Unable to stop chunk reader task", e);
             }
+        }
+    }
 
-            chunkReaders.remove(file);
+    private static class ChunkReaderTask {
+        private final ScheduledFuture<?> chunkReaderFuture;
+        private final AsynchronousFileChannel fileChannel;
+
+        public ChunkReaderTask(ScheduledFuture<?> chunkReaderFuture, AsynchronousFileChannel fileChannel) {
+            this.chunkReaderFuture = chunkReaderFuture;
+            this.fileChannel = fileChannel;
+        }
+
+        public void cancel() throws IOException {
+            chunkReaderFuture.cancel(false);
+            fileChannel.close();
         }
     }
 }
