@@ -108,10 +108,15 @@ public class ChunkReader implements Runnable {
                 return;
             }
 
+            final long size = fileChannel.size();
+
             // If the size of the file is smaller than the read position, the file might have been truncated.
-            if (fileChannel.size() < position) {
-                log.trace("Reset read position");
+            if (size < position) {
+                log.trace("Reset read position for {}", path);
                 position = 0;
+            } else if (size == position) {
+                log.trace("File size did not change, not trying to read from {}", path);
+                return;
             }
 
             final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(initialChunkSize);
