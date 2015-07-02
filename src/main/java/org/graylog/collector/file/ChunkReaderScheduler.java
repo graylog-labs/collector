@@ -64,7 +64,7 @@ public class ChunkReaderScheduler {
         this.scheduler = Executors.newSingleThreadScheduledExecutor(
                 new ThreadFactoryBuilder()
                         .setDaemon(false)
-                        .setNameFormat("chunkreader-scheduler-thread-%d")
+                        .setNameFormat("chunkreader-scheduler-thread-" + input.getId() + "-%d")
                         .build());
     }
 
