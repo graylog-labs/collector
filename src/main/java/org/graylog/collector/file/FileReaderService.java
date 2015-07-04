@@ -114,16 +114,12 @@ public class FileReaderService extends AbstractService {
 
         chunkProcessor.startAsync();
         chunkProcessor.awaitRunning();
-        fileObserver.startAsync();
-        fileObserver.awaitRunning();
 
         notifyStarted();
     }
 
     @Override
     protected void doStop() {
-        fileObserver.stopAsync();
-        fileObserver.awaitTerminated();
         chunkProcessor.stopAsync();
         chunkProcessor.awaitTerminated();
         notifyStopped();

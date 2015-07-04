@@ -25,6 +25,8 @@ import org.graylog.collector.MessageBuilder;
 import org.graylog.collector.file.naming.NumberSuffixStrategy;
 import org.graylog.collector.file.splitters.NewlineChunkSplitter;
 import org.graylog.collector.inputs.file.FileInput;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -32,9 +34,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -59,11 +61,27 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
+    private FileObserver fileObserver;
+
+    @Before
+    public void setUp() throws Exception {
+        fileObserver = new FileObserver(FileSystems.getDefault().newWatchService());
+
+        fileObserver.startAsync();
+        fileObserver.awaitRunning(1, TimeUnit.MINUTES);
+    }
+
+    @After
+    public void shutDown() throws Exception {
+        fileObserver.stopAsync();
+        fileObserver.awaitTerminated(1, TimeUnit.MINUTES);
+    }
+
     @Test
     public void testObserverCallbacks() throws Exception {
         final Path path = temporaryFolder.newFile().toPath();
 
-        final FileObserver fileObserver = spy(new FileObserver());
+        final FileObserver fileObserverSpy = spy(fileObserver);
         final NumberSuffixStrategy namingStrategy = new NumberSuffixStrategy(path);
 
         final FileReaderService readerService = new FileReaderService(
@@ -78,14 +96,14 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
                 new CollectingBuffer(),
                 1024,
                 250L,
-                fileObserver);
+                fileObserverSpy);
 
         readerService.startAsync();
         readerService.awaitRunning(1, TimeUnit.MINUTES);
 
         assertEquals("service should be running", Service.State.RUNNING, readerService.state());
 
-        verify(fileObserver).observePath(any(FileObserver.Listener.class), eq(path), eq(namingStrategy));
+        verify(fileObserverSpy).observePath(any(FileObserver.Listener.class), eq(path), eq(namingStrategy));
 
         readerService.stopAsync();
         readerService.awaitTerminated(1, TimeUnit.MINUTES);
@@ -98,7 +116,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
     }
 
     @Test
-    public void fileCreatedAfterStartIsRead() throws IOException, InterruptedException {
+    public void fileCreatedAfterStartIsRead() throws Exception {
         final File file = temporaryFolder.newFile();
         final Path path = file.toPath();
         // make sure the file doesn't exist prior to this test
@@ -120,7 +138,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
                 buffer,
                 1024,
                 250L,
-                new FileObserver());
+                fileObserver);
 
         readerService.startAsync();
         readerService.awaitRunning();
@@ -141,7 +159,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
     }
 
     @Test
-    public void fileCreatedAfterStartIsReadAfterPermissionsFixed() throws IOException, InterruptedException {
+    public void fileCreatedAfterStartIsReadAfterPermissionsFixed() throws Exception {
         final File file = temporaryFolder.newFile();
         final Path path = file.toPath();
         // make sure the file doesn't exist prior to this test
@@ -163,7 +181,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
                 buffer,
                 1024,
                 250L,
-                new FileObserver());
+                fileObserver);
 
         readerService.startAsync();
         readerService.awaitRunning();
@@ -194,7 +212,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
     }
 
     @Test
-    public void followMultipleFiles() throws IOException, InterruptedException {
+    public void followMultipleFiles() throws Exception {
         final Path path1 = temporaryFolder.newFile().toPath();
         final Path path2 = temporaryFolder.newFile().toPath();
         final Path path3 = temporaryFolder.newFile().toPath();
@@ -222,7 +240,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
                 buffer,
                 1024,
                 250L,
-                new FileObserver());
+                fileObserver);
 
         readerService.startAsync();
         readerService.awaitRunning();

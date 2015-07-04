@@ -17,6 +17,7 @@
 package org.graylog.collector.file;
 
 import org.graylog.collector.file.naming.ExactFileStrategy;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -24,9 +25,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -42,9 +45,16 @@ public class FileObserverTest {
     @Rule
     public TemporaryFolder temporaryFolder2 = new TemporaryFolder();
 
+    private WatchService watchService;
+
+    @Before
+    public void setUp() throws Exception {
+        watchService = FileSystems.getDefault().newWatchService();
+    }
+
     @Test
     public void testObserverCallbacks() throws Exception {
-        final FileObserver fileObserver = new FileObserver();
+        final FileObserver fileObserver = new FileObserver(watchService);
         final File file = temporaryFolder.newFile();
         final Path path = file.toPath();
         // make sure the file doesn't exist prior to this test
@@ -107,7 +117,7 @@ public class FileObserverTest {
 
     @Test
     public void testObserverCallbacksForMultipleFiles() throws Exception {
-        final FileObserver fileObserver = new FileObserver();
+        final FileObserver fileObserver = new FileObserver(watchService);
         final File file1 = temporaryFolder.newFile();
         final File file2 = temporaryFolder.newFile();
         final File file3 = temporaryFolder2.newFile();
@@ -223,7 +233,7 @@ public class FileObserverTest {
 
     @Test
     public void testNamingStrategy() throws Exception {
-        final FileObserver fileObserver = new FileObserver();
+        final FileObserver fileObserver = new FileObserver(watchService);
         final File file1 = temporaryFolder.newFile();
         final File file2 = temporaryFolder.newFile();
         final Path path1 = file1.toPath();

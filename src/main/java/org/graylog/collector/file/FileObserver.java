@@ -26,8 +26,8 @@ import org.graylog.collector.file.naming.FileNamingStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -98,15 +98,9 @@ public class FileObserver extends AbstractExecutionThreadService {
         }
     }
 
-    public FileObserver() {
-        WatchService tmp;
-        try {
-            tmp = FileSystems.getDefault().newWatchService();
-        } catch (IOException e) {
-            tmp = null;
-            // shouldn't happen
-        }
-        watcher = tmp;
+    @Inject
+    public FileObserver(WatchService watchService) {
+        watcher = watchService;
     }
 
     public void observePath(Listener listener, Path path, FileNamingStrategy namingStrategy) throws IOException {

@@ -49,12 +49,14 @@ public class FileInput extends InputService {
 
     private final FileInputConfiguration configuration;
     private final Buffer buffer;
+    private final FileObserver fileObserver;
     private final CountDownLatch stopLatch = new CountDownLatch(1);
 
     @Inject
-    public FileInput(@Assisted FileInputConfiguration inputConfiguration, Buffer buffer) {
+    public FileInput(@Assisted FileInputConfiguration inputConfiguration, Buffer buffer, FileObserver fileObserver) {
         this.configuration = inputConfiguration;
         this.buffer = buffer;
+        this.fileObserver = fileObserver;
     }
 
     @Override
@@ -85,7 +87,7 @@ public class FileInput extends InputService {
                 buffer,
                 configuration.getReaderBufferSize(),
                 configuration.getReaderInterval(),
-                new FileObserver()
+                fileObserver
         );
 
         readerService.startAsync();

@@ -25,6 +25,7 @@ import org.graylog.collector.buffer.BufferModule;
 import org.graylog.collector.config.ConfigurationError;
 import org.graylog.collector.config.ConfigurationModule;
 import org.graylog.collector.config.ConfigurationRegistry;
+import org.graylog.collector.file.FileModule;
 import org.graylog.collector.guice.CollectorInjector;
 import org.graylog.collector.heartbeat.HeartbeatModule;
 import org.graylog.collector.inputs.InputsModule;
@@ -82,6 +83,7 @@ public class Run implements CollectorCommand {
             injector = CollectorInjector.createInjector(new ConfigurationModule(configFile),
                     new BufferModule(),
                     new InputsModule(),
+                    new FileModule(),
                     new OutputsModule(),
                     new ServicesModule(),
                     new MetricsModule(),
