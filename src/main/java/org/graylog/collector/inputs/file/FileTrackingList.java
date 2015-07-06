@@ -44,6 +44,7 @@ public class FileTrackingList {
     private final String pattern;
     private final FileTreeWalker fileTreeWalker;
     private final PathMatcher matcher;
+    private final Path rootPath;
 
     public static class GlobbingFileVisitor extends SimpleFileVisitor<Path> {
         private final PathMatcher matcher;
@@ -99,13 +100,18 @@ public class FileTrackingList {
         this.pattern = pattern;
         this.fileTreeWalker = fileTreeWalker;
         this.matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern);
+        this.rootPath = getRootPathFromPattern(pattern);
+    }
+
+    public Path getRootPath() {
+        return rootPath;
     }
 
     public Set<Path> getTrackedFiles() throws IOException {
         final ImmutableSet.Builder<Path> matchedPaths = ImmutableSet.builder();
 
         if (hasGlobMetaChars(pattern)) {
-            fileTreeWalker.walk(getRootPathFromPattern(pattern), new GlobbingFileVisitor(matcher, matchedPaths));
+            fileTreeWalker.walk(rootPath, new GlobbingFileVisitor(matcher, matchedPaths));
         } else {
             // TODO needs to be an absolute path because otherwise the FileObserver does weird things. Investigate what's wrong with it.
             matchedPaths.add(Paths.get(pattern).toAbsolutePath());
@@ -115,6 +121,10 @@ public class FileTrackingList {
     }
 
     private Path getRootPathFromPattern(String pattern) {
+        if (!hasGlobMetaChars(pattern)) {
+            return Paths.get(pattern).toAbsolutePath().getParent();
+        }
+
         final List<String> elements = Lists.newArrayList();
 
         for (Path name: Paths.get(pattern)) {

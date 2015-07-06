@@ -52,6 +52,7 @@ public class FileTrackingListTest {
 
         final Set<Path> trackedFiles = list.getTrackedFiles();
 
+        assertEquals(Paths.get("/var/log"), list.getRootPath());
         assertEquals(1, trackedFiles.size());
         assertTrue(trackedFiles.contains(Paths.get("/var/log/syslog")));
     }
@@ -75,6 +76,7 @@ public class FileTrackingListTest {
 
         final Set<Path> trackedFiles = list.getTrackedFiles();
 
+        assertEquals(Paths.get("/var/log"), list.getRootPath());
         assertEquals(3, trackedFiles.size());
         assertTrue(trackedFiles.contains(Paths.get(file1)));
         assertTrue(trackedFiles.contains(Paths.get(file2)));
@@ -95,6 +97,7 @@ public class FileTrackingListTest {
 
         final Set<Path> trackedFiles = list.getTrackedFiles();
 
+        assertEquals(Paths.get("/var/log"), list.getRootPath());
         assertEquals(1, trackedFiles.size());
         assertTrue(trackedFiles.contains(Paths.get(file1)));
     }
