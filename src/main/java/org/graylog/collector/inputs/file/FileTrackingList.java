@@ -69,7 +69,8 @@ public class FileTrackingList {
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) throws IOException {
             if (matcher.matches(file)) {
-                matchedPaths.add(file);
+                // TODO needs to be an absolute path because otherwise the FileObserver does weird things. Investigate what's wrong with it.
+                matchedPaths.add(file.toAbsolutePath());
             }
 
             return FileVisitResult.CONTINUE;
@@ -106,7 +107,8 @@ public class FileTrackingList {
         if (hasGlobMetaChars(pattern)) {
             fileTreeWalker.walk(getRootPathFromPattern(pattern), new GlobbingFileVisitor(matcher, matchedPaths));
         } else {
-            matchedPaths.add(Paths.get(pattern));
+            // TODO needs to be an absolute path because otherwise the FileObserver does weird things. Investigate what's wrong with it.
+            matchedPaths.add(Paths.get(pattern).toAbsolutePath());
         }
 
         return matchedPaths.build();
