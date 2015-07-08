@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Graylog.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graylog.collector.inputs.file;
+package org.graylog.collector.file;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -35,8 +35,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.Set;
 
-public class FileTrackingList {
-    private static final Logger LOG = LoggerFactory.getLogger(FileTrackingList.class);
+public class PathSet {
+    private static final Logger LOG = LoggerFactory.getLogger(PathSet.class);
 
     // List taken from sun.nio.fs.Globs.
     private static final List<String> GLOB_META_CHARS = ImmutableList.of("\\", "*", "?", "[", "{");
@@ -87,7 +87,7 @@ public class FileTrackingList {
      *
      * @param pattern the pattern to scan for
      */
-    public FileTrackingList(final String pattern) {
+    public PathSet(final String pattern) {
         this(pattern, new FileTreeWalker() {
             @Override
             public void walk(Path basePath, FileVisitor<Path> visitor) throws IOException {
@@ -96,7 +96,7 @@ public class FileTrackingList {
         });
     }
 
-    public FileTrackingList(final String pattern, FileTreeWalker fileTreeWalker) {
+    public PathSet(final String pattern, FileTreeWalker fileTreeWalker) {
         this.pattern = pattern;
         this.fileTreeWalker = fileTreeWalker;
         this.matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern);
@@ -107,7 +107,7 @@ public class FileTrackingList {
         return rootPath;
     }
 
-    public Set<Path> getTrackedFiles() throws IOException {
+    public Set<Path> getPaths() throws IOException {
         final ImmutableSet.Builder<Path> matchedPaths = ImmutableSet.builder();
 
         if (hasGlobMetaChars(pattern)) {

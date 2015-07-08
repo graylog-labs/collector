@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Graylog.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.graylog.collector.inputs.file;
+package org.graylog.collector.file;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class FileTrackingListTest {
+public class PathSetTest {
     @Mock
     BasicFileAttributes attributes;
 
@@ -43,18 +43,18 @@ public class FileTrackingListTest {
 
     @Test
     public void testTrackingList() throws Exception {
-        final FileTrackingList list = new FileTrackingList("/var/log/syslog", new FileTrackingList.FileTreeWalker() {
+        final PathSet list = new PathSet("/var/log/syslog", new PathSet.FileTreeWalker() {
             @Override
             public void walk(Path basePath, FileVisitor<Path> visitor) throws IOException {
                 System.out.println("YO");
             }
         });
 
-        final Set<Path> trackedFiles = list.getTrackedFiles();
+        final Set<Path> paths = list.getPaths();
 
         assertEquals(Paths.get("/var/log"), list.getRootPath());
-        assertEquals(1, trackedFiles.size());
-        assertTrue(trackedFiles.contains(Paths.get("/var/log/syslog")));
+        assertEquals(1, paths.size());
+        assertTrue(paths.contains(Paths.get("/var/log/syslog")));
     }
 
     @Test
@@ -64,7 +64,7 @@ public class FileTrackingListTest {
         final String file3 = "/var/log/foo/bar/baz/test.log";
         final String file4 = "/var/log/test.log";
 
-        final FileTrackingList list = new FileTrackingList("/var/log/**/*.{log,gz}", new FileTrackingList.FileTreeWalker() {
+        final PathSet list = new PathSet("/var/log/**/*.{log,gz}", new PathSet.FileTreeWalker() {
             @Override
             public void walk(Path basePath, FileVisitor<Path> visitor) throws IOException {
                 visitor.visitFile(Paths.get(file1), attributes);
@@ -74,31 +74,31 @@ public class FileTrackingListTest {
             }
         });
 
-        final Set<Path> trackedFiles = list.getTrackedFiles();
+        final Set<Path> paths = list.getPaths();
 
         assertEquals(Paths.get("/var/log"), list.getRootPath());
-        assertEquals(3, trackedFiles.size());
-        assertTrue(trackedFiles.contains(Paths.get(file1)));
-        assertTrue(trackedFiles.contains(Paths.get(file2)));
-        assertTrue(trackedFiles.contains(Paths.get(file3)));
-        assertFalse(trackedFiles.contains(Paths.get(file4)));
+        assertEquals(3, paths.size());
+        assertTrue(paths.contains(Paths.get(file1)));
+        assertTrue(paths.contains(Paths.get(file2)));
+        assertTrue(paths.contains(Paths.get(file3)));
+        assertFalse(paths.contains(Paths.get(file4)));
     }
 
     @Test
     public void testTrackingListWithGlobEdgeCases() throws Exception {
         final String file1 = "/var/log/ups?art/graylog-collector.log";
 
-        final FileTrackingList list = new FileTrackingList("/var/log/ups\\?art/*.{log,gz}", new FileTrackingList.FileTreeWalker() {
+        final PathSet list = new PathSet("/var/log/ups\\?art/*.{log,gz}", new PathSet.FileTreeWalker() {
             @Override
             public void walk(Path basePath, FileVisitor<Path> visitor) throws IOException {
                 visitor.visitFile(Paths.get(file1), attributes);
             }
         });
 
-        final Set<Path> trackedFiles = list.getTrackedFiles();
+        final Set<Path> paths = list.getPaths();
 
         assertEquals(Paths.get("/var/log"), list.getRootPath());
-        assertEquals(1, trackedFiles.size());
-        assertTrue(trackedFiles.contains(Paths.get(file1)));
+        assertEquals(1, paths.size());
+        assertTrue(paths.contains(Paths.get(file1)));
     }
 }
