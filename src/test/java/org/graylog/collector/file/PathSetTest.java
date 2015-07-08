@@ -101,4 +101,30 @@ public class PathSetTest {
         assertEquals(1, paths.size());
         assertTrue(paths.contains(Paths.get(file1)));
     }
+
+    @Test
+    public void testIsInSet() throws Exception {
+        final PathSet pathSet = new PathSet("/var/log/**/*.{log,gz}", new PathSet.FileTreeWalker() {
+            @Override
+            public void walk(Path basePath, FileVisitor<Path> visitor) throws IOException {
+            }
+        });
+
+        assertFalse(pathSet.isInSet(Paths.get("/var/log/mail.log")));
+        assertTrue(pathSet.isInSet(Paths.get("/var/log/upstart/test.log")));
+        assertTrue(pathSet.isInSet(Paths.get("/var/log/upstart/ntp.log.gz")));
+        assertFalse(pathSet.isInSet(Paths.get("/var/log/ntp/compressed.txt")));
+    }
+
+    @Test
+    public void testIsInSetWithoutPattern() throws Exception {
+        final PathSet pathSet = new PathSet("/var/log/syslog", new PathSet.FileTreeWalker() {
+            @Override
+            public void walk(Path basePath, FileVisitor<Path> visitor) throws IOException {
+            }
+        });
+
+        assertFalse(pathSet.isInSet(Paths.get("/var/log/mail.log")));
+        assertTrue(pathSet.isInSet(Paths.get("/var/log/syslog")));
+    }
 }

@@ -107,6 +107,10 @@ public class PathSet {
         return rootPath;
     }
 
+    public boolean isInSet(Path path) {
+        return matcher.matches(path);
+    }
+
     public Set<Path> getPaths() throws IOException {
         final ImmutableSet.Builder<Path> matchedPaths = ImmutableSet.builder();
 
