@@ -17,7 +17,6 @@
 package org.graylog.collector.file;
 
 import com.google.common.base.Charsets;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Service;
 import org.graylog.collector.Message;
@@ -83,11 +82,11 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
 
         final FileObserver fileObserverSpy = spy(fileObserver);
         final NumberSuffixStrategy namingStrategy = new NumberSuffixStrategy(path);
+        final PathSet pathSet = new PathSet(path.toString());
 
         final FileReaderService readerService = new FileReaderService(
-                ImmutableSet.of(path),
+                pathSet,
                 Charsets.UTF_8,
-                namingStrategy,
                 true,
                 FileInput.InitialReadPosition.START,
                 mockFileInput(),
@@ -103,7 +102,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
 
         assertEquals("service should be running", Service.State.RUNNING, readerService.state());
 
-        verify(fileObserverSpy).observePath(any(FileObserver.Listener.class), eq(path), eq(namingStrategy));
+        verify(fileObserverSpy).observePathSet(eq(pathSet), any(FileObserver.Listener.class));
 
         readerService.stopAsync();
         readerService.awaitTerminated(1, TimeUnit.MINUTES);
@@ -127,9 +126,8 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         final CollectingBuffer buffer = new CollectingBuffer();
         final MessageBuilder messageBuilder = new MessageBuilder().input("input-id").outputs(new HashSet<String>()).source("test");
         final FileReaderService readerService = new FileReaderService(
-                ImmutableSet.of(path),
+                new PathSet(path.toString()),
                 Charsets.UTF_8,
-                new NumberSuffixStrategy(path),
                 true,
                 FileInput.InitialReadPosition.START,
                 mockInput,
@@ -170,9 +168,8 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         final CollectingBuffer buffer = new CollectingBuffer();
         final MessageBuilder messageBuilder = new MessageBuilder().input("input-id").outputs(new HashSet<String>()).source("test");
         final FileReaderService readerService = new FileReaderService(
-                ImmutableSet.of(path),
+                new PathSet(path.toString()),
                 Charsets.UTF_8,
-                new NumberSuffixStrategy(path),
                 true,
                 FileInput.InitialReadPosition.START,
                 mockInput,
@@ -221,7 +218,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         log.info("FILE 2 - {}", path2);
         log.info("FILE 3 - {}", path3);
 
-        final ImmutableSet<Path> paths = ImmutableSet.of(path1, path2, path3);
+        final PathSet pathSet = new PathSet(temporaryFolder.getRoot().toString() + "/*");
 
         // Delete the second file before starting.
         Files.deleteIfExists(path2);
@@ -229,9 +226,8 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         final CollectingBuffer buffer = new CollectingBuffer();
         final MessageBuilder messageBuilder = new MessageBuilder().input("input-id").outputs(new HashSet<String>()).source("test");
         final FileReaderService readerService = new FileReaderService(
-                paths,
+                pathSet,
                 Charsets.UTF_8,
-                new NumberSuffixStrategy(paths),
                 true,
                 FileInput.InitialReadPosition.START,
                 mockFileInput(),

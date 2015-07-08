@@ -16,8 +16,8 @@
  */
 package org.graylog.collector.file;
 
-import org.graylog.collector.file.naming.ExactFileStrategy;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -28,7 +28,6 @@ import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.CountDownLatch;
@@ -54,6 +53,7 @@ public class FileObserverTest {
 
     @Test
     public void testObserverCallbacks() throws Exception {
+        final PathSet pathSet = new PathSet(temporaryFolder.getRoot().toString() + "/*");
         final FileObserver fileObserver = new FileObserver(watchService);
         final File file = temporaryFolder.newFile();
         final Path path = file.toPath();
@@ -89,7 +89,7 @@ public class FileObserverTest {
             }
         };
 
-        fileObserver.observePath(listener, path, new ExactFileStrategy(path));
+        fileObserver.observePathSet(pathSet, listener);
 
         fileObserver.startAsync();
         fileObserver.awaitRunning(1, TimeUnit.MINUTES);
@@ -121,6 +121,8 @@ public class FileObserverTest {
         final File file1 = temporaryFolder.newFile();
         final File file2 = temporaryFolder.newFile();
         final File file3 = temporaryFolder2.newFile();
+        final PathSet pathSet1 = new PathSet(temporaryFolder.getRoot().toString() + "/*");
+        final PathSet pathSet2 = new PathSet(temporaryFolder2.getRoot().toString() + "/*");
         final Path path1 = file1.toPath();
         final Path path2 = file2.toPath();
         final Path path3 = file3.toPath();
@@ -182,9 +184,8 @@ public class FileObserverTest {
             }
         };
 
-        fileObserver.observePath(listener, path1, new ExactFileStrategy(path1));
-        fileObserver.observePath(listener, path2, new ExactFileStrategy(path2));
-        fileObserver.observePath(listener, path3, new ExactFileStrategy(path3));
+        fileObserver.observePathSet(pathSet1, listener);
+        fileObserver.observePathSet(pathSet2, listener);
 
         fileObserver.startAsync();
         fileObserver.awaitRunning(1, TimeUnit.MINUTES);
@@ -232,7 +233,9 @@ public class FileObserverTest {
     }
 
     @Test
+    @Ignore("File naming strategies have been disabled for now")
     public void testNamingStrategy() throws Exception {
+        final PathSet pathSet = new PathSet(temporaryFolder.getRoot().toString() + "/*");
         final FileObserver fileObserver = new FileObserver(watchService);
         final File file1 = temporaryFolder.newFile();
         final File file2 = temporaryFolder.newFile();
@@ -288,8 +291,11 @@ public class FileObserverTest {
         };
 
         // Make sure to use a non-existent path for the naming strategy here!
+        /*
         fileObserver.observePath(listener, path1, new ExactFileStrategy(Paths.get("/tmp/foo/bar/baz")));
         fileObserver.observePath(listener, path2, new ExactFileStrategy(path2));
+        */
+        fileObserver.observePathSet(pathSet, listener);
 
         fileObserver.startAsync();
         fileObserver.awaitRunning(1, TimeUnit.MINUTES);
