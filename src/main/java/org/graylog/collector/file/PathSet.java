@@ -107,6 +107,10 @@ public class PathSet {
         return rootPath;
     }
 
+    public String getPattern() {
+        return pattern;
+    }
+
     public boolean isInSet(Path path) {
         return matcher.matches(path);
     }

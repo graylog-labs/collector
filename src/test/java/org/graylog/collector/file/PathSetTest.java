@@ -146,4 +146,19 @@ public class PathSetTest {
         assertEquals(pathSet3, pathSet4);
         assertNotEquals(pathSet1, pathSet4);
     }
+
+    @Test
+    public void testGetPattern() throws Exception {
+        final PathSet.FileTreeWalker treeWalker = new PathSet.FileTreeWalker() {
+            @Override
+            public void walk(Path basePath, FileVisitor<Path> visitor) throws IOException {
+            }
+        };
+
+        final PathSet pathSet1 = new PathSet("/var/log/syslog", treeWalker);
+        final PathSet pathSet2 = new PathSet("/var/log/**/*.log", treeWalker);
+
+        assertEquals("/var/log/syslog", pathSet1.getPattern());
+        assertEquals("/var/log/**/*.log", pathSet2.getPattern());
+    }
 }
