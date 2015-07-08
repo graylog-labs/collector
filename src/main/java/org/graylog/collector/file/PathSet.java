@@ -102,7 +102,8 @@ public class PathSet {
     public PathSet(final String pattern, FileTreeWalker fileTreeWalker) {
         this.pattern = pattern;
         this.fileTreeWalker = fileTreeWalker;
-        this.matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern);
+        final String patternString = Utils.isWindows() ? pattern.replace("\\", "\\\\") : pattern;
+        this.matcher = FileSystems.getDefault().getPathMatcher("glob:" + patternString);
         this.rootPath = getRootPathFromPattern(pattern);
     }
 
