@@ -115,6 +115,14 @@ public class PathSet {
         return matcher.matches(path);
     }
 
+    /**
+     * Returns a {@link Set<Path>} of all existing paths that match the pattern.
+     *
+     * The file tree is walked on every invocation to pick up newly created paths. This can be expensive!
+     *
+     * @return all existing paths that match the pattern
+     * @throws IOException
+     */
     public Set<Path> getPaths() throws IOException {
         final ImmutableSet.Builder<Path> matchedPaths = ImmutableSet.builder();
 
