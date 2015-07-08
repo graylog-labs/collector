@@ -16,12 +16,15 @@
  */
 package org.graylog.collector.file;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import org.graylog.collector.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
@@ -143,15 +146,21 @@ public class PathSet {
 
         final List<String> elements = Lists.newArrayList();
 
-        for (Path name: Paths.get(pattern)) {
-            if (hasGlobMetaChars(name.toString())) {
+        // Splitting manually on File.separator here to make it work on Windows.
+        for (String part : Splitter.on(File.separator).split(pattern)) {
+            if (hasGlobMetaChars(part)) {
                 break;
             }
 
-            elements.add(name.toString());
+            elements.add(part);
         }
 
-        return Paths.get("/", elements.toArray(new String[elements.size()]));
+        if (Utils.isWindows()) {
+            return Paths.get("", elements.toArray(new String[elements.size()]));
+        } else {
+            return Paths.get("/", elements.toArray(new String[elements.size()]));
+        }
+
     }
 
     private boolean hasGlobMetaChars(String path) {
