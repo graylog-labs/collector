@@ -153,4 +153,21 @@ public class PathSet {
         }
         return false;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PathSet pathSet = (PathSet) o;
+
+        return pattern.equals(pathSet.pattern);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return pattern.hashCode();
+    }
+
 }

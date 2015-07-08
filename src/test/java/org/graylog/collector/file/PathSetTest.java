@@ -30,6 +30,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 public class PathSetTest {
@@ -126,5 +127,23 @@ public class PathSetTest {
 
         assertFalse(pathSet.isInSet(Paths.get("/var/log/mail.log")));
         assertTrue(pathSet.isInSet(Paths.get("/var/log/syslog")));
+    }
+
+    @Test
+    public void testEquality() throws Exception{
+        final PathSet.FileTreeWalker treeWalker = new PathSet.FileTreeWalker() {
+            @Override
+            public void walk(Path basePath, FileVisitor<Path> visitor) throws IOException {
+            }
+        };
+
+        final PathSet pathSet1 = new PathSet("/var/log/syslog", treeWalker);
+        final PathSet pathSet2 = new PathSet("/var/log/syslog", treeWalker);
+        final PathSet pathSet3 = new PathSet("/var/log/**/*.log", treeWalker);
+        final PathSet pathSet4 = new PathSet("/var/log/**/*.log", treeWalker);
+
+        assertEquals(pathSet1, pathSet2);
+        assertEquals(pathSet3, pathSet4);
+        assertNotEquals(pathSet1, pathSet4);
     }
 }
