@@ -16,15 +16,17 @@
  */
 package org.graylog.collector.file;
 
+import com.google.common.jimfs.Configuration;
+import com.google.common.jimfs.Jimfs;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
+import java.nio.file.FileSystem;
 import java.nio.file.FileVisitor;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Set;
 
@@ -37,24 +39,30 @@ public class PathSetTest {
     @Mock
     BasicFileAttributes attributes;
 
+    private FileSystem fileSystem;
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        this.fileSystem = newUnixFileSystem();
     }
 
+    private FileSystem newUnixFileSystem() {
+        return Jimfs.newFileSystem(Configuration.unix());
+    }
     @Test
     public void testTrackingList() throws Exception {
         final PathSet list = new PathSet("/var/log/syslog", new PathSet.FileTreeWalker() {
             @Override
             public void walk(Path basePath, FileVisitor<Path> visitor) throws IOException {
             }
-        });
+        }, fileSystem);
 
         final Set<Path> paths = list.getPaths();
 
-        assertEquals(Paths.get("/var/log"), list.getRootPath());
+        assertEquals(fileSystem.getPath("/var/log"), list.getRootPath());
         assertEquals(1, paths.size());
-        assertTrue(paths.contains(Paths.get("/var/log/syslog")));
+        assertTrue(paths.contains(fileSystem.getPath("/var/log/syslog")));
     }
 
     @Test
@@ -67,21 +75,21 @@ public class PathSetTest {
         final PathSet list = new PathSet("/var/log/**/*.{log,gz}", new PathSet.FileTreeWalker() {
             @Override
             public void walk(Path basePath, FileVisitor<Path> visitor) throws IOException {
-                visitor.visitFile(Paths.get(file1), attributes);
-                visitor.visitFile(Paths.get(file2), attributes);
-                visitor.visitFile(Paths.get(file3), attributes);
-                visitor.visitFile(Paths.get(file4), attributes);
+                visitor.visitFile(fileSystem.getPath(file1), attributes);
+                visitor.visitFile(fileSystem.getPath(file2), attributes);
+                visitor.visitFile(fileSystem.getPath(file3), attributes);
+                visitor.visitFile(fileSystem.getPath(file4), attributes);
             }
-        });
+        }, fileSystem);
 
         final Set<Path> paths = list.getPaths();
 
-        assertEquals(Paths.get("/var/log"), list.getRootPath());
+        assertEquals(fileSystem.getPath("/var/log"), list.getRootPath());
         assertEquals(3, paths.size());
-        assertTrue(paths.contains(Paths.get(file1)));
-        assertTrue(paths.contains(Paths.get(file2)));
-        assertTrue(paths.contains(Paths.get(file3)));
-        assertFalse(paths.contains(Paths.get(file4)));
+        assertTrue(paths.contains(fileSystem.getPath(file1)));
+        assertTrue(paths.contains(fileSystem.getPath(file2)));
+        assertTrue(paths.contains(fileSystem.getPath(file3)));
+        assertFalse(paths.contains(fileSystem.getPath(file4)));
     }
 
     @Test
@@ -91,15 +99,15 @@ public class PathSetTest {
         final PathSet list = new PathSet("/var/log/ups\\?art/*.{log,gz}", new PathSet.FileTreeWalker() {
             @Override
             public void walk(Path basePath, FileVisitor<Path> visitor) throws IOException {
-                visitor.visitFile(Paths.get(file1), attributes);
+                visitor.visitFile(fileSystem.getPath(file1), attributes);
             }
-        });
+        }, fileSystem);
 
         final Set<Path> paths = list.getPaths();
 
-        assertEquals(Paths.get("/var/log"), list.getRootPath());
+        assertEquals(fileSystem.getPath("/var/log"), list.getRootPath());
         assertEquals(1, paths.size());
-        assertTrue(paths.contains(Paths.get(file1)));
+        assertTrue(paths.contains(fileSystem.getPath(file1)));
     }
 
     @Test
@@ -108,12 +116,12 @@ public class PathSetTest {
             @Override
             public void walk(Path basePath, FileVisitor<Path> visitor) throws IOException {
             }
-        });
+        }, fileSystem);
 
-        assertFalse(pathSet.isInSet(Paths.get("/var/log/mail.log")));
-        assertTrue(pathSet.isInSet(Paths.get("/var/log/upstart/test.log")));
-        assertTrue(pathSet.isInSet(Paths.get("/var/log/upstart/ntp.log.gz")));
-        assertFalse(pathSet.isInSet(Paths.get("/var/log/ntp/compressed.txt")));
+        assertFalse(pathSet.isInSet(fileSystem.getPath("/var/log/mail.log")));
+        assertTrue(pathSet.isInSet(fileSystem.getPath("/var/log/upstart/test.log")));
+        assertTrue(pathSet.isInSet(fileSystem.getPath("/var/log/upstart/ntp.log.gz")));
+        assertFalse(pathSet.isInSet(fileSystem.getPath("/var/log/ntp/compressed.txt")));
     }
 
     @Test
@@ -122,10 +130,10 @@ public class PathSetTest {
             @Override
             public void walk(Path basePath, FileVisitor<Path> visitor) throws IOException {
             }
-        });
+        }, fileSystem);
 
-        assertFalse(pathSet.isInSet(Paths.get("/var/log/mail.log")));
-        assertTrue(pathSet.isInSet(Paths.get("/var/log/syslog")));
+        assertFalse(pathSet.isInSet(fileSystem.getPath("/var/log/mail.log")));
+        assertTrue(pathSet.isInSet(fileSystem.getPath("/var/log/syslog")));
     }
 
     @Test
@@ -136,10 +144,10 @@ public class PathSetTest {
             }
         };
 
-        final PathSet pathSet1 = new PathSet("/var/log/syslog", treeWalker);
-        final PathSet pathSet2 = new PathSet("/var/log/syslog", treeWalker);
-        final PathSet pathSet3 = new PathSet("/var/log/**/*.log", treeWalker);
-        final PathSet pathSet4 = new PathSet("/var/log/**/*.log", treeWalker);
+        final PathSet pathSet1 = new PathSet("/var/log/syslog", treeWalker, fileSystem);
+        final PathSet pathSet2 = new PathSet("/var/log/syslog", treeWalker, fileSystem);
+        final PathSet pathSet3 = new PathSet("/var/log/**/*.log", treeWalker, fileSystem);
+        final PathSet pathSet4 = new PathSet("/var/log/**/*.log", treeWalker, fileSystem);
 
         assertEquals(pathSet1, pathSet2);
         assertEquals(pathSet3, pathSet4);
@@ -154,8 +162,8 @@ public class PathSetTest {
             }
         };
 
-        final PathSet pathSet1 = new PathSet("/var/log/syslog", treeWalker);
-        final PathSet pathSet2 = new PathSet("/var/log/**/*.log", treeWalker);
+        final PathSet pathSet1 = new PathSet("/var/log/syslog", treeWalker, fileSystem);
+        final PathSet pathSet2 = new PathSet("/var/log/**/*.log", treeWalker, fileSystem);
 
         assertEquals("/var/log/syslog", pathSet1.getPattern());
         assertEquals("/var/log/**/*.log", pathSet2.getPattern());
