@@ -102,8 +102,10 @@ public class FileObserver extends AbstractExecutionThreadService {
         final WatchKey key = rootPath.register(watcher, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY},
                 SensitivityWatchEventModifier.HIGH);
 
-        keys.putIfAbsent(key, Sets.<WatchPath>newConcurrentHashSet());
-        keys.get(key).add(new WatchPath(pathSet, listener));
+        synchronized (keys) {
+            keys.putIfAbsent(key, Sets.<WatchPath>newConcurrentHashSet());
+            keys.get(key).add(new WatchPath(pathSet, listener));
+        }
     }
 
     @Override
