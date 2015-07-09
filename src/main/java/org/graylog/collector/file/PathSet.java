@@ -26,13 +26,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
@@ -48,6 +48,7 @@ public class PathSet {
 
     private final String pattern;
     private final FileTreeWalker fileTreeWalker;
+    private final FileSystem fileSystem;
     private final PathMatcher matcher;
     private final Path rootPath;
 
@@ -101,11 +102,16 @@ public class PathSet {
         });
     }
 
-    public PathSet(final String pattern, FileTreeWalker fileTreeWalker) {
+    public PathSet(final String pattern, final FileTreeWalker fileTreeWalker) {
+        this(pattern, fileTreeWalker, FileSystems.getDefault());
+    }
+
+    public PathSet(final String pattern, final FileTreeWalker fileTreeWalker, final FileSystem fileSystem) {
         this.pattern = checkNotNull(pattern);
         this.fileTreeWalker = fileTreeWalker;
+        this.fileSystem = fileSystem;
         final String patternString = Utils.isWindows() ? pattern.replace("\\", "\\\\") : pattern;
-        this.matcher = FileSystems.getDefault().getPathMatcher("glob:" + patternString);
+        this.matcher = fileSystem.getPathMatcher("glob:" + patternString);
         this.rootPath = getRootPathFromPattern(pattern);
     }
 
@@ -136,7 +142,7 @@ public class PathSet {
             fileTreeWalker.walk(rootPath, new GlobbingFileVisitor(matcher, matchedPaths));
         } else {
             // TODO needs to be an absolute path because otherwise the FileObserver does weird things. Investigate what's wrong with it.
-            matchedPaths.add(Paths.get(pattern).toAbsolutePath());
+            matchedPaths.add(fileSystem.getPath(pattern).toAbsolutePath());
         }
 
         return matchedPaths.build();
@@ -144,7 +150,7 @@ public class PathSet {
 
     private Path getRootPathFromPattern(String pattern) {
         if (!hasGlobMetaChars(pattern)) {
-            return Paths.get(pattern).toAbsolutePath().getParent();
+            return fileSystem.getPath(pattern).toAbsolutePath().getParent();
         }
 
         final List<String> elements = Lists.newArrayList();
@@ -159,9 +165,9 @@ public class PathSet {
         }
 
         if (Utils.isWindows()) {
-            return Paths.get("", elements.toArray(new String[elements.size()]));
+            return fileSystem.getPath("", elements.toArray(new String[elements.size()]));
         } else {
-            return Paths.get("/", elements.toArray(new String[elements.size()]));
+            return fileSystem.getPath("/", elements.toArray(new String[elements.size()]));
         }
 
     }
