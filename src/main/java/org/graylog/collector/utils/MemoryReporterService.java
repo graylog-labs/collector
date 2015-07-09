@@ -22,8 +22,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.misc.SharedSecrets;
-import sun.misc.VM;
 
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
@@ -63,7 +61,6 @@ public class MemoryReporterService extends AbstractService {
             this.scheduledJob = this.scheduler.scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
-                    reportDirectMemory();
                     reportGC();
                     reportMemoryPool();
                     reportMemoryUsage();
@@ -83,12 +80,6 @@ public class MemoryReporterService extends AbstractService {
             scheduler.shutdown();
         }
         notifyStopped();
-    }
-
-    private void reportDirectMemory() {
-        log.info("Direct Memory Usage - {} MB (max {} MB)",
-                SharedSecrets.getJavaNioAccess().getDirectBufferPool().getMemoryUsed() / 1024.0 / 1024.0,
-                VM.maxDirectMemory() / 1024.0 / 1024.0);
     }
 
     private void reportGC() {
