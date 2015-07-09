@@ -35,6 +35,7 @@ import org.graylog.collector.serverapi.ServerApiModule;
 import org.graylog.collector.services.CollectorServiceManager;
 import org.graylog.collector.services.ServicesModule;
 import org.graylog.collector.utils.CollectorIdModule;
+import org.graylog.collector.utils.MemoryReporterModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,6 +88,7 @@ public class Run implements CollectorCommand {
                     new OutputsModule(),
                     new ServicesModule(),
                     new MetricsModule(),
+                    new MemoryReporterModule(),
                     new ServerApiModule(),
                     new HeartbeatModule(),
                     new CollectorIdModule());
