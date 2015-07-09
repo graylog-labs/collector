@@ -94,10 +94,6 @@ public class MessageBuilderTest {
         ensureFailure(builder, "timestamp");
         builder.timestamp(DateTime.now());
 
-        builder.level(null);
-        ensureFailure(builder, "level");
-        builder.level(Message.Level.INFO);
-
         builder.input(null);
         ensureFailure(builder, "input");
         builder.input("input-id");

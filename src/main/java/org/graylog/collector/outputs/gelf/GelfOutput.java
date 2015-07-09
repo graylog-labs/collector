@@ -96,8 +96,13 @@ public class GelfOutput extends OutputService {
         try {
             final GelfMessageBuilder messageBuilder = new GelfMessageBuilder(message.getMessage(), message.getSource())
                     .timestamp(message.getTimestamp().getMillis() / 1000.0)
-                    .additionalFields(message.getFields().asMap())
-                    .level(GelfMessageLevel.valueOf(message.getLevel().toString()));
+                    .additionalFields(message.getFields().asMap());
+
+            if (message.getLevel() != null) {
+                messageBuilder.level(GelfMessageLevel.valueOf(message.getLevel().toString()));
+            } else {
+                messageBuilder.level(null);
+            }
 
             transport.send(messageBuilder.build());
         } catch (InterruptedException e) {

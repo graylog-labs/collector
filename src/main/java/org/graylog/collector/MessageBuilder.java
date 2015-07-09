@@ -98,7 +98,6 @@ public class MessageBuilder {
         checkNotNull(message, "Message should not be null!");
         checkNotNull(source, "Message source should not be null!");
         checkNotNull(timestamp, "Message timestamp should not be null!");
-        checkNotNull(level, "Message level should not be null!");
         checkNotNull(input, "Message input should not be null!");
         checkNotNull(outputs, "Message outputs should not be null!");
 

@@ -117,7 +117,7 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
             final Message message = messageBuilder.copy()
                     .message(messageString)
                     .timestamp(DateTime.now(DateTimeZone.UTC))
-                    .level(Message.Level.INFO)
+                    .level(null) // Do not send a level in the GELF message for data read from files.
                     .build();
 
             message.getFields().put("source_file", path.toFile().getAbsolutePath());
