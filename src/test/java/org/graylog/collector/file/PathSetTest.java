@@ -36,6 +36,12 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 public class PathSetTest {
+    public static final PathSet.FileTreeWalker NOOP_FILE_TREE_WALKER = new PathSet.FileTreeWalker() {
+        @Override
+        public void walk(Path basePath, FileVisitor<Path> visitor) throws IOException {
+        }
+    };
+
     @Mock
     BasicFileAttributes attributes;
 
@@ -50,13 +56,14 @@ public class PathSetTest {
     private FileSystem newUnixFileSystem() {
         return Jimfs.newFileSystem(Configuration.unix());
     }
+
+    private FileSystem newWindowsFileSystem() {
+        return Jimfs.newFileSystem(Configuration.windows());
+    }
+
     @Test
     public void testTrackingList() throws Exception {
-        final PathSet list = new PathSet("/var/log/syslog", new PathSet.FileTreeWalker() {
-            @Override
-            public void walk(Path basePath, FileVisitor<Path> visitor) throws IOException {
-            }
-        }, fileSystem);
+        final PathSet list = new PathSet("/var/log/syslog", NOOP_FILE_TREE_WALKER, fileSystem);
 
         final Set<Path> paths = list.getPaths();
 
@@ -112,11 +119,7 @@ public class PathSetTest {
 
     @Test
     public void testIsInSet() throws Exception {
-        final PathSet pathSet = new PathSet("/var/log/**/*.{log,gz}", new PathSet.FileTreeWalker() {
-            @Override
-            public void walk(Path basePath, FileVisitor<Path> visitor) throws IOException {
-            }
-        }, fileSystem);
+        final PathSet pathSet = new PathSet("/var/log/**/*.{log,gz}", NOOP_FILE_TREE_WALKER, fileSystem);
 
         assertFalse(pathSet.isInSet(fileSystem.getPath("/var/log/mail.log")));
         assertTrue(pathSet.isInSet(fileSystem.getPath("/var/log/upstart/test.log")));
@@ -126,11 +129,7 @@ public class PathSetTest {
 
     @Test
     public void testIsInSetWithoutPattern() throws Exception {
-        final PathSet pathSet = new PathSet("/var/log/syslog", new PathSet.FileTreeWalker() {
-            @Override
-            public void walk(Path basePath, FileVisitor<Path> visitor) throws IOException {
-            }
-        }, fileSystem);
+        final PathSet pathSet = new PathSet("/var/log/syslog", NOOP_FILE_TREE_WALKER, fileSystem);
 
         assertFalse(pathSet.isInSet(fileSystem.getPath("/var/log/mail.log")));
         assertTrue(pathSet.isInSet(fileSystem.getPath("/var/log/syslog")));
@@ -138,11 +137,7 @@ public class PathSetTest {
 
     @Test
     public void testEquality() throws Exception{
-        final PathSet.FileTreeWalker treeWalker = new PathSet.FileTreeWalker() {
-            @Override
-            public void walk(Path basePath, FileVisitor<Path> visitor) throws IOException {
-            }
-        };
+        final PathSet.FileTreeWalker treeWalker = NOOP_FILE_TREE_WALKER;
 
         final PathSet pathSet1 = new PathSet("/var/log/syslog", treeWalker, fileSystem);
         final PathSet pathSet2 = new PathSet("/var/log/syslog", treeWalker, fileSystem);
@@ -156,11 +151,7 @@ public class PathSetTest {
 
     @Test
     public void testGetPattern() throws Exception {
-        final PathSet.FileTreeWalker treeWalker = new PathSet.FileTreeWalker() {
-            @Override
-            public void walk(Path basePath, FileVisitor<Path> visitor) throws IOException {
-            }
-        };
+        final PathSet.FileTreeWalker treeWalker = NOOP_FILE_TREE_WALKER;
 
         final PathSet pathSet1 = new PathSet("/var/log/syslog", treeWalker, fileSystem);
         final PathSet pathSet2 = new PathSet("/var/log/**/*.log", treeWalker, fileSystem);
