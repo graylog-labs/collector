@@ -16,20 +16,17 @@
  */
 package org.graylog.collector.file;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import com.sun.nio.file.SensitivityWatchEventModifier;
-import org.graylog.collector.file.naming.FileNamingStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
@@ -47,54 +44,45 @@ public class FileObserver extends AbstractExecutionThreadService {
     private static final Logger log = LoggerFactory.getLogger(FileObserver.class);
 
     private final WatchService watcher;
-    private final ConcurrentMap<WatchKey, WatchPath> keys = Maps.newConcurrentMap();
+    private final ConcurrentMap<WatchKey, Set<WatchPath>> keys = Maps.newConcurrentMap();
 
     private class WatchPath {
-        private final Path path;
-        private final Set<WatchEntry> entries = Sets.newConcurrentHashSet();
+        private final PathSet pathSet;
+        private final Listener listener;
 
-        public WatchPath(Path path) {
-            this.path = path;
-        }
 
-        public Path getPath() {
-            return path;
-        }
-
-        public void addEntry(WatchEntry entry) {
-            entries.add(entry);
-        }
-
-        public Set<WatchEntry> getEntries() {
-            return ImmutableSet.copyOf(entries);
-        }
-    }
-
-    private class WatchEntry {
-        public Path path;
-        public FileNamingStrategy namingStrategy;
-        public Listener listener;
-
-        public WatchEntry(Path path, FileNamingStrategy namingStrategy, Listener listener) {
-            this.namingStrategy = namingStrategy;
-            this.path = path;
+        public WatchPath(PathSet pathSet, Listener listener) {
+            this.pathSet = pathSet;
             this.listener = listener;
         }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+        public Path getPath() {
+            return pathSet.getRootPath();
+        }
 
-            WatchEntry that = (WatchEntry) o;
+        public boolean matches(Path path) {
+            return pathSet.isInSet(path);
+        }
 
-            return path.equals(that.path);
+        public void dispatchEvent(WatchEvent.Kind<Path> event, Path path) {
+            if (event == ENTRY_CREATE) {
+                listener.pathCreated(path);
+            }
+            if (event == ENTRY_DELETE) {
+                listener.pathRemoved(path);
+            }
+            if (event == ENTRY_MODIFY) {
+                listener.pathModified(path);
+            }
+        }
 
+        public void dispatchInvalid() {
+            listener.cannotObservePath(pathSet.getRootPath());
         }
 
         @Override
-        public int hashCode() {
-            return path.hashCode();
+        public String toString() {
+            return MoreObjects.toStringHelper(this).add("pathSet", pathSet.getPattern()).toString();
         }
     }
 
@@ -103,20 +91,21 @@ public class FileObserver extends AbstractExecutionThreadService {
         watcher = watchService;
     }
 
-    public void observePath(Listener listener, Path path, FileNamingStrategy namingStrategy) throws IOException {
+    public void observePathSet(PathSet pathSet, Listener listener) throws IOException {
         Preconditions.checkNotNull(listener);
-        Preconditions.checkNotNull(path);
-        Preconditions.checkNotNull(namingStrategy);
+        Preconditions.checkNotNull(pathSet);
 
-        Path directory = path;
-        if (!Files.isDirectory(directory, LinkOption.NOFOLLOW_LINKS)) {
-            directory = path.getParent();
-        }
-        final WatchKey key = directory.register(watcher, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY},
+        final Path rootPath = pathSet.getRootPath();
+
+        log.debug("Watching directory {} for changes matching: {}", rootPath, pathSet.getPattern());
+
+        final WatchKey key = rootPath.register(watcher, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY},
                 SensitivityWatchEventModifier.HIGH);
-        log.debug("Watching directory {} for file {}", directory, path);
-        keys.putIfAbsent(key, new WatchPath(directory));
-        keys.get(key).addEntry(new WatchEntry(path, namingStrategy, listener));
+
+        synchronized (keys) {
+            keys.putIfAbsent(key, Sets.<WatchPath>newConcurrentHashSet());
+            keys.get(key).add(new WatchPath(pathSet, listener));
+        }
     }
 
     @Override
@@ -133,8 +122,7 @@ public class FileObserver extends AbstractExecutionThreadService {
                 continue;
             }
 
-            final WatchPath watchPath = keys.get(key);
-            final Set<WatchEntry> watchEntries = watchPath.getEntries();
+            final Set<WatchPath> watchPaths = keys.get(key);
             for (WatchEvent<?> event : key.pollEvents()) {
                 if (event.kind() == OVERFLOW) {
                     log.error("Too many changes occurred when watching files, we lost updates.");
@@ -142,32 +130,28 @@ public class FileObserver extends AbstractExecutionThreadService {
                 }
                 @SuppressWarnings("unchecked")
                 final WatchEvent<Path> ev = (WatchEvent<Path>) event;
-                final Path path = watchPath.getPath().resolve(ev.context());
 
-                for (final WatchEntry watchEntry : watchEntries) {
-                    log.debug("Event {} for path {} received", ev.kind(), path);
+                for (WatchPath watchPath : watchPaths) {
+                    final Path path = watchPath.getPath().resolve(ev.context());
 
-                    if (!watchEntry.namingStrategy.pathMatches(path)) {
+                    if (watchPath.matches(path)) {
+                        if (log.isTraceEnabled()) {
+                            log.trace("Dispatching event {} for path {} received to {}", ev.kind(), path, watchPath);
+                        }
+                        watchPath.dispatchEvent(ev.kind(), path);
+                    } else {
                         // this file path does not belong to the set of files we are interested in
-                        log.trace("Ignoring change {} to path {}. Does not fit naming scheme.", ev.kind().name(), path.toString());
-                        continue;
-                    }
-                    if (ev.kind() == ENTRY_CREATE) {
-                        watchEntry.listener.pathCreated(path);
-                    }
-                    if (ev.kind() == ENTRY_DELETE) {
-                        watchEntry.listener.pathRemoved(path);
-                    }
-                    if (ev.kind() == ENTRY_MODIFY) {
-                        watchEntry.listener.pathModified(path);
+                        if (log.isTraceEnabled()) {
+                            log.trace("Ignoring change {} to path {} - No match in path set {}", ev.kind().name(), path, watchPath);
+                        }
                     }
                 }
             }
 
             final boolean valid = key.reset();
             if (!valid) {
-                for (WatchEntry watchEntry : watchEntries) {
-                    watchEntry.listener.cannotObservePath(watchEntry.path);
+                for (WatchPath watchPath : watchPaths) {
+                    watchPath.dispatchInvalid();
                 }
             }
         }

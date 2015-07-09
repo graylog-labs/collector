@@ -16,7 +16,6 @@
  */
 package org.graylog.collector.inputs.file;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.assistedinject.Assisted;
 import org.graylog.collector.MessageBuilder;
 import org.graylog.collector.buffer.Buffer;
@@ -24,14 +23,13 @@ import org.graylog.collector.config.ConfigurationUtils;
 import org.graylog.collector.file.ChunkReader;
 import org.graylog.collector.file.FileObserver;
 import org.graylog.collector.file.FileReaderService;
-import org.graylog.collector.file.naming.NumberSuffixStrategy;
+import org.graylog.collector.file.PathSet;
 import org.graylog.collector.inputs.InputService;
 import org.graylog.collector.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.nio.file.Path;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
@@ -72,13 +70,11 @@ public class FileInput extends InputService {
     @Override
     protected void run() throws Exception {
         // TODO needs to be an absolute path because otherwise the FileObserver does weird things. Investigate what's wrong with it.
-        final Path path = configuration.getPath().toPath().toAbsolutePath();
         final MessageBuilder messageBuilder = new MessageBuilder().input(getId()).outputs(getOutputs()).source(Utils.getHostname());
-        final ImmutableSet<Path> paths = ImmutableSet.of(path);
+        final PathSet pathSet = new PathSet(configuration.getPath().toString());
         final FileReaderService readerService = new FileReaderService(
-                paths,
+                pathSet,
                 configuration.getCharset(),
-                new NumberSuffixStrategy(paths),
                 true,
                 InitialReadPosition.END,
                 this,

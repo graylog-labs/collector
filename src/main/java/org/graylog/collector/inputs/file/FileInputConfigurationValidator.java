@@ -87,10 +87,6 @@ public class FileInputConfigurationValidator implements ConstraintValidator<Vali
         if (!file.getParentFile().canRead()) {
             LOG.warn("Configured directory {} does not exist or is not accessible.", file.getParent());
         }
-
-        if (!file.canRead()) {
-            LOG.warn("Configured log file {} does not exist yet or is not accessible.", file.toString());
-        }
     }
 
     private void setMessageTemplate(ConstraintValidatorContext context, String messageTemplate, String value) {

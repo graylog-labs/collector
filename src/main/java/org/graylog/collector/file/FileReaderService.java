@@ -20,7 +20,6 @@ import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.AbstractService;
 import org.graylog.collector.MessageBuilder;
 import org.graylog.collector.buffer.Buffer;
-import org.graylog.collector.file.naming.FileNamingStrategy;
 import org.graylog.collector.file.splitters.ContentSplitter;
 import org.graylog.collector.inputs.file.FileInput;
 import org.slf4j.Logger;
@@ -35,8 +34,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class FileReaderService extends AbstractService {
     private static final Logger log = LoggerFactory.getLogger(FileReaderService.class);
 
-    private final Set<Path> monitoredFiles;
-    private final FileNamingStrategy namingStrategy;
+    private final PathSet pathSet;
     private final boolean followMode;
     private final FileInput.InitialReadPosition initialReadPosition;
     private final FileInput input;
@@ -52,9 +50,8 @@ public class FileReaderService extends AbstractService {
     private ChunkProcessor chunkProcessor;
     private ChunkReaderScheduler chunkReaderScheduler;
 
-    public FileReaderService(Set<Path> monitoredFiles,
+    public FileReaderService(PathSet pathSet,
                              Charset charset,
-                             FileNamingStrategy namingStrategy,
                              boolean followMode,
                              FileInput.InitialReadPosition initialReadPosition,
                              FileInput input,
@@ -64,8 +61,7 @@ public class FileReaderService extends AbstractService {
                              int readerBufferSize,
                              long readerInterval,
                              FileObserver fileObserver) {
-        this.monitoredFiles = monitoredFiles;
-        this.namingStrategy = namingStrategy;
+        this.pathSet = pathSet;
         this.followMode = followMode;
         this.initialReadPosition = initialReadPosition;
         this.input = input;
@@ -85,29 +81,44 @@ public class FileReaderService extends AbstractService {
         chunkReaderScheduler = new ChunkReaderScheduler(input, chunkQueue, readerBufferSize, readerInterval, followMode, initialReadPosition);
         chunkProcessor = new ChunkProcessor(buffer, messageBuilder, chunkQueue, contentSplitter, charset);
 
-        for (Path monitoredFile : monitoredFiles) {
-            if (!monitoredFile.toFile().exists()) {
+        try {
+            fileObserver.observePathSet(pathSet, new FsChangeListener());
+        } catch (IOException e) {
+            log.error("Unable to monitor directory: {}", pathSet.getRootPath());
+            notifyFailed(e);
+            return;
+        }
+
+        final Set<Path> paths;
+        try {
+            paths = pathSet.getPaths();
+        } catch (IOException e) {
+            log.error("Unable to compute paths", e);
+            notifyFailed(e);
+            return;
+        }
+
+        for (Path path : paths) {
+            if (!path.toFile().exists()) {
                 if (followMode) {
-                    log.warn("File {} does not exist but will be followed once it will be created.", monitoredFile);
+                    log.warn("File {} does not exist but will be followed once it will be created.", path);
                 } else {
-                    final String msg = "File " + monitoredFile + " does not exist and follow mode is not enabled. Not waiting for file to appear.";
+                    final String msg = "File " + path + " does not exist and follow mode is not enabled. Not waiting for file to appear.";
                     log.error(msg);
                     notifyFailed(new IllegalStateException(msg));
                     return;
                 }
             }
 
-            chunkProcessor.addFileConfig(monitoredFile, "source", false);
+            chunkProcessor.addFileConfig(path, "source", false);
 
             try {
-                fileObserver.observePath(new FsChangeListener(monitoredFile), monitoredFile, namingStrategy);
-
                 // for a previously existing file, we would not get a watcher callback, so we initialize the chunkreader here
-                if (monitoredFile.toFile().exists()) {
-                    chunkReaderScheduler.followFile(monitoredFile);
+                if (path.toFile().exists()) {
+                    chunkReaderScheduler.followFile(path);
                 }
             } catch (IOException e) {
-                log.error("Unable to monitor directory for file " + monitoredFile, e);
+                log.error("Unable to follow file: " + path, e);
                 notifyFailed(e);
             }
         }
@@ -126,53 +137,37 @@ public class FileReaderService extends AbstractService {
     }
 
     public class FsChangeListener implements FileObserver.Listener {
-        private final Path monitoredFile;
-
-        public FsChangeListener(Path monitoredFile) {
-            this.monitoredFile = monitoredFile;
-        }
-
         @Override
         public void pathCreated(Path path) {
-            if (path.equals(monitoredFile)) {
-                // a file with the same name as the one we should be monitoring has been created, start reading it
-                if (chunkReaderScheduler.isFollowingFile(path)) {
-                    chunkReaderScheduler.cancelFile(path);
+            // a file with the same name as the one we should be monitoring has been created, start reading it
+            if (chunkReaderScheduler.isFollowingFile(path)) {
+                chunkReaderScheduler.cancelFile(path);
+            }
+            try {
+                if (path.toFile().exists()) {
+                    chunkReaderScheduler.followFile(path);
                 }
-                try {
-                    if (monitoredFile.toFile().exists()) {
-                        chunkReaderScheduler.followFile(monitoredFile);
-                    }
-                } catch (IOException e) {
-                    log.error("Cannot read newly created file " + monitoredFile, e);
-                }
-            } else {
-                // the file is part of the logrotate 'family'
-                // TODO make sure we have read everything from the rotated file (copytruncate will copy the original file)
+            } catch (IOException e) {
+                log.error("Cannot read newly created file " + path, e);
             }
         }
 
         @Override
         public void pathRemoved(Path path) {
-            if (path.equals(monitoredFile)) {
-                // File got removed, stop following it.
-                chunkReaderScheduler.cancelFile(path);
-            } else {
-                // TODO logrotate removed some file, check if we have read all data in it already, else send a warning that we
-                // might have lost data
-            }
+            // File got removed, stop following it.
+            chunkReaderScheduler.cancelFile(path);
         }
 
         @Override
         public void pathModified(Path path) {
-            if (!chunkReaderScheduler.isFollowingFile(path) && path.equals(monitoredFile) && monitoredFile.toFile().exists()) {
+            if (!chunkReaderScheduler.isFollowingFile(path) && path.toFile().exists()) {
                 // Start following the modified file now. If we did not follow it before, there might have been an
                 // error regarding permissions or something similar.
                 try {
-                    log.trace("Start following modified file {}", monitoredFile);
-                    chunkReaderScheduler.followFile(monitoredFile);
+                    log.trace("Start following modified file {}", path);
+                    chunkReaderScheduler.followFile(path);
                 } catch (IOException e) {
-                    log.error("Cannot read modified file " + monitoredFile, e);
+                    log.error("Cannot read modified file " + path, e);
                 }
             }
         }
