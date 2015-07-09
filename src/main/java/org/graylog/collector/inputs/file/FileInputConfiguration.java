@@ -20,6 +20,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.typesafe.config.Config;
 import org.graylog.collector.config.ConfigurationUtils;
 import org.graylog.collector.config.constraints.IsOneOf;
+import org.graylog.collector.file.PathSet;
 import org.graylog.collector.file.splitters.ContentSplitter;
 import org.graylog.collector.file.splitters.NewlineChunkSplitter;
 import org.graylog.collector.file.splitters.PatternChunkSplitter;
@@ -27,7 +28,6 @@ import org.graylog.collector.inputs.InputConfiguration;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,7 +45,7 @@ public class FileInputConfiguration extends InputConfiguration {
     }
 
     @NotNull
-    private File path;
+    private PathSet path;
 
     @IsOneOf({"NEWLINE", "PATTERN"})
     private final String contentSplitter;
@@ -70,7 +70,7 @@ public class FileInputConfiguration extends InputConfiguration {
         this.inputFactory = inputFactory;
 
         if (config.hasPath("path")) {
-            this.path = new File(config.getString("path"));
+            this.path = new PathSet(config.getString("path"));
         }
         if (config.hasPath("content-splitter")) {
             this.contentSplitter = config.getString("content-splitter").toUpperCase();
@@ -105,7 +105,7 @@ public class FileInputConfiguration extends InputConfiguration {
         return inputFactory.create(this);
     }
 
-    public File getPath() {
+    public PathSet getPathSet() {
         return path;
     }
 
@@ -148,7 +148,7 @@ public class FileInputConfiguration extends InputConfiguration {
     public Map<String, String> toStringValues() {
         return Collections.unmodifiableMap(new HashMap<String, String>(super.toStringValues()) {
             {
-                put("path", getPath().toString());
+                put("path-set", getPathSet().toString());
                 put("charset", getCharset().toString());
                 put("content-splitter", getContentSplitter());
                 if (!isNullOrEmpty(contentSplitterPattern)) {
