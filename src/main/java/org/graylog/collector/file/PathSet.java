@@ -38,6 +38,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class PathSet {
     private static final Logger LOG = LoggerFactory.getLogger(PathSet.class);
 
@@ -100,6 +102,8 @@ public class PathSet {
     }
 
     public PathSet(final String pattern, FileTreeWalker fileTreeWalker) {
+        checkNotNull(pattern);
+
         this.pattern = pattern;
         this.fileTreeWalker = fileTreeWalker;
         final String patternString = Utils.isWindows() ? pattern.replace("\\", "\\\\") : pattern;
