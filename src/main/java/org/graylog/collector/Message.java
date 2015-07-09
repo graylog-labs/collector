@@ -80,7 +80,7 @@ public class Message {
     public String toString() {
         final StringBuffer sb = new StringBuffer("Message{");
         sb.append("timestamp=").append(getTimestamp());
-        sb.append(", level='").append(getLevel().toString()).append('\'');
+        sb.append(", level='").append(getLevel()).append('\'');
         sb.append(", message='").append(getMessage()).append('\'');
         sb.append(", source='").append(getSource()).append('\'');
         sb.append(", input='").append(getInput()).append('\'');
