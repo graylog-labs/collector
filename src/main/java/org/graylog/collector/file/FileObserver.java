@@ -142,7 +142,7 @@ public class FileObserver extends AbstractExecutionThreadService {
                     } else {
                         // this file path does not belong to the set of files we are interested in
                         if (log.isTraceEnabled()) {
-                            log.trace("Ignoring change {} to path {} - No match in path set {}", ev.kind().name(), path.toString(), watchPath);
+                            log.trace("Ignoring change {} to path {} - No match in path set {}", ev.kind().name(), path, watchPath);
                         }
                     }
                 }

@@ -47,7 +47,6 @@ public class PathSetTest {
         final PathSet list = new PathSet("/var/log/syslog", new PathSet.FileTreeWalker() {
             @Override
             public void walk(Path basePath, FileVisitor<Path> visitor) throws IOException {
-                System.out.println("YO");
             }
         });
 

@@ -137,9 +137,6 @@ public class FileReaderService extends AbstractService {
     }
 
     public class FsChangeListener implements FileObserver.Listener {
-        public FsChangeListener() {
-        }
-
         @Override
         public void pathCreated(Path path) {
             // a file with the same name as the one we should be monitoring has been created, start reading it

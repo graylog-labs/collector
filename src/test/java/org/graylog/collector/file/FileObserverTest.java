@@ -290,11 +290,6 @@ public class FileObserverTest {
             }
         };
 
-        // Make sure to use a non-existent path for the naming strategy here!
-        /*
-        fileObserver.observePath(listener, path1, new ExactFileStrategy(Paths.get("/tmp/foo/bar/baz")));
-        fileObserver.observePath(listener, path2, new ExactFileStrategy(path2));
-        */
         fileObserver.observePathSet(pathSet, listener);
 
         fileObserver.startAsync();
