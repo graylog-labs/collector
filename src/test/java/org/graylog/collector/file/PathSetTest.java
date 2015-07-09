@@ -26,6 +26,7 @@ import org.mockito.MockitoAnnotations;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileVisitor;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Set;
@@ -63,11 +64,14 @@ public class PathSetTest {
 
     @Test
     public void testTrackingList() throws Exception {
-        final PathSet list = new PathSet("/var/log/syslog", NOOP_FILE_TREE_WALKER, fileSystem);
+        final Path path = fileSystem.getPath("/var/log");
 
+        Files.createDirectories(path);
+
+        final PathSet list = new PathSet("/var/log/syslog", NOOP_FILE_TREE_WALKER, fileSystem);
         final Set<Path> paths = list.getPaths();
 
-        assertEquals(fileSystem.getPath("/var/log"), list.getRootPath());
+        assertEquals(path, list.getRootPath());
         assertEquals(1, paths.size());
         assertTrue(paths.contains(fileSystem.getPath("/var/log/syslog")));
     }
@@ -78,6 +82,11 @@ public class PathSetTest {
         final String file2 = "/var/log/test/compressed.log.1.gz";
         final String file3 = "/var/log/foo/bar/baz/test.log";
         final String file4 = "/var/log/test.log";
+
+        Files.createDirectories(fileSystem.getPath(file1).getParent());
+        Files.createDirectories(fileSystem.getPath(file2).getParent());
+        Files.createDirectories(fileSystem.getPath(file3).getParent());
+        Files.createDirectories(fileSystem.getPath(file4).getParent());
 
         final PathSet list = new PathSet("/var/log/**/*.{log,gz}", new PathSet.FileTreeWalker() {
             @Override
@@ -102,6 +111,8 @@ public class PathSetTest {
     @Test
     public void testTrackingListWithGlobEdgeCases() throws Exception {
         final String file1 = "/var/log/ups?art/graylog-collector.log";
+
+        Files.createDirectories(fileSystem.getPath(file1).getParent());
 
         final PathSet list = new PathSet("/var/log/ups\\?art/*.{log,gz}", new PathSet.FileTreeWalker() {
             @Override
