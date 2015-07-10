@@ -120,7 +120,15 @@ public class ChunkReader implements Runnable {
                 return;
             }
 
-            final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(Math.min(Ints.saturatedCast(size - position), initialChunkSize));
+            final ByteBuffer byteBuffer;
+            try {
+                byteBuffer = ByteBuffer.allocateDirect(Math.min(Ints.saturatedCast(size - position), initialChunkSize));
+            } catch (OutOfMemoryError e) {
+                // Catch and log the OutOfMemoryError and re-throw. Without catching it here, it would be swallowed
+                // when allocating direct buffers.
+                log.error("Unable to allocate buffer", e);
+                throw e;
+            }
             final Future<Integer> read = fileChannel.read(byteBuffer, position);
             final Integer bytesRead = read.get();
             log.trace("[{}] Read {} bytes from position {}", new Object[]{path, bytesRead, position});
