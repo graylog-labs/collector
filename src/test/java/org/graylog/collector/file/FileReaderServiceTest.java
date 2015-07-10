@@ -82,7 +82,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
 
         final FileObserver fileObserverSpy = spy(fileObserver);
         final NumberSuffixStrategy namingStrategy = new NumberSuffixStrategy(path);
-        final PathSet pathSet = new PathSet(path.toString());
+        final PathSet pathSet = new SinglePathSet(path.toString());
 
         final FileReaderService readerService = new FileReaderService(
                 pathSet,
@@ -126,7 +126,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         final CollectingBuffer buffer = new CollectingBuffer();
         final MessageBuilder messageBuilder = new MessageBuilder().input("input-id").outputs(new HashSet<String>()).source("test");
         final FileReaderService readerService = new FileReaderService(
-                new PathSet(path.toString()),
+                new SinglePathSet(path.toString()),
                 Charsets.UTF_8,
                 true,
                 FileInput.InitialReadPosition.START,
@@ -168,7 +168,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         final CollectingBuffer buffer = new CollectingBuffer();
         final MessageBuilder messageBuilder = new MessageBuilder().input("input-id").outputs(new HashSet<String>()).source("test");
         final FileReaderService readerService = new FileReaderService(
-                new PathSet(path.toString()),
+                new SinglePathSet(path.toString()),
                 Charsets.UTF_8,
                 true,
                 FileInput.InitialReadPosition.START,
@@ -218,7 +218,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         log.info("FILE 2 - {}", path2);
         log.info("FILE 3 - {}", path3);
 
-        final PathSet pathSet = new PathSet(temporaryFolder.getRoot().toString() + "/*");
+        final GlobPathSet pathSet = new GlobPathSet(temporaryFolder.getRoot().toString(), "*");
 
         // Delete the second file before starting.
         Files.deleteIfExists(path2);

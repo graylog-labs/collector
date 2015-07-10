@@ -53,7 +53,7 @@ public class FileObserverTest {
 
     @Test
     public void testObserverCallbacks() throws Exception {
-        final PathSet pathSet = new PathSet(temporaryFolder.getRoot().toString() + "/*");
+        final PathSet pathSet = new GlobPathSet(temporaryFolder.getRoot().toString(), "*");
         final FileObserver fileObserver = new FileObserver(watchService);
         final File file = temporaryFolder.newFile();
         final Path path = file.toPath();
@@ -121,8 +121,8 @@ public class FileObserverTest {
         final File file1 = temporaryFolder.newFile();
         final File file2 = temporaryFolder.newFile();
         final File file3 = temporaryFolder2.newFile();
-        final PathSet pathSet1 = new PathSet(temporaryFolder.getRoot().toString() + "/*");
-        final PathSet pathSet2 = new PathSet(temporaryFolder2.getRoot().toString() + "/*");
+        final GlobPathSet pathSet1 = new GlobPathSet(temporaryFolder.getRoot().toString(), "*");
+        final GlobPathSet pathSet2 = new GlobPathSet(temporaryFolder2.getRoot().toString(), "*");
         final Path path1 = file1.toPath();
         final Path path2 = file2.toPath();
         final Path path3 = file3.toPath();
@@ -235,7 +235,7 @@ public class FileObserverTest {
     @Test
     @Ignore("File naming strategies have been disabled for now")
     public void testNamingStrategy() throws Exception {
-        final PathSet pathSet = new PathSet(temporaryFolder.getRoot().toString() + "/*");
+        final GlobPathSet pathSet = new GlobPathSet(temporaryFolder.getRoot().toString(), "*");
         final FileObserver fileObserver = new FileObserver(watchService);
         final File file1 = temporaryFolder.newFile();
         final File file2 = temporaryFolder.newFile();

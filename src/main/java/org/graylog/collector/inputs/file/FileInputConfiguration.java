@@ -20,7 +20,9 @@ import com.google.inject.assistedinject.Assisted;
 import com.typesafe.config.Config;
 import org.graylog.collector.config.ConfigurationUtils;
 import org.graylog.collector.config.constraints.IsOneOf;
+import org.graylog.collector.file.GlobPathSet;
 import org.graylog.collector.file.PathSet;
+import org.graylog.collector.file.SinglePathSet;
 import org.graylog.collector.file.splitters.ContentSplitter;
 import org.graylog.collector.file.splitters.NewlineChunkSplitter;
 import org.graylog.collector.file.splitters.PatternChunkSplitter;
@@ -69,9 +71,14 @@ public class FileInputConfiguration extends InputConfiguration {
         super(id, config);
         this.inputFactory = inputFactory;
 
-        if (config.hasPath("path")) {
-            this.path = new PathSet(config.getString("path"));
+        if (config.hasPath("path-glob-root") && config.hasPath("path-glob-pattern")) {
+            this.path = new GlobPathSet(config.getString("path-glob-root"), config.getString("path-glob-pattern"));
+        } else {
+            if (config.hasPath("path")) {
+                this.path = new SinglePathSet(config.getString("path"));
+            }
         }
+
         if (config.hasPath("content-splitter")) {
             this.contentSplitter = config.getString("content-splitter").toUpperCase();
 
