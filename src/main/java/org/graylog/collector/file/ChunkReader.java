@@ -17,6 +17,7 @@
 package org.graylog.collector.file;
 
 import com.google.common.base.Preconditions;
+import com.google.common.primitives.Ints;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.graylog.collector.inputs.Input;
@@ -119,7 +120,7 @@ public class ChunkReader implements Runnable {
                 return;
             }
 
-            final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(initialChunkSize);
+            final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(Math.min(Ints.saturatedCast(size - position), initialChunkSize));
             final Future<Integer> read = fileChannel.read(byteBuffer, position);
             final Integer bytesRead = read.get();
             log.trace("[{}] Read {} bytes from position {}", new Object[]{path, bytesRead, position});
