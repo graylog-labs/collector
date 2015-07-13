@@ -37,6 +37,7 @@
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.install.skip>true</maven.install.skip>
 
         <collector.share-path>/usr/share/graylog-collector</collector.share-path>
         <collector.script-config>${collector.share-path}/graylog-collector-script-config.sh</collector.script-config>
@@ -328,6 +329,15 @@
                     <outputDirectory>${project.build.directory}/assembly</outputDirectory>
                     <finalName>${project.artifactId}-${project.version}-${maven.build.timestamp}</finalName>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>build-assembly</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
