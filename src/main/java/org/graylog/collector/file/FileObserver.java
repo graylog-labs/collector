@@ -82,7 +82,7 @@ public class FileObserver extends AbstractExecutionThreadService {
 
         @Override
         public String toString() {
-            return MoreObjects.toStringHelper(this).add("pathSet", pathSet.getPattern()).toString();
+            return MoreObjects.toStringHelper(this).add("pathSet", pathSet).toString();
         }
     }
 
@@ -97,7 +97,7 @@ public class FileObserver extends AbstractExecutionThreadService {
 
         final Path rootPath = pathSet.getRootPath();
 
-        log.debug("Watching directory {} for changes matching: {}", rootPath, pathSet.getPattern());
+        log.debug("Watching directory {} for changes matching: {}", rootPath, pathSet);
 
         final WatchKey key = rootPath.register(watcher, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY},
                 SensitivityWatchEventModifier.HIGH);
