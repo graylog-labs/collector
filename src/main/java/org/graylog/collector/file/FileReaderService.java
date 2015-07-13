@@ -99,8 +99,8 @@ public class FileReaderService extends AbstractService {
         }
 
         if (paths.isEmpty()) {
-            log.info("No files to follow for input \"{}\" yet, files will be followed once they appear in \"{}\"",
-                    input.getId(), pathSet.getRootPath());
+            log.info("Configured files for input \"{}\" do not exist yet. They will be followed once they are created.",
+                    input.getId());
         }
 
         for (Path path : paths) {
