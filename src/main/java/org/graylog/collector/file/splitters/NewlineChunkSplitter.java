@@ -48,7 +48,7 @@ public class NewlineChunkSplitter extends ContentSplitter {
                             }
                             final ByteBuf fullLine = buffer.readBytes(i);
                             // Strip the \r/\n bytes from the buffer.
-                            final byte readByte = buffer.readByte();// the \r or \n byte
+                            final byte readByte = buffer.readByte(); // the \r or \n byte
                             if (readByte == '\r') {
                                 buffer.readByte(); // the \n byte if previous was \r
                             }

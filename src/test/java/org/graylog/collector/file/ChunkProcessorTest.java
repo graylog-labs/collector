@@ -177,7 +177,6 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
 
         final MessageBuilder messageBuilder = new MessageBuilder().input("input-id").outputs(new HashSet<String>()).source("test");
         final ChunkProcessor processor = new ChunkProcessor(buffer, messageBuilder, chunkQueue, new NewlineChunkSplitter(), Charsets.UTF_8);
-        processor.addFileConfig(logFile, "test", true);
 
         return processor;
     }

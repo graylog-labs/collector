@@ -62,10 +62,11 @@ public class HeartbeatService extends AbstractScheduledService {
                 LOG.warn("Unable to send heartbeat to Graylog server, result was: {} - {}", response.getStatus(), response.getReason());
             else {
                 final String message;
-                if (e.getCause() != null)
+                if (e.getCause() != null) {
                     message = e.getCause().getClass().getSimpleName() + ": " + e.getCause().getMessage();
-                else
+                } else {
                     message = e.getClass().getSimpleName() + ": " + e.getMessage();
+                }
                 LOG.warn("Unable to send heartbeat to Graylog server: {}", message);
             }
         }

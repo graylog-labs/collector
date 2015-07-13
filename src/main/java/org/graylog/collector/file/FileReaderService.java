@@ -115,8 +115,6 @@ public class FileReaderService extends AbstractService {
                 }
             }
 
-            chunkProcessor.addFileConfig(path, "source", false);
-
             try {
                 // for a previously existing file, we would not get a watcher callback, so we initialize the chunkreader here
                 if (path.toFile().exists()) {

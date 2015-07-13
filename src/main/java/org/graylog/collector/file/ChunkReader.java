@@ -158,7 +158,9 @@ public class ChunkReader implements Runnable {
                         log.info("Unable to close file", e);
                     }
                     // signals the consumer of the queue that we won't produce any more chunks.
-                    chunks.offer(FileChunk.finalChunk(path));
+                    if (!chunks.offer(FileChunk.finalChunk(path))) {
+                        log.debug("Failed to put the final chunk into the chunk queue.");
+                    }
                 }
             }
 

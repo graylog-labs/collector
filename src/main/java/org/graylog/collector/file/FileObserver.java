@@ -46,7 +46,7 @@ public class FileObserver extends AbstractExecutionThreadService {
     private final WatchService watcher;
     private final ConcurrentMap<WatchKey, Set<WatchPath>> keys = Maps.newConcurrentMap();
 
-    private class WatchPath {
+    private static class WatchPath {
         private final PathSet pathSet;
         private final Listener listener;
 
@@ -102,6 +102,7 @@ public class FileObserver extends AbstractExecutionThreadService {
         final WatchKey key = rootPath.register(watcher, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY},
                 SensitivityWatchEventModifier.HIGH);
 
+        // Synchronize on keys to make the two operations atomic.
         synchronized (keys) {
             keys.putIfAbsent(key, Sets.<WatchPath>newConcurrentHashSet());
             keys.get(key).add(new WatchPath(pathSet, listener));

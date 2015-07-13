@@ -16,6 +16,7 @@
  */
 package org.graylog.collector.utils;
 
+import com.google.common.base.Charsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,8 +44,9 @@ public class CollectorId {
         final String configuredCollectorId = config.getCollectorId();
         if (configuredCollectorId.startsWith("file:")) {
             final String[] splittedConfig = configuredCollectorId.split("^file:");
-            if (splittedConfig.length < 2)
+            if (splittedConfig.length < 2) {
                 throw new RuntimeException("Invalid specified file location for collector id: " + configuredCollectorId);
+            }
             this.id = readOrGenerate(splittedConfig[1]);
         } else {
             this.id = configuredCollectorId;
@@ -95,7 +97,7 @@ public class CollectorId {
             Files.createDirectories(path.getParent());
         }
 
-        Files.write(path, nodeId.getBytes());
+        Files.write(path, nodeId.getBytes(Charsets.UTF_8));
     }
 
     /**

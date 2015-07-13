@@ -16,7 +16,6 @@
  */
 package org.graylog.collector.file;
 
-import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import io.netty.buffer.ByteBuf;
 import org.graylog.collector.Message;
@@ -30,7 +29,6 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.charset.Charset;
 import java.nio.file.Path;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -55,22 +53,7 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
         }
     }
 
-    private static class ImmutablePair<K, V> {
-        final K first;
-        final V second;
-
-        public ImmutablePair(K first, V second) {
-            this.first = first;
-            this.second = second;
-        }
-
-        public static <K, V> ImmutablePair<K, V> of(K first, V second) {
-            return new ImmutablePair<>(first, second);
-        }
-    }
-
     private ChunkBufferStore chunkBufferStore = new ChunkBufferStore();
-    private Map<Path, ImmutablePair<String, Boolean>> pathConfig = Maps.newHashMap();
 
     public ChunkProcessor(Buffer buffer, MessageBuilder messageBuilder, BlockingQueue<FileChunk> chunkQueue, ContentSplitter splitter, final Charset charset) {
         this.buffer = buffer;
@@ -80,13 +63,8 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
         this.charset = charset;
     }
 
-    public void addFileConfig(Path path, String source, boolean overrideTimestamp) {
-        pathConfig.put(path, ImmutablePair.of(source, overrideTimestamp));
-    }
-
     public void process(FileChunk chunk) {
         final Path path = chunk.getPath();
-        final ImmutablePair<String, Boolean> options = pathConfig.get(path);
 
         if (chunk.isFinalChunk()) {
             // we've reached the EOF and aren't in follow mode
