@@ -55,7 +55,7 @@ public class GlobPathSet implements PathSet {
         @Override
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
             // Skip /proc because it can throw some permission errors we cannot check for.
-            return dir.toString().startsWith("/proc") ? FileVisitResult.SKIP_SUBTREE : FileVisitResult.CONTINUE;
+            return "/proc".equals(dir.toString()) ? FileVisitResult.SKIP_SUBTREE : FileVisitResult.CONTINUE;
         }
 
         @Override
