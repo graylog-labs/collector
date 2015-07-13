@@ -24,6 +24,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -51,7 +52,7 @@ public class SinglePathSet implements PathSet {
 
     @Override
     public Set<Path> getPaths() throws IOException {
-        return Files.exists(path) ? ImmutableSet.of(path) : ImmutableSet.<Path>of();
+        return Files.exists(path) ? ImmutableSet.of(path) : Collections.<Path>emptySet();
     }
 
     @Override
