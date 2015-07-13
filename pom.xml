@@ -486,7 +486,6 @@
                         <configuration>
                             <targetJdk>${maven.compiler.target}</targetJdk>
                             <failOnViolation>false</failOnViolation>
-                            <verbose>true</verbose>
                         </configuration>
                         <executions>
                             <execution>
@@ -500,9 +499,9 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-checkstyle-plugin</artifactId>
                         <configuration>
-                            <consoleOutput>true</consoleOutput>
                             <failOnViolation>false</failOnViolation>
                             <configLocation>checkstyle.xml</configLocation>
+                            <logViolationsToConsole>false</logViolationsToConsole>
                         </configuration>
                         <executions>
                             <execution>
@@ -544,16 +543,15 @@
                         <configuration>
                             <targetJdk>${maven.compiler.target}</targetJdk>
                             <failOnViolation>false</failOnViolation>
-                            <verbose>true</verbose>
                         </configuration>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-checkstyle-plugin</artifactId>
                         <configuration>
-                            <consoleOutput>true</consoleOutput>
                             <failOnViolation>false</failOnViolation>
                             <configLocation>checkstyle.xml</configLocation>
+                            <logViolationsToConsole>false</logViolationsToConsole>
                         </configuration>
                     </plugin>
                     <plugin>
