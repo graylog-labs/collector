@@ -9,8 +9,8 @@ This is the Graylog Collector.
 
 Running the Collector requires at least **Java 7**.
 
-* [v0.2.5 TGZ](https://packages.graylog2.org/releases/graylog-collector/graylog-collector-0.2.5.tgz)
-* [v0.2.5 ZIP](https://packages.graylog2.org/releases/graylog-collector/graylog-collector-0.2.5.zip)
+* [v0.3.0 TGZ](https://packages.graylog2.org/releases/graylog-collector/graylog-collector-0.3.0.tgz)
+* [v0.3.0 ZIP](https://packages.graylog2.org/releases/graylog-collector/graylog-collector-0.3.0.zip)
 
 ## Documentation
 
