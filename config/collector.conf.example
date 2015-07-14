@@ -15,44 +15,52 @@ message-buffer-size = 128
 // Defaults to "file:config/collector-id" if not specified.
 collector-id = "file:config/collector-id"
 
-inputs {
-  local-syslog {
-    type = "file"
-    path = "/var/log/syslog"
-    charset = "utf-8"
-    content-splitter = "newline"
-  }
-  win-application {
-    type = "windows-eventlog"
-    source-name = "Application"
-    poll-interval = 1s
-  }
-  apache-access {
-    type = "file"
-    path = "/var/log/apache2/access.log"
-  }
-  test-log {
-    type = "file"
-    charset = "windows-1252"
-    path = "logs/file.log"
-  }
-}
+//inputs {
+//  // A simple file input that follows /var/log/syslog.
+//  local-syslog {
+//    type = "file"
+//    path = "/var/log/syslog"
+//    charset = "utf-8"
+//    content-splitter = "newline"
+//  }
+//
+//  // A globbing file input. Follows all *.access.log files that exist and will be created in /var/log/apache2.
+//  // You have to split the path into path-glob-root and path-glob-pattern. A usual "/var/log/**/*.{log,txt}"
+//  // becomes path-glob-root="/var/log" and path-glob-pattern="**/*.{log,txt}".
+//  apache-access {
+//    type = "file"
+//    path-glob-root = "/var/log/apache2"
+//    path-glob-pattern = "*.access.log"
+//  }
+//
+//  // An input to read from the given Windows event log. Only works on Windows.
+//  // Available source-names: Application, System, Security
+//  win-application {
+//    type = "windows-eventlog"
+//    source-name = "Application"
+//    poll-interval = 1s
+//  }
+//}
 
-outputs {
-  gelf-tcp {
-    type = "gelf"
-    host = "127.0.0.1"
-    port = 12201
-    client-tls = false
-    client-tls-cert-chain-file = "/path/to/cert-chain.pem"
-    client-tls-verify-cert = true
-    client-queue-size = 512
-    client-connect-timeout = 5000
-    client-reconnect-delay = 1000
-    client-tcp-no-delay = true
-    client-send-buffer-size = 32768
-  }
-  console {
-    type = "stdout"
-  }
-}
+//outputs {
+//  // GELF output to send messages to a Graylog server. Usually only type, host and port are needed.
+//  // The other options are for TLS support and to fine-tune the GELF client library.
+//  gelf-tcp {
+//    type = "gelf"
+//    host = "127.0.0.1"
+//    port = 12201
+//    client-tls = false
+//    client-tls-cert-chain-file = "/path/to/cert-chain.pem"
+//    client-tls-verify-cert = true
+//    client-queue-size = 512
+//    client-connect-timeout = 5000
+//    client-reconnect-delay = 1000
+//    client-tcp-no-delay = true
+//    client-send-buffer-size = 32768
+//  }
+//
+//  // Prints all messages to STDOUT. Useful for debugging. Do not enable in production usage!
+//  console {
+//    type = "stdout"
+//  }
+//}
