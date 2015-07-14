@@ -1,6 +1,14 @@
 Graylog Collector ChangeLog
 ===========================
 
+## v0.3.0 (2015-07-14)
+
+* Lots of bug fixes regarding resource usage.
+* Wildcard support for file inputs. (#24, #42)
+* The GELF output does not send a `level` field for messages from file inputs
+  anymore. It was hardcoded to INFO before.
+* Improved example configuration file.
+
 ## v0.2.5 (2015-07-01)
 
 * Fix classpath for Windows service to unbreak Sigar. (#39)
