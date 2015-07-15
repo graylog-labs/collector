@@ -6,8 +6,6 @@ server-url = "http://localhost:12900"
 // Enable registration with the Graylog server. (enabled by default)
 //enable-registration = true
 
-message-buffer-size = 128
-
 // The id used to identify this collector. Can be either a string which is used as id,
 // or the location of a file if prefixed with "file:". If the file does not exist,
 // an id will be generated and written to that file. If it exists, it is expected
