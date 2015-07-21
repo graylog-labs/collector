@@ -43,7 +43,6 @@ public class GelfOutput extends OutputService {
     private final GelfOutputConfiguration configuration;
     private GelfTransport transport;
 
-    private final CountDownLatch stopLatch = new CountDownLatch(1);
     private final CountDownLatch transportInitialized = new CountDownLatch(1);
 
     @Inject
@@ -52,12 +51,7 @@ public class GelfOutput extends OutputService {
     }
 
     @Override
-    protected void triggerShutdown() {
-        stopLatch.countDown();
-    }
-
-    @Override
-    protected void run() throws Exception {
+    protected void doStart() {
         final GelfConfiguration clientConfig = new GelfConfiguration(configuration.getHost(), configuration.getPort())
                 .transport(GelfTransports.TCP)
                 .queueSize(configuration.getClientQueueSize())
@@ -81,10 +75,15 @@ public class GelfOutput extends OutputService {
         this.transport = GelfTransports.create(clientConfig);
 
         transportInitialized.countDown();
-        stopLatch.await();
 
+        notifyStarted();
+    }
+
+    @Override
+    protected void doStop() {
         LOG.debug("Stopping transport {}", transport);
         transport.stop();
+        notifyStopped();
     }
 
     @Override

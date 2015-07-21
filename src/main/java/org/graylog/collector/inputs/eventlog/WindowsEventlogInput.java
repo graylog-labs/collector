@@ -26,12 +26,11 @@ import org.hyperic.sigar.win32.EventLogThread;
 
 import javax.inject.Inject;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 
 public class WindowsEventlogInput extends InputService {
     private final WindowsEventlogInputConfiguration configuration;
     private final Buffer buffer;
-    private final CountDownLatch stopLatch = new CountDownLatch(1);
+    private final EventLogThread logThread;
 
     public interface Factory extends InputService.Factory<WindowsEventlogInput, WindowsEventlogInputConfiguration> {
         WindowsEventlogInput create(WindowsEventlogInputConfiguration configuration);
@@ -41,25 +40,24 @@ public class WindowsEventlogInput extends InputService {
     public WindowsEventlogInput(@Assisted WindowsEventlogInputConfiguration configuration, Buffer buffer) {
         this.configuration = configuration;
         this.buffer = buffer;
+        this.logThread = EventLogThread.getInstance(configuration.getSourceName());
     }
 
     @Override
-    protected void triggerShutdown() {
-        stopLatch.countDown();
-    }
-
-    @Override
-    protected void run() throws Exception {
+    protected void doStart() {
         final MessageBuilder messageBuilder = new MessageBuilder().input(getId()).outputs(getOutputs());
-        final EventLogThread logThread = EventLogThread.getInstance(configuration.getSourceName());
 
         logThread.add(new WindowsEventlogHandler(messageBuilder, buffer));
         logThread.setInterval(configuration.getPollInterval());
         logThread.doStart();
 
-        stopLatch.await();
+        notifyStarted();
+    }
 
+    @Override
+    public void doStop() {
         logThread.doStop();
+        notifyStopped();
     }
 
     @Override

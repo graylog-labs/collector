@@ -16,7 +16,7 @@
  */
 package org.graylog.collector.inputs;
 
-import com.google.common.util.concurrent.AbstractExecutionThreadService;
+import com.google.common.util.concurrent.AbstractService;
 
-public abstract class InputService extends AbstractExecutionThreadService implements Input {
+public abstract class InputService extends AbstractService implements Input {
 }

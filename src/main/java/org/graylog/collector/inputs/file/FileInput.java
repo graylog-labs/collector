@@ -26,12 +26,9 @@ import org.graylog.collector.file.FileReaderService;
 import org.graylog.collector.file.PathSet;
 import org.graylog.collector.inputs.InputService;
 import org.graylog.collector.utils.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 
 public class FileInput extends InputService {
     public enum InitialReadPosition {
@@ -43,12 +40,10 @@ public class FileInput extends InputService {
         FileInput create(FileInputConfiguration configuration);
     }
 
-    private static final Logger LOG = LoggerFactory.getLogger(FileInput.class);
-
     private final FileInputConfiguration configuration;
     private final Buffer buffer;
     private final FileObserver fileObserver;
-    private final CountDownLatch stopLatch = new CountDownLatch(1);
+    private FileReaderService readerService;
 
     @Inject
     public FileInput(@Assisted FileInputConfiguration inputConfiguration, Buffer buffer, FileObserver fileObserver) {
@@ -68,11 +63,11 @@ public class FileInput extends InputService {
     }
 
     @Override
-    protected void run() throws Exception {
+    protected void doStart() {
         // TODO needs to be an absolute path because otherwise the FileObserver does weird things. Investigate what's wrong with it.
         final MessageBuilder messageBuilder = new MessageBuilder().input(getId()).outputs(getOutputs()).source(Utils.getHostname());
         final PathSet pathSet = configuration.getPathSet();
-        final FileReaderService readerService = new FileReaderService(
+        readerService = new FileReaderService(
                 pathSet,
                 configuration.getCharset(),
                 true,
@@ -86,17 +81,14 @@ public class FileInput extends InputService {
                 fileObserver
         );
 
-        readerService.startAsync();
-        readerService.awaitRunning();
-
-        stopLatch.await();
-
-        readerService.stopAsync().awaitTerminated();
+        readerService.startAsync().awaitRunning();
+        notifyStarted();
     }
 
     @Override
-    protected void triggerShutdown() {
-        stopLatch.countDown();
+    protected void doStop() {
+        readerService.stopAsync().awaitTerminated();
+        notifyStopped();
     }
 
     @Override

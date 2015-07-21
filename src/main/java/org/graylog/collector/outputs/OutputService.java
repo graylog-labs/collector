@@ -16,7 +16,7 @@
  */
 package org.graylog.collector.outputs;
 
-import com.google.common.util.concurrent.AbstractExecutionThreadService;
+import com.google.common.util.concurrent.AbstractService;
 
-public abstract class OutputService extends AbstractExecutionThreadService implements Output {
+public abstract class OutputService extends AbstractService implements Output {
 }

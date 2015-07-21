@@ -20,23 +20,16 @@ import com.google.inject.assistedinject.Assisted;
 import org.graylog.collector.Message;
 import org.graylog.collector.config.ConfigurationUtils;
 import org.graylog.collector.outputs.OutputService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 
 public class StdoutOutput extends OutputService {
-    private static final Logger LOG = LoggerFactory.getLogger(StdoutOutput.class);
-
     public interface Factory extends OutputService.Factory<StdoutOutput, StdoutOutputConfiguration> {
         StdoutOutput create(StdoutOutputConfiguration configuration);
     }
 
     private final StdoutOutputConfiguration configuration;
-
-    private final CountDownLatch stopLatch = new CountDownLatch(1);
 
     @Inject
     public StdoutOutput(@Assisted StdoutOutputConfiguration configuration) {
@@ -44,13 +37,13 @@ public class StdoutOutput extends OutputService {
     }
 
     @Override
-    protected void triggerShutdown() {
-        stopLatch.countDown();
+    protected void doStart() {
+        notifyStarted();
     }
 
     @Override
-    protected void run() throws Exception {
-        stopLatch.await();
+    protected void doStop() {
+        notifyStopped();
     }
 
     @Override
