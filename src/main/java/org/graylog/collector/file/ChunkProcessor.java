@@ -78,7 +78,7 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
             stopAsync();
             return;
         }
-        log.debug("[{}] Processing {} bytes chunk (pos {})", new Object[]{path, chunk.getChunkBuffer().readableBytes(), chunk.getId()});
+        log.debug("[{}] Processing {} bytes chunk (pos {})", path, chunk.getChunkBuffer().readableBytes(), chunk.getId());
 
         chunkBufferStore.put(path, chunk.getChunkBuffer());
 
