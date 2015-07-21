@@ -36,6 +36,7 @@ import org.graylog.collector.services.CollectorServiceManager;
 import org.graylog.collector.services.ServicesModule;
 import org.graylog.collector.utils.CollectorIdModule;
 import org.graylog.collector.utils.MemoryReporterModule;
+import org.graylog.collector.utils.Os;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +54,10 @@ public class Run implements CollectorCommand {
 
     @Override
     public void run() {
+        final Os os = Os.getOs();
+
         LOG.info("Starting Collector v{} (commit {})", CollectorVersion.CURRENT.version(), CollectorVersion.CURRENT.commitIdShort());
+        LOG.info("Running on {} {} {} ({})", os.getPlatformName(), os.getName(), os.getVersion(), os.getArch());
 
         final Injector injector = getInjector();
         serviceManager = injector.getInstance(CollectorServiceManager.class);
