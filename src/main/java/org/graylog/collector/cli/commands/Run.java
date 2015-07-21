@@ -54,10 +54,9 @@ public class Run implements CollectorCommand {
 
     @Override
     public void run() {
-        final Os os = Os.getOs();
-
         LOG.info("Starting Collector v{} (commit {})", CollectorVersion.CURRENT.version(), CollectorVersion.CURRENT.commitIdShort());
-        LOG.info("Running on {} {} {} ({})", os.getPlatformName(), os.getName(), os.getVersion(), os.getArch());
+
+        showOsInfo();
 
         final Injector injector = getInjector();
         serviceManager = injector.getInstance(CollectorServiceManager.class);
@@ -71,6 +70,15 @@ public class Run implements CollectorCommand {
         }
 
         serviceManager.awaitStopped();
+    }
+
+    private void showOsInfo() {
+        try {
+            final Os os = Os.getOs();
+            LOG.info("Running on {} {} {} ({})", os.getPlatformName(), os.getName(), os.getVersion(), os.getArch());
+        } catch (Exception e) {
+            LOG.warn("Unable to get detailed platform information", e);
+        }
     }
 
     @Override
