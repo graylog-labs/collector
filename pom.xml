@@ -58,6 +58,11 @@
             <version>1.3.0</version>
         </dependency>
         <dependency>
+            <groupId>org.graylog.repackaged</groupId>
+            <artifactId>os-platform-finder</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
             <groupId>io.airlift</groupId>
             <artifactId>airline</artifactId>
             <version>0.7</version>
@@ -384,11 +389,6 @@
                         <include>**/src/main/java/**</include>
                         <include>**/src/test/java/**</include>
                     </includes>
-                    <excludes>
-                        <!-- Os has been included from https://github.com/aurbroszniowski/os-platform-finder / Apache License 2 -->
-                        <exclude>**/src/main/java/org/graylog/collector/utils/Os.java</exclude>
-                        <exclude>**/src/test/java/org/graylog/collector/utils/OsTest.java</exclude>
-                    </excludes>
                 </configuration>
                 <executions>
                     <execution>

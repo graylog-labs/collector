@@ -36,7 +36,7 @@ import org.graylog.collector.services.CollectorServiceManager;
 import org.graylog.collector.services.ServicesModule;
 import org.graylog.collector.utils.CollectorIdModule;
 import org.graylog.collector.utils.MemoryReporterModule;
-import org.graylog.collector.utils.Os;
+import org.jsoftbiz.utils.OS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +74,7 @@ public class Run implements CollectorCommand {
 
     private void showOsInfo() {
         try {
-            final Os os = Os.getOs();
+            final OS os = OS.getOs();
             LOG.info("Running on {} {} {} ({})", os.getPlatformName(), os.getName(), os.getVersion(), os.getArch());
         } catch (Exception e) {
             LOG.warn("Unable to get detailed platform information", e);
