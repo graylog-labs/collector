@@ -23,17 +23,12 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 
 public class MessageFields {
-    private final Map<String, Integer> intFields = Maps.newConcurrentMap();
-    private final Map<String, Long> longFields = Maps.newConcurrentMap();
+    private final Map<String, Number> numberFields = Maps.newConcurrentMap();
     private final Map<String, Boolean> booleanFields = Maps.newConcurrentMap();
     private final Map<String, String> stringFields = Maps.newConcurrentMap();
 
-    public void put(String key, int value) {
-        intFields.put(key, value);
-    }
-
-    public void put(String key, long value) {
-        longFields.put(key, value);
+    public void put(String key, Number value) {
+        numberFields.put(key, value);
     }
 
     public void put(String key, boolean value) {
@@ -46,8 +41,7 @@ public class MessageFields {
 
     public Map<String, Object> asMap() {
         return ImmutableMap.<String, Object>builder()
-                .putAll(intFields)
-                .putAll(longFields)
+                .putAll(numberFields)
                 .putAll(booleanFields)
                 .putAll(stringFields)
                 .build();
