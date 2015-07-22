@@ -64,7 +64,7 @@ public abstract class InputConfiguration implements Configuration {
 
                 switch (value.valueType()) {
                     case NUMBER:
-                        this.messageFields.put(key, messageFieldsConfig.getLong(key));
+                        this.messageFields.put(key, messageFieldsConfig.getNumber(key));
                         break;
                     case BOOLEAN:
                         this.messageFields.put(key, messageFieldsConfig.getBoolean(key));
