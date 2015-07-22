@@ -16,6 +16,7 @@
  */
 package org.graylog.collector;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
@@ -50,5 +51,16 @@ public class MessageFields {
                 .putAll(booleanFields)
                 .putAll(stringFields)
                 .build();
+    }
+
+    @Override
+    public String toString() {
+        final MoreObjects.ToStringHelper stringHelper = MoreObjects.toStringHelper(this);
+
+        for (Map.Entry<String, Object> entry : asMap().entrySet()) {
+            stringHelper.add(entry.getKey(), entry.getValue());
+        }
+
+        return stringHelper.toString();
     }
 }
