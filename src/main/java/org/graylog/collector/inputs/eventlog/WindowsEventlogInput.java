@@ -45,7 +45,10 @@ public class WindowsEventlogInput extends InputService {
 
     @Override
     protected void doStart() {
-        final MessageBuilder messageBuilder = new MessageBuilder().input(getId()).outputs(getOutputs());
+        final MessageBuilder messageBuilder = new MessageBuilder()
+                .input(getId())
+                .outputs(getOutputs())
+                .fields(configuration.getMessageFields());
 
         logThread.add(new WindowsEventlogHandler(messageBuilder, buffer));
         logThread.setInterval(configuration.getPollInterval());

@@ -65,7 +65,11 @@ public class FileInput extends InputService {
     @Override
     protected void doStart() {
         // TODO needs to be an absolute path because otherwise the FileObserver does weird things. Investigate what's wrong with it.
-        final MessageBuilder messageBuilder = new MessageBuilder().input(getId()).outputs(getOutputs()).source(Utils.getHostname());
+        final MessageBuilder messageBuilder = new MessageBuilder()
+                .input(getId())
+                .outputs(getOutputs())
+                .source(Utils.getHostname())
+                .fields(configuration.getMessageFields());
         final PathSet pathSet = configuration.getPathSet();
         readerService = new FileReaderService(
                 pathSet,
