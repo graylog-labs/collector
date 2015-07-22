@@ -33,7 +33,7 @@ public class MessageBuilder {
     private Message.Level level;
     private String input;
     private Set<String> outputs;
-    private MessageFields fields;
+    private MessageFields fields = new MessageFields();
 
     public MessageBuilder() {
     }
@@ -91,6 +91,34 @@ public class MessageBuilder {
     public MessageBuilder fields(MessageFields fields) {
         checkOwnership();
         this.fields = fields;
+        return this;
+    }
+
+    public MessageBuilder addField(String key, int value) {
+        checkOwnership();
+        checkNotNull(fields);
+        this.fields.put(key, value);
+        return this;
+    }
+
+    public MessageBuilder addField(String key, long value) {
+        checkOwnership();
+        checkNotNull(fields);
+        this.fields.put(key, value);
+        return this;
+    }
+
+    public MessageBuilder addField(String key, boolean value) {
+        checkOwnership();
+        checkNotNull(fields);
+        this.fields.put(key, value);
+        return this;
+    }
+
+    public MessageBuilder addField(String key, String value) {
+        checkOwnership();
+        checkNotNull(fields);
+        this.fields.put(key, value);
         return this;
     }
 

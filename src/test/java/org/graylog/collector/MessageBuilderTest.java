@@ -66,6 +66,39 @@ public class MessageBuilderTest {
     }
 
     @Test
+    public void testAddField() throws Exception {
+        final DateTime time = DateTime.now();
+        final MessageFields fields = new MessageFields();
+
+        fields.put("hello", "world");
+
+        final MessageBuilder builder = new MessageBuilder()
+                .message("the message")
+                .source("source")
+                .timestamp(time)
+                .level(Message.Level.INFO)
+                .input("input-id")
+                .outputs(Sets.newHashSet("output1", "output2"))
+                .fields(fields);
+
+        Message message = builder.build();
+
+        assertEquals("world", message.getFields().asMap().get("hello"));
+
+        builder.addField("hello", "changed");
+        builder.addField("int", 123);
+        builder.addField("long", 1000L);
+        builder.addField("boolean", true);
+
+        message = builder.build();
+
+        assertEquals("changed", message.getFields().asMap().get("hello"));
+        assertEquals(123, message.getFields().asMap().get("int"));
+        assertEquals(1000L, message.getFields().asMap().get("long"));
+        assertTrue((boolean) message.getFields().asMap().get("boolean"));
+    }
+
+    @Test
     public void testEmpty() throws Exception {
         throwing.expect(NullPointerException.class);
         new MessageBuilder().build();
