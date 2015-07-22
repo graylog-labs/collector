@@ -18,7 +18,6 @@ package org.graylog.collector.inputs.eventlog;
 
 import org.graylog.collector.Message;
 import org.graylog.collector.MessageBuilder;
-import org.graylog.collector.MessageFields;
 import org.graylog.collector.buffer.Buffer;
 import org.hyperic.sigar.win32.EventLogNotification;
 import org.hyperic.sigar.win32.EventLogRecord;
@@ -49,31 +48,27 @@ public class WindowsEventlogHandler implements EventLogNotification {
     public void handleNotification(EventLogRecord record) {
         LOG.debug("EventLogRecord: {}", record);
 
-        final MessageFields fields = new MessageFields();
-
-        fields.put("event_source", record.getSource());
-        fields.put("event_category", record.getCategory());
-        fields.put("event_category_string", record.getCategoryString());
-        fields.put("event_computer_name", record.getComputerName());
-        fields.put("event_id", record.getEventId());
-        fields.put("event_type", record.getEventType());
-        fields.put("event_type_string", record.getEventTypeString());
-        fields.put("event_log_name", record.getLogName());
-        fields.put("event_record_number", record.getRecordNumber());
-        fields.put("event_time_generated", getDateTime(record.getTimeGenerated()).toString());
-        fields.put("event_time_written", getDateTime(record.getTimeWritten()).toString());
-        fields.put("event_user", isNullOrEmpty(record.getUser()) ? "" : record.getUser());
-
-        final Message message = messageBuilder
+        final MessageBuilder builder = messageBuilder
                 .copy()
                 .source(record.getComputerName())
                 .message(isNullOrEmpty(record.getMessage()) ? "empty" : record.getMessage().trim())
                 .timestamp(getDateTime(record.getTimeGenerated()))
-                .level(getMessageLevel(record))
-                .fields(fields)
-                .build();
+                .level(getMessageLevel(record));
 
-        buffer.insert(message);
+        builder.addField("event_source", record.getSource());
+        builder.addField("event_category", record.getCategory());
+        builder.addField("event_category_string", record.getCategoryString());
+        builder.addField("event_computer_name", record.getComputerName());
+        builder.addField("event_id", record.getEventId());
+        builder.addField("event_type", record.getEventType());
+        builder.addField("event_type_string", record.getEventTypeString());
+        builder.addField("event_log_name", record.getLogName());
+        builder.addField("event_record_number", record.getRecordNumber());
+        builder.addField("event_time_generated", getDateTime(record.getTimeGenerated()).toString());
+        builder.addField("event_time_written", getDateTime(record.getTimeWritten()).toString());
+        builder.addField("event_user", isNullOrEmpty(record.getUser()) ? "" : record.getUser());
+
+        buffer.insert(builder.build());
     }
 
     private DateTime getDateTime(long seconds) {
