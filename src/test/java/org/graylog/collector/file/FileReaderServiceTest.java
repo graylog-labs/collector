@@ -87,7 +87,6 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         final FileReaderService readerService = new FileReaderService(
                 pathSet,
                 Charsets.UTF_8,
-                true,
                 FileInput.InitialReadPosition.START,
                 mockFileInput(),
                 null,
@@ -128,7 +127,6 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         final FileReaderService readerService = new FileReaderService(
                 new SinglePathSet(path.toString()),
                 Charsets.UTF_8,
-                true,
                 FileInput.InitialReadPosition.START,
                 mockInput,
                 messageBuilder,
@@ -170,7 +168,6 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         final FileReaderService readerService = new FileReaderService(
                 new SinglePathSet(path.toString()),
                 Charsets.UTF_8,
-                true,
                 FileInput.InitialReadPosition.START,
                 mockInput,
                 messageBuilder,
@@ -228,7 +225,6 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         final FileReaderService readerService = new FileReaderService(
                 pathSet,
                 Charsets.UTF_8,
-                true,
                 FileInput.InitialReadPosition.START,
                 mockFileInput(),
                 messageBuilder,

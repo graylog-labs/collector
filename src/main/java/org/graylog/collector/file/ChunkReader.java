@@ -44,7 +44,6 @@ public class ChunkReader implements Runnable {
     private final AsynchronousFileChannel fileChannel;
     private final BlockingQueue<FileChunk> chunks;
     private final int initialChunkSize;
-    private final boolean followMode;
     private int lastReadSize = 0; // TODO for adaptive read sizing
     private long position = 0;
     private AtomicBoolean locked = new AtomicBoolean(false);
@@ -57,7 +56,6 @@ public class ChunkReader implements Runnable {
                        AsynchronousFileChannel fileChannel,
                        BlockingQueue<FileChunk> chunks,
                        int initialChunkSize,
-                       boolean followMode,
                        FileInput.InitialReadPosition initialReadPosition) {
         this.fileInput = fileInput;
         this.path = path;
@@ -66,7 +64,6 @@ public class ChunkReader implements Runnable {
         this.initialChunkSize = initialChunkSize;
         Preconditions.checkArgument(initialChunkSize > 0, "Chunk size must be positive");
 
-        this.followMode = followMode;
         if (fileChannel.isOpen()) {
             try {
                 final BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
@@ -148,20 +145,7 @@ public class ChunkReader implements Runnable {
                 }
                 log.debug("[{}] Queued chunk of {} bytes, chunk number {}", new Object[]{path, bytesRead, chunkId});
             } else {
-                if (followMode) {
-                    log.trace("[{}] Could not read any bytes from file, waiting for more", path);
-                } else {
-                    log.debug("[{}] Reached end of file in no-follow mode, closing file.", path);
-                    try {
-                        fileChannel.close();
-                    } catch (IOException e) {
-                        log.info("Unable to close file", e);
-                    }
-                    // signals the consumer of the queue that we won't produce any more chunks.
-                    if (!chunks.offer(FileChunk.finalChunk(path))) {
-                        log.debug("Failed to put the final chunk into the chunk queue.");
-                    }
-                }
+                log.trace("[{}] Could not read any bytes from file, waiting for more", path);
             }
 
         } catch (InterruptedException e) {

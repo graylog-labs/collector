@@ -74,7 +74,6 @@ public class FileInput extends InputService {
         readerService = new FileReaderService(
                 pathSet,
                 configuration.getCharset(),
-                true,
                 InitialReadPosition.END,
                 this,
                 messageBuilder,

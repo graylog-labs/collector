@@ -40,7 +40,6 @@ public class ChunkReaderScheduler {
     private final Input input;
     private final int readerBufferSize;
     private final long readerInterval;
-    private final boolean followMode;
     private final FileInput.InitialReadPosition initialReadPosition;
     private final ArrayBlockingQueue<FileChunk> chunkQueue;
     private final ConcurrentMap<Path, ChunkReaderTask> chunkReaderTasks = Maps.newConcurrentMap();
@@ -50,13 +49,11 @@ public class ChunkReaderScheduler {
                                 final ArrayBlockingQueue<FileChunk> chunkQueue,
                                 final int readerBufferSize,
                                 final long readerInterval,
-                                final boolean followMode,
                                 final FileInput.InitialReadPosition initialReadPosition) {
         this.input = input;
         this.chunkQueue = chunkQueue;
         this.readerBufferSize = readerBufferSize;
         this.readerInterval = readerInterval;
-        this.followMode = followMode;
         this.initialReadPosition = initialReadPosition;
 
         // TODO Make the thread size configurable.
@@ -82,7 +79,7 @@ public class ChunkReaderScheduler {
             log.debug("Following file {}", file);
 
             final AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(file, StandardOpenOption.READ);
-            final ChunkReader chunkReader = new ChunkReader(input, file, fileChannel, chunkQueue, readerBufferSize, followMode, initialReadPosition);
+            final ChunkReader chunkReader = new ChunkReader(input, file, fileChannel, chunkQueue, readerBufferSize, initialReadPosition);
             final ScheduledFuture<?> chunkReaderFuture = scheduler.scheduleAtFixedRate(chunkReader, 0, readerInterval, TimeUnit.MILLISECONDS);
 
             chunkReaderTasks.putIfAbsent(file, new ChunkReaderTask(chunkReaderFuture, fileChannel));

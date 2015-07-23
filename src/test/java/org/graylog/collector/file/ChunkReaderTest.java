@@ -56,7 +56,7 @@ public class ChunkReaderTest implements Thread.UncaughtExceptionHandler {
         final AsynchronousFileChannel channel = AsynchronousFileChannel.open(tempFile, StandardOpenOption.READ);
         final CountingAsyncFileChannel spy = new CountingAsyncFileChannel(channel);
 
-        final ChunkReader chunkReader = new ChunkReader(mock(FileInput.class), tempFile, spy, chunkQueue, 10 * 1024, false,
+        final ChunkReader chunkReader = new ChunkReader(mock(FileInput.class), tempFile, spy, chunkQueue, 10 * 1024,
                 FileInput.InitialReadPosition.START);
 
         final ScheduledExecutorService chunkReaderExecutor = Executors.newSingleThreadScheduledExecutor(
@@ -98,7 +98,7 @@ public class ChunkReaderTest implements Thread.UncaughtExceptionHandler {
         final AsynchronousFileChannel channel = AsynchronousFileChannel.open(logFile.getPath(), StandardOpenOption.READ);
         final CountingAsyncFileChannel spy = new CountingAsyncFileChannel(channel);
 
-        final ChunkReader chunkReader = new ChunkReader(mock(FileInput.class), logFile.getPath(), spy, chunkQueue, 10 * 1024, true,
+        final ChunkReader chunkReader = new ChunkReader(mock(FileInput.class), logFile.getPath(), spy, chunkQueue, 10 * 1024,
                 FileInput.InitialReadPosition.END);
 
         final ScheduledExecutorService chunkReaderExecutor = Executors.newSingleThreadScheduledExecutor(
@@ -135,7 +135,7 @@ public class ChunkReaderTest implements Thread.UncaughtExceptionHandler {
         final AsynchronousFileChannel channel = AsynchronousFileChannel.open(logFile.getPath(), StandardOpenOption.READ);
         final CountingAsyncFileChannel spy = new CountingAsyncFileChannel(channel);
 
-        final ChunkReader chunkReader = new ChunkReader(mock(FileInput.class), logFile.getPath(), spy, chunkQueue, 10 * 1024, true,
+        final ChunkReader chunkReader = new ChunkReader(mock(FileInput.class), logFile.getPath(), spy, chunkQueue, 10 * 1024,
                 FileInput.InitialReadPosition.END);
 
         final ScheduledExecutorService chunkReaderExecutor = Executors.newSingleThreadScheduledExecutor(

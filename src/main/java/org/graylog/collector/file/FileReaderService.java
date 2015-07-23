@@ -35,7 +35,6 @@ public class FileReaderService extends AbstractService {
     private static final Logger log = LoggerFactory.getLogger(FileReaderService.class);
 
     private final PathSet pathSet;
-    private final boolean followMode;
     private final FileInput.InitialReadPosition initialReadPosition;
     private final FileInput input;
     private final MessageBuilder messageBuilder;
@@ -52,7 +51,6 @@ public class FileReaderService extends AbstractService {
 
     public FileReaderService(PathSet pathSet,
                              Charset charset,
-                             boolean followMode,
                              FileInput.InitialReadPosition initialReadPosition,
                              FileInput input,
                              MessageBuilder messageBuilder,
@@ -62,7 +60,6 @@ public class FileReaderService extends AbstractService {
                              long readerInterval,
                              FileObserver fileObserver) {
         this.pathSet = pathSet;
-        this.followMode = followMode;
         this.initialReadPosition = initialReadPosition;
         this.input = input;
         this.messageBuilder = messageBuilder;
@@ -78,7 +75,7 @@ public class FileReaderService extends AbstractService {
 
     @Override
     protected void doStart() {
-        chunkReaderScheduler = new ChunkReaderScheduler(input, chunkQueue, readerBufferSize, readerInterval, followMode, initialReadPosition);
+        chunkReaderScheduler = new ChunkReaderScheduler(input, chunkQueue, readerBufferSize, readerInterval, initialReadPosition);
         chunkProcessor = new ChunkProcessor(buffer, messageBuilder, chunkQueue, contentSplitter, charset);
 
         try {
@@ -105,14 +102,7 @@ public class FileReaderService extends AbstractService {
 
         for (Path path : paths) {
             if (!path.toFile().exists()) {
-                if (followMode) {
-                    log.warn("File {} does not exist but will be followed once it will be created.", path);
-                } else {
-                    final String msg = "File " + path + " does not exist and follow mode is not enabled. Not waiting for file to appear.";
-                    log.error(msg);
-                    notifyFailed(new IllegalStateException(msg));
-                    return;
-                }
+                log.warn("File {} does not exist but will be followed once it will be created.", path);
             }
 
             try {
