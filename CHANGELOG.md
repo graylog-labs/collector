@@ -1,6 +1,12 @@
 Graylog Collector ChangeLog
 ===========================
 
+## v0.4.0 (unreleased)
+
+* Log operating system version and platform on startup.
+* More resource usage improvements by using less threads per input/output.
+* Add static message-fields support. (#45)
+
 ## v0.3.0 (2015-07-14)
 
 * Lots of bug fixes regarding resource usage.
