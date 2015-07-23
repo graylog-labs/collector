@@ -7,7 +7,7 @@
 
     <groupId>org.graylog</groupId>
     <artifactId>graylog-collector</artifactId>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>0.4.0</version>
     <description>The Graylog Collector</description>
     <organization>
         <name>Graylog, Inc.</name>
@@ -26,7 +26,7 @@
         <connection>scm:git:git@github.com:Graylog2/collector.git</connection>
         <developerConnection>scm:git:git@github.com:Graylog2/collector.git</developerConnection>
         <url>https://github.com/Graylog2/collector</url>
-      <tag>HEAD</tag>
+      <tag>0.4.0</tag>
   </scm>
 
     <properties>
