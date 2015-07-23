@@ -1,7 +1,7 @@
 Graylog Collector ChangeLog
 ===========================
 
-## v0.4.0 (unreleased)
+## v0.4.0 (2015-07-23)
 
 * Log operating system version and platform on startup.
 * More resource usage improvements by using less threads per input/output.
