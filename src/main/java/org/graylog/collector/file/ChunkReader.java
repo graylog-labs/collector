@@ -128,7 +128,7 @@ public class ChunkReader implements Runnable {
             }
             final Future<Integer> read = fileChannel.read(byteBuffer, position);
             final Integer bytesRead = read.get();
-            log.trace("[{}] Read {} bytes from position {}", new Object[]{path, bytesRead, position});
+            log.trace("[{}] Read {} bytes from position {}", path, bytesRead, position);
             if (bytesRead != -1) {
                 lastReadSize = bytesRead;
                 position += bytesRead;
@@ -143,7 +143,7 @@ public class ChunkReader implements Runnable {
                             path);
                     return;
                 }
-                log.debug("[{}] Queued chunk of {} bytes, chunk number {}", new Object[]{path, bytesRead, chunkId});
+                log.debug("[{}] Queued chunk of {} bytes, chunk number {}", path, bytesRead, chunkId);
             } else {
                 log.trace("[{}] Could not read any bytes from file, waiting for more", path);
             }
