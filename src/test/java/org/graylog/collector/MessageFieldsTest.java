@@ -30,6 +30,7 @@ public class MessageFieldsTest {
         fields.put("bool", true);
         fields.put("int", 123);
         fields.put("long", 1500L);
+        fields.put("double", 1.4D);
         fields.put("string", "string");
 
         final HashMap<String, Object> map = new HashMap<String, Object>() {
@@ -37,6 +38,7 @@ public class MessageFieldsTest {
                 put("bool", true);
                 put("int", 123);
                 put("long", 1500L);
+                put("double", 1.4D);
                 put("string", "string");
             }
         };
