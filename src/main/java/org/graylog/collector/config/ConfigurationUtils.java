@@ -21,6 +21,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 
 import javax.annotation.Nullable;
+import java.util.Locale;
 import java.util.Map;
 
 public class ConfigurationUtils {
@@ -37,7 +38,7 @@ public class ConfigurationUtils {
                 if (input == null) {
                     return "";
                 }
-                return String.format("%s='%s'", input.getKey(), input.getValue());
+                return String.format(Locale.getDefault(), "%s='%s'", input.getKey(), input.getValue());
             }
         });
 

@@ -105,7 +105,7 @@ public class GelfOutput extends OutputService {
 
             transport.send(messageBuilder.build());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.error("Failed to send message", e);
         }
     }
 

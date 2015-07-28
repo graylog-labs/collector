@@ -23,6 +23,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class ConfigurationValidator {
@@ -39,7 +40,7 @@ public class ConfigurationValidator {
 
         if (constraintViolations.size() > 0) {
             for (ConstraintViolation<Object> violation : constraintViolations) {
-                final String msg = String.format("%s (%s)", violation.getMessage(), violation.getPropertyPath().toString());
+                final String msg = String.format(Locale.getDefault(), "%s (%s)", violation.getMessage(), violation.getPropertyPath().toString());
                 errors.add(new ConfigurationError(msg));
             }
 

@@ -403,6 +403,10 @@
                     <excludes>
                         <!-- We use System.out.println to show the version. Thank is okay. -->
                         <exclude>**/org/graylog/collector/cli/commands/Version.class</exclude>
+                        <!-- Uses System.out.println to write the message to STDOU. -->
+                        <exclude>**/org/graylog/collector/outputs/stdout/StdoutOutput.class</exclude>
+                        <!-- Uses com.sun.nio.file.SensitivityWatchEventModifier.HIGH for the file watcher -->
+                        <exclude>**/org/graylog/collector/file/FileObserver.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

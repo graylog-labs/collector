@@ -72,7 +72,7 @@ public class WindowsEventlogHandler implements EventLogNotification {
     }
 
     private DateTime getDateTime(long seconds) {
-        return new DateTime(seconds * 1000).withZone(DateTimeZone.UTC);
+        return new DateTime(seconds * 1000, DateTimeZone.UTC);
     }
 
     /**

@@ -33,6 +33,7 @@ import javax.validation.constraints.NotNull;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -80,7 +81,7 @@ public class FileInputConfiguration extends InputConfiguration {
         }
 
         if (config.hasPath("content-splitter")) {
-            this.contentSplitter = config.getString("content-splitter").toUpperCase();
+            this.contentSplitter = config.getString("content-splitter").toUpperCase(Locale.getDefault());
 
         } else {
             this.contentSplitter = "NEWLINE";
