@@ -1,0 +1,16 @@
+@defaultMessage Use a custom thread factory to ensure proper thread naming.
+java.util.concurrent.Executors#defaultThreadFactory()
+java.util.concurrent.Executors#newCachedThreadPool()
+java.util.concurrent.Executors#newFixedThreadPool(int)
+java.util.concurrent.Executors#newScheduledThreadPool(int)
+java.util.concurrent.Executors#newSingleThreadExecutor()
+java.util.concurrent.Executors#newSingleThreadScheduledExecutor()
+java.util.concurrent.Executors#privilegedThreadFactory()
+
+@defaultMessage Do not create a DateTime without an explicit time zone.
+org.joda.time.DateTime#<init>()
+org.joda.time.DateTime#<init>(long)
+org.joda.time.DateTime#<init>(int, int, int, int, int)
+org.joda.time.DateTime#<init>(int, int, int, int, int, int)
+org.joda.time.DateTime#<init>(int, int, int, int, int, int, int)
+org.joda.time.DateTime#now()
