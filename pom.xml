@@ -414,7 +414,6 @@
                         <phase>compile</phase>
                         <goals>
                             <goal>check</goal>
-                            <goal>testCheck</goal>
                         </goals>
                     </execution>
                 </executions>
