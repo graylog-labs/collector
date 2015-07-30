@@ -130,11 +130,12 @@ public class ChunkReader implements Runnable {
             final Integer bytesRead = read.get();
             log.trace("[{}] Read {} bytes from position {}", path, bytesRead, position);
             if (bytesRead != -1) {
-                lastReadSize = bytesRead;
-                position += bytesRead;
                 byteBuffer.flip();
                 final ByteBuf buffer = Unpooled.wrappedBuffer(byteBuffer);
-                final FileChunk chunk = new FileChunk(path, buffer, ++chunkId);
+                final FileChunk chunk = new FileChunk(path, buffer, position);
+                lastReadSize = bytesRead;
+                position += bytesRead;
+                chunkId++;
                 final boolean isQueued = chunks.offer(chunk);
                 if (!isQueued) {
                     // the buffer could not be added to the queue, we'll buffer it in this chunkreader until we can get rid of it

@@ -36,21 +36,22 @@ public class ChunkBufferStoreTest {
         assertNull("Empty store should not have any buffers...", store.get(path1));
         assertNull("Empty store should not have any buffers...", store.get(path2));
 
-        store.put(path1, Unpooled.copiedBuffer("log 1\n".getBytes()));
+        store.put(new FileChunk(path1, Unpooled.copiedBuffer("log 1\n".getBytes()), 0));
         assertEquals("Buffer should have correct data", "log 1\n", store.get(path1).toString(UTF_8));
 
-        store.put(path2, Unpooled.copiedBuffer("hello\n".getBytes()));
+        store.put(new FileChunk(path2, Unpooled.copiedBuffer("hello\n".getBytes()), 0));
         assertEquals("Buffer should have correct data", "hello\n", store.get(path2).toString(UTF_8));
 
-        store.put(path1, Unpooled.copiedBuffer("log 2\n".getBytes()));
+        store.put(new FileChunk(path1, Unpooled.copiedBuffer("log 2\n".getBytes()), 0));
         assertEquals("New data should be appended to buffer", "log 1\nlog 2\n", store.get(path1).toString(UTF_8));
 
-        store.get(path1).readBytes(new byte[store.get(path1).readableBytes()]);
-        store.put(path1, Unpooled.copiedBuffer("new log\n".getBytes()));
+        store.get(path1).readBytes(store.get(path1).readableBytes());
+        store.put(new FileChunk(path1, Unpooled.copiedBuffer("new log\n".getBytes()), 0));
         assertEquals("Writing to truncated buffer should only have new data", "new log\n", store.get(path1).toString(UTF_8));
 
-        store.get(path2).readBytes(new byte[3], 0, 3);
-        store.put(path2, Unpooled.copiedBuffer("new log\n".getBytes()));
+        store.get(path2).readBytes(3);
+        store.put(new FileChunk(path2, Unpooled.copiedBuffer("new log\n".getBytes()), 0));
         assertEquals("Buffer should have rest of old and the new data", "lo\nnew log\n", store.get(path2).toString(UTF_8));
+        assertEquals(3, store.get(path2).getFileOffset());
     }
 }

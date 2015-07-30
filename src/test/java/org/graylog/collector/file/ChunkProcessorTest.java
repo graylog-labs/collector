@@ -68,7 +68,7 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
             }
         });
 
-        final FileChunk chunk = new FileChunk(logFile, Unpooled.copiedBuffer("some line\nanother line\n", UTF_8), 1);
+        final FileChunk chunk = new FileChunk(logFile, Unpooled.copiedBuffer("some line\nanother line\n", UTF_8), 0);
         processor.process(chunk);
     }
 
@@ -102,8 +102,8 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
 
         ByteBuf undelimitedBuffer = Unpooled.copiedBuffer("some line", UTF_8);
         ByteBuf secondBufferDelimitedComplete = Unpooled.copiedBuffer(" with more content\n", UTF_8);
-        processor.process(new FileChunk(logFile, undelimitedBuffer, 1));
-        processor.process(new FileChunk(logFile, secondBufferDelimitedComplete, 2));
+        processor.process(new FileChunk(logFile, undelimitedBuffer, 0));
+        processor.process(new FileChunk(logFile, secondBufferDelimitedComplete, 0));
     }
 
     @Test
@@ -135,9 +135,9 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
         ByteBuf undelimitedBuffer = Unpooled.copiedBuffer("some line", UTF_8);
         ByteBuf secondBufferDelimitedIncomplete = Unpooled.copiedBuffer(" with more content\ntrailing", UTF_8);
         ByteBuf onlyNewline = Unpooled.copiedBuffer("\n", UTF_8);
-        processor.process(new FileChunk(logFile, undelimitedBuffer, 1));
-        processor.process(new FileChunk(logFile, secondBufferDelimitedIncomplete, 2));
-        processor.process(new FileChunk(logFile, onlyNewline, 3)); // this flushes the remaining content in the buffer
+        processor.process(new FileChunk(logFile, undelimitedBuffer, 0));
+        processor.process(new FileChunk(logFile, secondBufferDelimitedIncomplete, 0));
+        processor.process(new FileChunk(logFile, onlyNewline, 0)); // this flushes the remaining content in the buffer
     }
 
     @Test
@@ -167,9 +167,9 @@ public class ChunkProcessorTest extends MultithreadedBaseTest {
         ByteBuf firstNewline = Unpooled.copiedBuffer("\n", UTF_8);
         ByteBuf secondNewline = Unpooled.copiedBuffer("\n", UTF_8);
         ByteBuf thirdNewline = Unpooled.copiedBuffer("\n", UTF_8);
-        processor.process(new FileChunk(logFile, firstNewline, 1));
-        processor.process(new FileChunk(logFile, secondNewline, 2));
-        processor.process(new FileChunk(logFile, thirdNewline, 3));
+        processor.process(new FileChunk(logFile, firstNewline, 0));
+        processor.process(new FileChunk(logFile, secondNewline, 0));
+        processor.process(new FileChunk(logFile, thirdNewline, 0));
     }
 
     private ChunkProcessor setupProcessor(Path logFile, Buffer buffer) {

@@ -18,7 +18,6 @@ package org.graylog.collector.file;
 
 import com.google.common.collect.Maps;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 
 import java.nio.file.Path;
 import java.util.concurrent.ConcurrentMap;
@@ -29,7 +28,7 @@ import java.util.concurrent.ConcurrentMap;
  * This class is thread-safe.
  */
 public class ChunkBufferStore {
-    private final ConcurrentMap<Path, ByteBuf> buffersPerFile = Maps.newConcurrentMap();
+    private final ConcurrentMap<Path, FileChunkBuffer> buffersPerFile = Maps.newConcurrentMap();
 
     public ChunkBufferStore() {
     }
@@ -40,25 +39,24 @@ public class ChunkBufferStore {
      * @param path the path
      * @return the buffer for the given path or null
      */
-    public ByteBuf get(final Path path) {
+    public FileChunkBuffer get(final Path path) {
         return buffersPerFile.get(path);
     }
 
     /**
-     * Stores the {@link ByteBuf} for the given path. If there is a buffer for the path already, the new buffer
-     * will be appended to the existing one.
+     * Stores the {@link ByteBuf} for the given {@link FileChunk}. If there is a buffer for the path already,
+     * the new buffer will be appended to the existing one.
      *
-     * @param path the path
-     * @param chunk the buffer
+     * @param chunk the file chunk object
      */
-    public void put(final Path path, final ByteBuf chunk) {
+    public void put(final FileChunk chunk) {
         synchronized (this) {
-            final ByteBuf buf = get(path);
+            final FileChunkBuffer fileChunkBuffer = get(chunk.getPath());
 
-            if (buf == null) {
-                buffersPerFile.put(path, chunk);
+            if (fileChunkBuffer == null) {
+                buffersPerFile.put(chunk.getPath(), new FileChunkBuffer(chunk));
             } else {
-                buffersPerFile.put(path, Unpooled.wrappedBuffer(buf, chunk));
+                fileChunkBuffer.append(chunk);
             }
         }
     }

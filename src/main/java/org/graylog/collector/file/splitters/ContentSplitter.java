@@ -16,19 +16,20 @@
  */
 package org.graylog.collector.file.splitters;
 
-import io.netty.buffer.ByteBuf;
+import org.graylog.collector.file.FileChunkBuffer;
+import org.graylog.collector.file.FileChunkMessage;
 
 import java.nio.charset.Charset;
 
 public abstract class ContentSplitter {
 
-    public abstract Iterable<String> split(ByteBuf buffer, Charset charset, boolean includeRemainingData);
+    public abstract Iterable<FileChunkMessage> split(FileChunkBuffer fileChunkBuffer, Charset charset, boolean includeRemainingData);
 
-    public Iterable<String> split(ByteBuf buffer, Charset charset) {
-        return split(buffer, charset, false);
+    public Iterable<FileChunkMessage> split(FileChunkBuffer fileChunkBuffer, Charset charset) {
+        return split(fileChunkBuffer, charset, false);
     }
 
-    public Iterable<String> splitRemaining(ByteBuf buffer, Charset charset) {
-        return split(buffer, charset, true);
+    public Iterable<FileChunkMessage> splitRemaining(FileChunkBuffer fileChunkBuffer, Charset charset) {
+        return split(fileChunkBuffer, charset, true);
     }
 }

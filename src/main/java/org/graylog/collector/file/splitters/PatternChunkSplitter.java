@@ -18,6 +18,8 @@ package org.graylog.collector.file.splitters;
 
 import com.google.common.collect.AbstractIterator;
 import io.netty.buffer.ByteBuf;
+import org.graylog.collector.file.FileChunkBuffer;
+import org.graylog.collector.file.FileChunkMessage;
 
 import java.nio.charset.Charset;
 import java.util.Iterator;
@@ -33,11 +35,11 @@ public class PatternChunkSplitter extends ContentSplitter {
     }
 
     @Override
-    public Iterable<String> split(final ByteBuf buffer, final Charset charset, final boolean includeRemainingData) {
-        return new Iterable<String>() {
+    public Iterable<FileChunkMessage> split(final FileChunkBuffer buffer, final Charset charset, final boolean includeRemainingData) {
+        return new Iterable<FileChunkMessage>() {
             @Override
-            public Iterator<String> iterator() {
-                return new AbstractIterator<String>() {
+            public Iterator<FileChunkMessage> iterator() {
+                return new AbstractIterator<FileChunkMessage>() {
                     // TODO Might throw an exception if multibyte charset is used and buffer is not complete.
                     //      Use CharsetDecoder to create a CharBuffer and match on that!
                     private final String inputAsString = buffer.toString(charset);
@@ -45,7 +47,7 @@ public class PatternChunkSplitter extends ContentSplitter {
                     private int positionInString = 0;
 
                     @Override
-                    protected String computeNext() {
+                    protected FileChunkMessage computeNext() {
                         try {
                             if (!buffer.isReadable()) {
                                 return endOfData();
@@ -72,8 +74,9 @@ public class PatternChunkSplitter extends ContentSplitter {
                                 }
                                 final String substring = inputAsString.substring(positionInString, firstByte);
                                 positionInString = firstByte;
+                                final long startOffset = buffer.getFileOffset();
                                 buffer.skipBytes(substring.getBytes(charset).length); // TODO performance
-                                return substring;
+                                return new FileChunkMessage(substring, buffer.getPath(), startOffset, buffer.getFileOffset() - startOffset);
                             } else {
                                 if (includeRemainingData) {
                                     return getRemainingContent();
@@ -91,9 +94,10 @@ public class PatternChunkSplitter extends ContentSplitter {
                         }
                     }
 
-                    private String getRemainingContent() {
+                    private FileChunkMessage getRemainingContent() {
+                        final long startOffset = buffer.getFileOffset();
                         final ByteBuf channelBuffer = buffer.readBytes(buffer.readableBytes());
-                        return channelBuffer.toString(charset);
+                        return new FileChunkMessage(channelBuffer.toString(charset), buffer.getPath(), startOffset, buffer.getFileOffset() - startOffset);
                     }
                 };
             }

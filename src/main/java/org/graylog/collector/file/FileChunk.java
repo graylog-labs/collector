@@ -24,12 +24,12 @@ public class FileChunk {
 
     private final Path path;
     private final ByteBuf chunkBuffer;
-    private final long id;
+    private final long fileOffset;
 
-    public FileChunk(Path path, ByteBuf chunkBuffer, long id) {
+    public FileChunk(Path path, ByteBuf chunkBuffer, long fileOffset) {
         this.path = path;
         this.chunkBuffer = chunkBuffer;
-        this.id = id;
+        this.fileOffset = fileOffset;
     }
 
     public static FileChunk finalChunk(Path path) {
@@ -40,12 +40,12 @@ public class FileChunk {
         return path;
     }
 
-    public ByteBuf getChunkBuffer() {
-        return chunkBuffer;
+    public long getFileOffset() {
+        return fileOffset;
     }
 
-    public long getId() {
-        return id;
+    public ByteBuf getChunkBuffer() {
+        return chunkBuffer;
     }
 
     public boolean isFinalChunk() {

@@ -17,7 +17,6 @@
 package org.graylog.collector.file;
 
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
-import io.netty.buffer.ByteBuf;
 import org.graylog.collector.Message;
 import org.graylog.collector.MessageBuilder;
 import org.graylog.collector.buffer.Buffer;
@@ -69,8 +68,8 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
         if (chunk.isFinalChunk()) {
             // we've reached the EOF and aren't in follow mode
             log.debug("[{}] Processing final chunk.", path);
-            final ByteBuf channelBuffer = chunkBufferStore.get(path);
-            final Iterable<String> messages = splitter.splitRemaining(channelBuffer, charset);
+            final FileChunkBuffer fileChunkBuffer = chunkBufferStore.get(path);
+            final Iterable<FileChunkMessage> messages = splitter.splitRemaining(fileChunkBuffer, charset);
 
             createMessages(path, messages);
 
@@ -80,13 +79,15 @@ public class ChunkProcessor extends AbstractExecutionThreadService {
         }
         log.debug("[{}] Processing {} bytes chunk (pos {})", path, chunk.getChunkBuffer().readableBytes(), chunk.getId());
 
-        chunkBufferStore.put(path, chunk.getChunkBuffer());
+        chunkBufferStore.put(chunk);
 
         createMessages(path, splitter.split(chunkBufferStore.get(path), charset, false));
     }
 
-    private void createMessages(Path path, Iterable<String> messages) {
-        for (String messageString : messages) {
+    private void createMessages(Path path, Iterable<FileChunkMessage> messages) {
+        for (FileChunkMessage fileChunkMessage : messages) {
+            final String messageString = fileChunkMessage.getMessageString();
+
             if (messageString.isEmpty()) {
                 // skip completely empty messages, they contain no useful information
                 continue;
