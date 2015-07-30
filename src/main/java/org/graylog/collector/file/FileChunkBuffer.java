@@ -83,6 +83,10 @@ public class FileChunkBuffer {
      * @param fileChunk the chunk to add
      */
     public void append(final FileChunk fileChunk) {
+        // Not adding a chunk for a different path to this buffer.
+        if (!path.equals(fileChunk.getPath())) {
+            return;
+        }
         buffer = Unpooled.wrappedBuffer(buffer, fileChunk.getChunkBuffer());
         bufferEndoffset = fileOffset + buffer.readableBytes();
     }
