@@ -1,5 +1,5 @@
-Graylog Colletor
-================
+Graylog Collector
+=================
 
 [![Build Status](https://travis-ci.org/Graylog2/collector.svg?branch=master)](https://travis-ci.org/Graylog2/collector)
 
