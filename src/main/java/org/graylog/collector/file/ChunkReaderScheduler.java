@@ -70,6 +70,10 @@ public class ChunkReaderScheduler {
     }
 
     public void followFile(Path file) throws IOException {
+        followFile(file, initialReadPosition);
+    }
+
+    public void followFile(Path file, FileInput.InitialReadPosition customInitialReadPosition) throws IOException {
         synchronized (this) {
             if (isFollowingFile(file)) {
                 log.debug("Not following file {} because it's already followed.", file);
@@ -79,10 +83,23 @@ public class ChunkReaderScheduler {
             log.debug("Following file {}", file);
 
             final AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(file, StandardOpenOption.READ);
-            final ChunkReader chunkReader = new ChunkReader(input, file, fileChannel, chunkQueue, readerBufferSize, initialReadPosition);
+            final ChunkReader chunkReader = new ChunkReader(input, file, fileChannel, chunkQueue, readerBufferSize, customInitialReadPosition, this);
             final ScheduledFuture<?> chunkReaderFuture = scheduler.scheduleAtFixedRate(chunkReader, 0, readerInterval, TimeUnit.MILLISECONDS);
 
             chunkReaderTasks.putIfAbsent(file, new ChunkReaderTask(chunkReaderFuture, fileChannel));
+        }
+    }
+
+    public void restartFile(Path file) {
+        try {
+            log.debug("Restart file {}", file);
+            // Synchronize to make this atomic and to avoid other events trigger a follow.
+            synchronized (this) {
+                cancelFile(file);
+                followFile(file, FileInput.InitialReadPosition.START);
+            }
+        } catch (IOException e) {
+            log.error("Error restarting file", e);
         }
     }
 

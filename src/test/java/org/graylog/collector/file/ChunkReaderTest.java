@@ -57,7 +57,7 @@ public class ChunkReaderTest implements Thread.UncaughtExceptionHandler {
         final CountingAsyncFileChannel spy = new CountingAsyncFileChannel(channel);
 
         final ChunkReader chunkReader = new ChunkReader(mock(FileInput.class), tempFile, spy, chunkQueue, 10 * 1024,
-                FileInput.InitialReadPosition.START);
+                FileInput.InitialReadPosition.START, null);
 
         final ScheduledExecutorService chunkReaderExecutor = Executors.newSingleThreadScheduledExecutor(
                 new ThreadFactoryBuilder()
@@ -99,7 +99,7 @@ public class ChunkReaderTest implements Thread.UncaughtExceptionHandler {
         final CountingAsyncFileChannel spy = new CountingAsyncFileChannel(channel);
 
         final ChunkReader chunkReader = new ChunkReader(mock(FileInput.class), logFile.getPath(), spy, chunkQueue, 10 * 1024,
-                FileInput.InitialReadPosition.END);
+                FileInput.InitialReadPosition.END, null);
 
         final ScheduledExecutorService chunkReaderExecutor = Executors.newSingleThreadScheduledExecutor(
                 new ThreadFactoryBuilder()
@@ -136,7 +136,7 @@ public class ChunkReaderTest implements Thread.UncaughtExceptionHandler {
         final CountingAsyncFileChannel spy = new CountingAsyncFileChannel(channel);
 
         final ChunkReader chunkReader = new ChunkReader(mock(FileInput.class), logFile.getPath(), spy, chunkQueue, 10 * 1024,
-                FileInput.InitialReadPosition.END);
+                FileInput.InitialReadPosition.END, null);
 
         final ScheduledExecutorService chunkReaderExecutor = Executors.newSingleThreadScheduledExecutor(
                 new ThreadFactoryBuilder()

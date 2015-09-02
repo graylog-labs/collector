@@ -31,6 +31,7 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -44,6 +45,7 @@ public class ChunkReader implements Runnable {
     private final AsynchronousFileChannel fileChannel;
     private final BlockingQueue<FileChunk> chunks;
     private final int initialChunkSize;
+    private final ChunkReaderScheduler chunkReaderScheduler;
     private int lastReadSize = 0; // TODO for adaptive read sizing
     private long position = 0;
     private AtomicBoolean locked = new AtomicBoolean(false);
@@ -56,12 +58,14 @@ public class ChunkReader implements Runnable {
                        AsynchronousFileChannel fileChannel,
                        BlockingQueue<FileChunk> chunks,
                        int initialChunkSize,
-                       FileInput.InitialReadPosition initialReadPosition) {
+                       FileInput.InitialReadPosition initialReadPosition,
+                       ChunkReaderScheduler chunkReaderScheduler) {
         this.fileInput = fileInput;
         this.path = path;
         this.fileChannel = fileChannel;
         this.chunks = chunks;
         this.initialChunkSize = initialChunkSize;
+        this.chunkReaderScheduler = chunkReaderScheduler;
         Preconditions.checkArgument(initialChunkSize > 0, "Chunk size must be positive");
 
         if (fileChannel.isOpen()) {
@@ -104,6 +108,25 @@ public class ChunkReader implements Runnable {
                     log.debug("[{}] Queue still full, not reading more.", path);
                 }
                 return;
+            }
+
+            // Make sure we still follow the correct file. If the file key has changed, we should not follow the file
+            // anymore. Some platforms like Windows do not have a file key and return null for #fileKey().
+            if (fileKey != null && Files.exists(path)) {
+                try {
+                    final Object fileKeyCheck = Files.readAttributes(path, BasicFileAttributes.class).fileKey();
+
+                    if (log.isTraceEnabled()) {
+                        log.trace("Check file key for {} - cached={} check={}", path, fileKey, fileKeyCheck);
+                    }
+
+                    if (!Objects.equals(fileKey, fileKeyCheck)) {
+                        chunkReaderScheduler.restartFile(path);
+                        return;
+                    }
+                } catch (IOException e) {
+                    log.error("Unable to read file attributes for {}", path);
+                }
             }
 
             final long size = fileChannel.size();
