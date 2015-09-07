@@ -1,6 +1,11 @@
 Graylog Collector ChangeLog
 ===========================
 
+## v0.4.1 (2015-09-07)
+
+* Fix file rotation detection on platforms with a slow watchservice
+  implementation like Mac OS X and AIX.
+
 ## v0.4.0 (2015-07-23)
 
 * Log operating system version and platform on startup.
