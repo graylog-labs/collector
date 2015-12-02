@@ -64,6 +64,11 @@ public class ApacheCommonsWatchService implements CollectorWatchService {
         this.eventQueueSize = eventQueueSize;
 
         monitor.setThreadFactory(THREAD_FACTORY);
+        try {
+            monitor.start();
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     @Override
@@ -121,12 +126,6 @@ public class ApacheCommonsWatchService implements CollectorWatchService {
         });
 
         monitor.addObserver(observer);
-
-        try {
-            monitor.start();
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
 
         return watchKey;
     }
