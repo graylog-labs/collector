@@ -16,6 +16,8 @@
  */
 package org.graylog.collector.file;
 
+import org.graylog.collector.file.watchservice.CollectorWatchService;
+import org.graylog.collector.file.watchservice.JvmWatchService;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -28,7 +30,6 @@ import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -44,11 +45,11 @@ public class FileObserverTest {
     @Rule
     public TemporaryFolder temporaryFolder2 = new TemporaryFolder();
 
-    private WatchService watchService;
+    private CollectorWatchService watchService;
 
     @Before
     public void setUp() throws Exception {
-        watchService = FileSystems.getDefault().newWatchService();
+        watchService = new JvmWatchService(FileSystems.getDefault().newWatchService());
     }
 
     @Test

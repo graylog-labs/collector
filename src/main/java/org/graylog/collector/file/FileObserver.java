@@ -22,6 +22,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import com.sun.nio.file.SensitivityWatchEventModifier;
+import org.graylog.collector.file.watchservice.CollectorWatchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +31,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -43,7 +43,7 @@ import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 public class FileObserver extends AbstractExecutionThreadService {
     private static final Logger log = LoggerFactory.getLogger(FileObserver.class);
 
-    private final WatchService watcher;
+    private final CollectorWatchService watcher;
     private final ConcurrentMap<WatchKey, Set<WatchPath>> keys = Maps.newConcurrentMap();
 
     private static class WatchPath {
@@ -87,7 +87,7 @@ public class FileObserver extends AbstractExecutionThreadService {
     }
 
     @Inject
-    public FileObserver(WatchService watchService) {
+    public FileObserver(CollectorWatchService watchService) {
         watcher = watchService;
     }
 
@@ -99,7 +99,7 @@ public class FileObserver extends AbstractExecutionThreadService {
 
         log.debug("Watching directory {} for changes matching: {}", rootPath, pathSet);
 
-        final WatchKey key = rootPath.register(watcher, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY},
+        final WatchKey key = watcher.register(rootPath, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY},
                 SensitivityWatchEventModifier.HIGH);
 
         // Synchronize on keys to make the two operations atomic.
@@ -111,6 +111,8 @@ public class FileObserver extends AbstractExecutionThreadService {
 
     @Override
     protected void run() throws Exception {
+        log.info("Starting file observer - watch-service-backend={}", watcher);
+
         while (isRunning()) {
             WatchKey key;
             try {

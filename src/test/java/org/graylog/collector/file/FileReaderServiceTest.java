@@ -23,6 +23,7 @@ import org.graylog.collector.Message;
 import org.graylog.collector.MessageBuilder;
 import org.graylog.collector.file.naming.NumberSuffixStrategy;
 import org.graylog.collector.file.splitters.NewlineChunkSplitter;
+import org.graylog.collector.file.watchservice.JvmWatchService;
 import org.graylog.collector.inputs.file.FileInput;
 import org.junit.After;
 import org.junit.Before;
@@ -64,7 +65,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
 
     @Before
     public void setUp() throws Exception {
-        fileObserver = new FileObserver(FileSystems.getDefault().newWatchService());
+        fileObserver = new FileObserver(new JvmWatchService(FileSystems.getDefault().newWatchService()));
 
         fileObserver.startAsync();
         fileObserver.awaitRunning(1, TimeUnit.MINUTES);
