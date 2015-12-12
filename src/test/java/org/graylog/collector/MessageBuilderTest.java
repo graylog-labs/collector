@@ -25,6 +25,7 @@ import org.junit.rules.ExpectedException;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -151,6 +152,13 @@ public class MessageBuilderTest {
         final MessageBuilder copy = builder.copy();
 
         assertNotEquals(builder, copy);
+
+        // Make sure we passe a copy of the fields to the new builder instance.
+        builder.addField("boolean", true);
+        copy.addField("boolean", false);
+
+        assertThat(builder.build().getFields().asMap().get("boolean")).isEqualTo(true);
+        assertThat(copy.build().getFields().asMap().get("boolean")).isEqualTo(false);
     }
 
     @Test

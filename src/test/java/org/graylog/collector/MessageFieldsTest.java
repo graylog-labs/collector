@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import java.util.HashMap;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 public class MessageFieldsTest {
@@ -44,5 +45,25 @@ public class MessageFieldsTest {
         };
 
         assertEquals(map, fields.asMap());
+    }
+
+    @Test
+    public void testCopy() throws Exception {
+        final MessageFields fields = new MessageFields();
+        final MessageFields copy = fields.copy();
+
+        fields.put("boolean", true);
+        fields.put("number", 1);
+        fields.put("string", "foo");
+        copy.put("boolean", false);
+        copy.put("number", 2);
+        copy.put("string", "bar");
+
+        assertThat(fields.asMap().get("boolean")).isEqualTo(true);
+        assertThat(fields.asMap().get("number")).isEqualTo(1);
+        assertThat(fields.asMap().get("string")).isEqualTo("foo");
+        assertThat(copy.asMap().get("boolean")).isEqualTo(false);
+        assertThat(copy.asMap().get("number")).isEqualTo(2);
+        assertThat(copy.asMap().get("string")).isEqualTo("bar");
     }
 }

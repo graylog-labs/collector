@@ -27,6 +27,17 @@ public class MessageFields {
     private final Map<String, Boolean> booleanFields = Maps.newConcurrentMap();
     private final Map<String, String> stringFields = Maps.newConcurrentMap();
 
+    public MessageFields(Map<String, Number> numberFields,
+                         Map<String, Boolean> booleanFields,
+                         Map<String, String> stringFields) {
+        this.numberFields.putAll(numberFields);
+        this.booleanFields.putAll(booleanFields);
+        this.stringFields.putAll(stringFields);
+    }
+
+    public MessageFields() {
+    }
+
     public void put(String key, Number value) {
         numberFields.put(key, value);
     }
@@ -56,5 +67,9 @@ public class MessageFields {
         }
 
         return stringHelper.toString();
+    }
+
+    public MessageFields copy() {
+        return new MessageFields(numberFields, booleanFields, stringFields);
     }
 }

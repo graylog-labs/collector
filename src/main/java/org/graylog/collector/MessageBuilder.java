@@ -137,7 +137,7 @@ public class MessageBuilder {
     }
 
     public MessageBuilder copy() {
-        return new MessageBuilder(message, source, timestamp, level, input, outputs, fields);
+        return new MessageBuilder(message, source, timestamp, level, input, outputs, fields.copy());
     }
 
     private void checkOwnership() {
