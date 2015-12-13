@@ -22,7 +22,6 @@ import org.graylog.collector.buffer.Buffer;
 import org.graylog.collector.config.ConfigurationUtils;
 import org.graylog.collector.file.ChunkReader;
 import org.graylog.collector.file.FileReaderService;
-import org.graylog.collector.file.PathSet;
 import org.graylog.collector.file.watcher.PathWatcher;
 import org.graylog.collector.inputs.InputService;
 import org.graylog.collector.utils.Utils;
@@ -70,9 +69,10 @@ public class FileInput extends InputService {
                 .outputs(getOutputs())
                 .source(Utils.getHostname())
                 .fields(configuration.getMessageFields());
-        final PathSet pathSet = configuration.getPathSet();
+
         readerService = new FileReaderService(
-                pathSet,
+                configuration.getPath(),
+                configuration.getFileNamingStrategy(),
                 configuration.getCharset(),
                 InitialReadPosition.END,
                 this,

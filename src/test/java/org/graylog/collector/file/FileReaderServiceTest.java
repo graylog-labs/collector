@@ -21,6 +21,9 @@ import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Service;
 import org.graylog.collector.Message;
 import org.graylog.collector.MessageBuilder;
+import org.graylog.collector.file.naming.ExactFileStrategy;
+import org.graylog.collector.file.naming.FileNamingStrategy;
+import org.graylog.collector.file.naming.GlobbingStrategy;
 import org.graylog.collector.file.naming.NumberSuffixStrategy;
 import org.graylog.collector.file.splitters.NewlineChunkSplitter;
 import org.graylog.collector.file.watcher.PathEventListener;
@@ -35,7 +38,6 @@ import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.FileSystems;
@@ -67,16 +69,17 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
 
     @Before
     public void setUp() throws Exception {
-        pathWatcher = new PathWatcher(FileSystems.getDefault().newWatchService(), Duration.millis(500));
+        temporaryFolder.create();
 
-        pathWatcher.startAsync();
-        pathWatcher.awaitRunning(1, TimeUnit.MINUTES);
+        pathWatcher = new PathWatcher(FileSystems.getDefault().newWatchService(), Duration.millis(500));
+        pathWatcher.startAsync().awaitRunning(1, TimeUnit.MINUTES);
     }
 
     @After
     public void shutDown() throws Exception {
-        pathWatcher.stopAsync();
-        pathWatcher.awaitTerminated(1, TimeUnit.MINUTES);
+        pathWatcher.stopAsync().awaitTerminated(1, TimeUnit.MINUTES);
+
+        temporaryFolder.delete();
     }
 
     @Test
@@ -85,10 +88,10 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
 
         final PathWatcher fileObserverSpy = spy(pathWatcher);
         final NumberSuffixStrategy namingStrategy = new NumberSuffixStrategy(path);
-        final PathSet pathSet = new SinglePathSet(path.toString());
 
         final FileReaderService readerService = new FileReaderService(
-                pathSet,
+                path,
+                namingStrategy,
                 Charsets.UTF_8,
                 FileInput.InitialReadPosition.START,
                 mockFileInput(),
@@ -104,7 +107,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
 
         assertEquals("service should be running", Service.State.RUNNING, readerService.state());
 
-        verify(fileObserverSpy).register(eq(pathSet.getRootPath()), anySetOf(PathEventListener.class));
+        verify(fileObserverSpy).register(eq(path), anySetOf(PathEventListener.class));
 
         readerService.stopAsync();
         readerService.awaitTerminated(1, TimeUnit.MINUTES);
@@ -118,17 +121,18 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
 
     @Test
     public void fileCreatedAfterStartIsRead() throws Exception {
-        final File file = temporaryFolder.newFile();
-        final Path path = file.toPath();
+        final Path rootPath = temporaryFolder.getRoot().toPath();
+        final Path file = temporaryFolder.newFile().toPath();
         // make sure the file doesn't exist prior to this test
-        Files.deleteIfExists(path);
+        Files.deleteIfExists(file);
 
         final FileInput mockInput = mockFileInput();
 
         final CollectingBuffer buffer = new CollectingBuffer();
         final MessageBuilder messageBuilder = new MessageBuilder().input("input-id").outputs(new HashSet<String>()).source("test");
         final FileReaderService readerService = new FileReaderService(
-                new SinglePathSet(path.toString()),
+                rootPath,
+                new ExactFileStrategy(file),
                 Charsets.UTF_8,
                 FileInput.InitialReadPosition.START,
                 mockInput,
@@ -143,7 +147,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         readerService.awaitRunning();
 
         // create new file and write a line to it
-        Files.write(file.toPath(), "hellotest\n".getBytes(), StandardOpenOption.CREATE_NEW, StandardOpenOption.APPEND, StandardOpenOption.WRITE);
+        Files.write(file, "hellotest\n".getBytes(), StandardOpenOption.CREATE_NEW, StandardOpenOption.APPEND, StandardOpenOption.WRITE);
 
         // the reader service should detect the file creation event, create a chunkreader for it and eventually a message
         // should appear in the buffer
@@ -159,17 +163,18 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
 
     @Test
     public void fileCreatedAfterStartIsReadAfterPermissionsFixed() throws Exception {
-        final File file = temporaryFolder.newFile();
-        final Path path = file.toPath();
+        final Path rootPath = temporaryFolder.getRoot().toPath();
+        final Path file = temporaryFolder.newFile().toPath();
         // make sure the file doesn't exist prior to this test
-        Files.deleteIfExists(path);
+        Files.deleteIfExists(file);
 
         final FileInput mockInput = mockFileInput();
 
         final CollectingBuffer buffer = new CollectingBuffer();
         final MessageBuilder messageBuilder = new MessageBuilder().input("input-id").outputs(new HashSet<String>()).source("test");
         final FileReaderService readerService = new FileReaderService(
-                new SinglePathSet(path.toString()),
+                rootPath,
+                new ExactFileStrategy(file),
                 Charsets.UTF_8,
                 FileInput.InitialReadPosition.START,
                 mockInput,
@@ -184,7 +189,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         readerService.awaitRunning();
 
         // create new unreadable file and write a line to it
-        final SeekableByteChannel channel = Files.newByteChannel(file.toPath(),
+        final SeekableByteChannel channel = Files.newByteChannel(file,
                 Sets.newHashSet(StandardOpenOption.CREATE_NEW, StandardOpenOption.APPEND),
                 PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("---------")));
         channel.write(ByteBuffer.wrap("hellotest\n".getBytes()));
@@ -194,7 +199,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         assertNull("There should be no message read from the file!", msgNull);
 
         // Make file readable.
-        Files.setPosixFilePermissions(file.toPath(), Sets.newHashSet(PosixFilePermission.OWNER_READ));
+        Files.setPosixFilePermissions(file, Sets.newHashSet(PosixFilePermission.OWNER_READ));
 
         // the reader service should detect the file modifcation event, create a chunkreader for it and eventually
         // a message should appear in the buffer
@@ -210,23 +215,25 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
 
     @Test
     public void followMultipleFiles() throws Exception {
-        final Path path1 = temporaryFolder.newFile().toPath();
-        final Path path2 = temporaryFolder.newFile().toPath();
-        final Path path3 = temporaryFolder.newFile().toPath();
+        final Path rootPath = temporaryFolder.getRoot().toPath();
+        final Path file1 = temporaryFolder.newFile().toPath();
+        final Path file2 = temporaryFolder.newFile().toPath();
+        final Path file3 = temporaryFolder.newFile().toPath();
 
-        log.info("FILE 1 - {}", path1);
-        log.info("FILE 2 - {}", path2);
-        log.info("FILE 3 - {}", path3);
+        log.info("FILE 1 - {}", file1);
+        log.info("FILE 2 - {}", file2);
+        log.info("FILE 3 - {}", file3);
 
-        final GlobPathSet pathSet = new GlobPathSet(temporaryFolder.getRoot().toString(), "*");
+        final FileNamingStrategy namingStrategy= new GlobbingStrategy(rootPath, "*");
 
         // Delete the second file before starting.
-        Files.deleteIfExists(path2);
+        Files.deleteIfExists(file2);
 
         final CollectingBuffer buffer = new CollectingBuffer();
         final MessageBuilder messageBuilder = new MessageBuilder().input("input-id").outputs(new HashSet<String>()).source("test");
         final FileReaderService readerService = new FileReaderService(
-                pathSet,
+                rootPath,
+                namingStrategy,
                 Charsets.UTF_8,
                 FileInput.InitialReadPosition.START,
                 mockFileInput(),
@@ -240,21 +247,21 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
         readerService.startAsync();
         readerService.awaitRunning();
 
-        Files.write(path1, "file1\n".getBytes());
+        Files.write(file1, "file1\n".getBytes());
 
         final Message msg1 = buffer.getMessageQueue().poll(20, TimeUnit.SECONDS);
         assertNotNull("file reader should have created a message", msg1);
         assertEquals("message content matches", "file1", msg1.getMessage());
         assertEquals("no more messages have been added to the buffer", 0, buffer.getMessageQueue().size());
 
-        Files.write(path2, "file2\n".getBytes(), StandardOpenOption.CREATE_NEW, StandardOpenOption.APPEND, StandardOpenOption.WRITE);
+        Files.write(file2, "file2\n".getBytes(), StandardOpenOption.CREATE_NEW, StandardOpenOption.APPEND, StandardOpenOption.WRITE);
 
         final Message msg2 = buffer.getMessageQueue().poll(20, TimeUnit.SECONDS);
         assertNotNull("file reader should have created a message", msg2);
         assertEquals("message content matches", "file2", msg2.getMessage());
         assertEquals("no more messages have been added to the buffer", 0, buffer.getMessageQueue().size());
 
-        Files.write(path3, "file3\n".getBytes());
+        Files.write(file3, "file3\n".getBytes());
 
         final Message msg3 = buffer.getMessageQueue().poll(20, TimeUnit.SECONDS);
         assertNotNull("file reader should have created a message", msg3);

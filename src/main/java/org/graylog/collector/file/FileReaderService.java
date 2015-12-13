@@ -21,6 +21,7 @@ import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.AbstractService;
 import org.graylog.collector.MessageBuilder;
 import org.graylog.collector.buffer.Buffer;
+import org.graylog.collector.file.naming.FileNamingStrategy;
 import org.graylog.collector.file.splitters.ContentSplitter;
 import org.graylog.collector.file.watcher.PathEventListener;
 import org.graylog.collector.file.watcher.PathWatcher;
@@ -37,7 +38,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class FileReaderService extends AbstractService {
     private static final Logger log = LoggerFactory.getLogger(FileReaderService.class);
 
-    private final PathSet pathSet;
+    private final Path path;
+    private final FileNamingStrategy fileNamingStrategy;
     private final FileInput.InitialReadPosition initialReadPosition;
     private final FileInput input;
     private final MessageBuilder messageBuilder;
@@ -52,7 +54,8 @@ public class FileReaderService extends AbstractService {
     private ChunkProcessor chunkProcessor;
     private ChunkReaderScheduler chunkReaderScheduler;
 
-    public FileReaderService(PathSet pathSet,
+    public FileReaderService(Path path,
+                             FileNamingStrategy fileNamingStrategy,
                              Charset charset,
                              FileInput.InitialReadPosition initialReadPosition,
                              FileInput input,
@@ -62,7 +65,8 @@ public class FileReaderService extends AbstractService {
                              int readerBufferSize,
                              long readerInterval,
                              PathWatcher pathWatcher) {
-        this.pathSet = pathSet;
+        this.path = path;
+        this.fileNamingStrategy = fileNamingStrategy;
         this.initialReadPosition = initialReadPosition;
         this.input = input;
         this.messageBuilder = messageBuilder;
@@ -84,9 +88,9 @@ public class FileReaderService extends AbstractService {
         chunkProcessor.startAsync().awaitRunning();
 
         try {
-            pathWatcher.register(pathSet.getRootPath(), Sets.<PathEventListener>newHashSet(new EventListener()));
+            pathWatcher.register(path, Sets.<PathEventListener>newHashSet(new EventListener()));
         } catch (IOException e) {
-            log.error("Unable to monitor directory: {}", pathSet.getRootPath());
+            log.error("Unable to monitor directory: {}", path);
             notifyFailed(e);
             return;
         }
@@ -108,7 +112,7 @@ public class FileReaderService extends AbstractService {
                 log.info("Path {} is a directory, skipping.", path);
                 return;
             }
-            if (!pathSet.isInSet(path)) {
+            if (!fileNamingStrategy.pathMatches(path)) {
                 log.info("File does not match pattern: {}", path);
                 return;
             }
@@ -133,7 +137,7 @@ public class FileReaderService extends AbstractService {
                 log.info("Path {} is a directory, skipping.", path);
                 return;
             }
-            if (!pathSet.isInSet(path)) {
+            if (!fileNamingStrategy.pathMatches(path)) {
                 log.info("File does not match pattern: {}", path);
                 return;
             }
