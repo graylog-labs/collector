@@ -16,7 +16,6 @@
  */
 package org.graylog.collector.inputs.file;
 
-import org.graylog.collector.file.PathSet;
 import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +24,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
+import java.nio.file.Path;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -78,14 +78,14 @@ public class FileInputConfigurationValidator implements ConstraintValidator<Vali
     }
 
     private void showWarnings(FileInputConfiguration config) {
-        final PathSet pathSet = config.getPathSet();
+        final Path path = config.getPath();
 
-        if (pathSet == null) {
+        if (path == null) {
             return;
         }
 
-        if (!pathSet.getRootPath().toFile().canRead()) {
-            LOG.warn("Configured directory {} does not exist or is not accessible.", pathSet.getRootPath());
+        if (!path.toFile().canRead()) {
+            LOG.warn("Configured path {} does not exist or is not accessible.", path);
         }
     }
 

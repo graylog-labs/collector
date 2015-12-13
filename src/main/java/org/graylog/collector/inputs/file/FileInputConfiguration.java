@@ -23,6 +23,9 @@ import org.graylog.collector.config.constraints.IsOneOf;
 import org.graylog.collector.file.GlobPathSet;
 import org.graylog.collector.file.PathSet;
 import org.graylog.collector.file.SinglePathSet;
+import org.graylog.collector.file.naming.ExactFileStrategy;
+import org.graylog.collector.file.naming.FileNamingStrategy;
+import org.graylog.collector.file.naming.GlobbingStrategy;
 import org.graylog.collector.file.splitters.ContentSplitter;
 import org.graylog.collector.file.splitters.NewlineChunkSplitter;
 import org.graylog.collector.file.splitters.PatternChunkSplitter;
@@ -31,6 +34,8 @@ import org.graylog.collector.inputs.InputConfiguration;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -42,13 +47,20 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 @ValidFileInputConfiguration
 public class FileInputConfiguration extends InputConfiguration {
 
+
     public interface Factory extends InputConfiguration.Factory<FileInputConfiguration> {
         @Override
         FileInputConfiguration create(String id, Config config);
     }
 
     @NotNull
-    private PathSet path;
+    private PathSet pathSet;
+
+    @NotNull
+    private Path path;
+
+    @NotNull
+    private FileNamingStrategy fileNamingStrategy;
 
     @IsOneOf({"NEWLINE", "PATTERN"})
     private final String contentSplitter;
@@ -73,10 +85,16 @@ public class FileInputConfiguration extends InputConfiguration {
         this.inputFactory = inputFactory;
 
         if (config.hasPath("path-glob-root") && config.hasPath("path-glob-pattern")) {
-            this.path = new GlobPathSet(config.getString("path-glob-root"), config.getString("path-glob-pattern"));
+            this.path = Paths.get(config.getString("path-glob-root"));
+            this.pathSet = new GlobPathSet(path.toString(), config.getString("path-glob-pattern"));
+
+            this.fileNamingStrategy = new GlobbingStrategy(path, config.getString("path-glob-pattern"));
         } else {
             if (config.hasPath("path")) {
-                this.path = new SinglePathSet(config.getString("path"));
+                this.path = Paths.get(config.getString("path"));
+                this.pathSet = new SinglePathSet(path.toString());
+
+                this.fileNamingStrategy = new ExactFileStrategy(Paths.get(config.getString("path")));
             }
         }
 
@@ -113,8 +131,17 @@ public class FileInputConfiguration extends InputConfiguration {
         return inputFactory.create(this);
     }
 
+    @Deprecated
     public PathSet getPathSet() {
+        return pathSet;
+    }
+
+    public Path getPath() {
         return path;
+    }
+
+    public FileNamingStrategy getFileNamingStrategy() {
+        return fileNamingStrategy;
     }
 
     public String getContentSplitter() {
@@ -156,7 +183,8 @@ public class FileInputConfiguration extends InputConfiguration {
     public Map<String, String> toStringValues() {
         return Collections.unmodifiableMap(new HashMap<String, String>(super.toStringValues()) {
             {
-                put("path-set", getPathSet().toString());
+                put("path", getPath().toString());
+                put("file-naming-strategy", fileNamingStrategy.toString());
                 put("charset", getCharset().toString());
                 put("content-splitter", getContentSplitter());
                 if (!isNullOrEmpty(contentSplitterPattern)) {
