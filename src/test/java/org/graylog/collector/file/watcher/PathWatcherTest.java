@@ -2,8 +2,8 @@ package org.graylog.collector.file.watcher;
 
 import com.google.common.collect.Sets;
 import org.joda.time.Duration;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
@@ -22,9 +22,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PathWatcherTest {
     private static final Logger log = LoggerFactory.getLogger(PathWatcherTest.class);
 
+    @Rule
+    public TemporaryFolder temporaryFolder1 = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder temporaryFolder2 = new TemporaryFolder();
+
     private Duration duration = Duration.millis(500);
-    private TemporaryFolder temporaryFolder1 = new TemporaryFolder();
-    private TemporaryFolder temporaryFolder2 = new TemporaryFolder();
     private FileSystem fileSystem = FileSystems.getDefault();
     private Path rootPath1;
     private Path rootPath2;
@@ -32,17 +35,9 @@ public class PathWatcherTest {
 
     @Before
     public void setUp() throws Exception {
-        temporaryFolder1.create();
-        temporaryFolder2.create();
         rootPath1 = temporaryFolder1.getRoot().toPath();
         rootPath2 = temporaryFolder2.getRoot().toPath();
         watcher = new PathWatcher(fileSystem.newWatchService(), duration);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        temporaryFolder1.delete();
-        temporaryFolder2.delete();
     }
 
     private static class CountDownTestListener implements PathEventListener {
