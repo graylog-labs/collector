@@ -21,9 +21,9 @@ import org.graylog.collector.MessageBuilder;
 import org.graylog.collector.buffer.Buffer;
 import org.graylog.collector.config.ConfigurationUtils;
 import org.graylog.collector.file.ChunkReader;
-import org.graylog.collector.file.FileObserver;
 import org.graylog.collector.file.FileReaderService;
 import org.graylog.collector.file.PathSet;
+import org.graylog.collector.file.watcher.PathWatcher;
 import org.graylog.collector.inputs.InputService;
 import org.graylog.collector.utils.Utils;
 
@@ -42,14 +42,14 @@ public class FileInput extends InputService {
 
     private final FileInputConfiguration configuration;
     private final Buffer buffer;
-    private final FileObserver fileObserver;
+    private final PathWatcher pathWatcher;
     private FileReaderService readerService;
 
     @Inject
-    public FileInput(@Assisted FileInputConfiguration inputConfiguration, Buffer buffer, FileObserver fileObserver) {
+    public FileInput(@Assisted FileInputConfiguration inputConfiguration, Buffer buffer, PathWatcher pathWatcher) {
         this.configuration = inputConfiguration;
         this.buffer = buffer;
-        this.fileObserver = fileObserver;
+        this.pathWatcher = pathWatcher;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class FileInput extends InputService {
                 buffer,
                 configuration.getReaderBufferSize(),
                 configuration.getReaderInterval(),
-                fileObserver
+                pathWatcher
         );
 
         readerService.startAsync().awaitRunning();

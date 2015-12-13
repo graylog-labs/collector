@@ -17,11 +17,15 @@
 package org.graylog.collector.file;
 
 import com.google.inject.Scopes;
+import org.graylog.collector.file.watcher.PathWatcher;
 import org.graylog.collector.guice.CollectorModule;
+import org.joda.time.Duration;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.WatchService;
+
+import static com.google.inject.name.Names.named;
 
 public class FileModule extends CollectorModule {
     @Override
@@ -32,7 +36,8 @@ public class FileModule extends CollectorModule {
             throw new RuntimeException("Unable to create WatchService");
         }
 
-        bind(FileObserver.class).in(Scopes.SINGLETON);
-        registerService(FileObserver.class);
+        bind(Duration.class).annotatedWith(named("watch-service-event-poll-timeout")).toInstance(Duration.millis(500));
+        bind(PathWatcher.class).in(Scopes.SINGLETON);
+        registerService(PathWatcher.class);
     }
 }

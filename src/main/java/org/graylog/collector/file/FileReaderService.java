@@ -17,18 +17,21 @@
 package org.graylog.collector.file;
 
 import com.google.common.collect.Queues;
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.AbstractService;
 import org.graylog.collector.MessageBuilder;
 import org.graylog.collector.buffer.Buffer;
 import org.graylog.collector.file.splitters.ContentSplitter;
+import org.graylog.collector.file.watcher.PathEventListener;
+import org.graylog.collector.file.watcher.PathWatcher;
 import org.graylog.collector.inputs.file.FileInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class FileReaderService extends AbstractService {
@@ -43,7 +46,7 @@ public class FileReaderService extends AbstractService {
     private final Charset charset;
     private final int readerBufferSize;
     private final long readerInterval;
-    private final FileObserver fileObserver;
+    private final PathWatcher pathWatcher;
     private ArrayBlockingQueue<FileChunk> chunkQueue;
 
     private ChunkProcessor chunkProcessor;
@@ -58,7 +61,7 @@ public class FileReaderService extends AbstractService {
                              Buffer buffer,
                              int readerBufferSize,
                              long readerInterval,
-                             FileObserver fileObserver) {
+                             PathWatcher pathWatcher) {
         this.pathSet = pathSet;
         this.initialReadPosition = initialReadPosition;
         this.input = input;
@@ -68,7 +71,7 @@ public class FileReaderService extends AbstractService {
         this.charset = charset;
         this.readerBufferSize = readerBufferSize;
         this.readerInterval = readerInterval;
-        this.fileObserver = fileObserver;
+        this.pathWatcher = pathWatcher;
         chunkQueue = Queues.newArrayBlockingQueue(2);
     }
 
@@ -76,48 +79,17 @@ public class FileReaderService extends AbstractService {
     @Override
     protected void doStart() {
         chunkReaderScheduler = new ChunkReaderScheduler(input, chunkQueue, readerBufferSize, readerInterval, initialReadPosition);
+
         chunkProcessor = new ChunkProcessor(buffer, messageBuilder, chunkQueue, contentSplitter, charset);
+        chunkProcessor.startAsync().awaitRunning();
 
         try {
-            fileObserver.observePathSet(pathSet, new FsChangeListener());
+            pathWatcher.register(pathSet.getRootPath(), Sets.<PathEventListener>newHashSet(new EventListener()));
         } catch (IOException e) {
             log.error("Unable to monitor directory: {}", pathSet.getRootPath());
             notifyFailed(e);
             return;
         }
-
-        final Set<Path> paths;
-        try {
-            paths = pathSet.getPaths();
-        } catch (IOException e) {
-            log.error("Unable to compute paths", e);
-            notifyFailed(e);
-            return;
-        }
-
-        if (paths.isEmpty()) {
-            log.info("Configured files for input \"{}\" do not exist yet. They will be followed once they are created.",
-                    input.getId());
-        }
-
-        for (Path path : paths) {
-            if (!path.toFile().exists()) {
-                log.warn("File {} does not exist but will be followed once it will be created.", path);
-            }
-
-            try {
-                // for a previously existing file, we would not get a watcher callback, so we initialize the chunkreader here
-                if (path.toFile().exists()) {
-                    chunkReaderScheduler.followFile(path);
-                }
-            } catch (IOException e) {
-                log.error("Unable to follow file: " + path, e);
-                notifyFailed(e);
-            }
-        }
-
-        chunkProcessor.startAsync();
-        chunkProcessor.awaitRunning();
 
         notifyStarted();
     }
@@ -129,15 +101,25 @@ public class FileReaderService extends AbstractService {
         notifyStopped();
     }
 
-    public class FsChangeListener implements FileObserver.Listener {
+    private class EventListener implements PathEventListener {
         @Override
         public void pathCreated(Path path) {
+            if (Files.isDirectory(path)) {
+                log.info("Path {} is a directory, skipping.", path);
+                return;
+            }
+            if (!pathSet.isInSet(path)) {
+                log.info("File does not match pattern: {}", path);
+                return;
+            }
             // a file with the same name as the one we should be monitoring has been created, start reading it
             if (chunkReaderScheduler.isFollowingFile(path)) {
+                log.info("Cancel existing follow for {}", path);
                 chunkReaderScheduler.cancelFile(path);
             }
             try {
                 if (path.toFile().exists()) {
+                    log.info("Follow created file {}", path);
                     chunkReaderScheduler.followFile(path);
                 }
             } catch (IOException e) {
@@ -146,18 +128,20 @@ public class FileReaderService extends AbstractService {
         }
 
         @Override
-        public void pathRemoved(Path path) {
-            // File got removed, stop following it.
-            chunkReaderScheduler.cancelFile(path);
-        }
-
-        @Override
         public void pathModified(Path path) {
+            if (Files.isDirectory(path)) {
+                log.info("Path {} is a directory, skipping.", path);
+                return;
+            }
+            if (!pathSet.isInSet(path)) {
+                log.info("File does not match pattern: {}", path);
+                return;
+            }
             if (!chunkReaderScheduler.isFollowingFile(path) && path.toFile().exists()) {
                 // Start following the modified file now. If we did not follow it before, there might have been an
                 // error regarding permissions or something similar.
                 try {
-                    log.trace("Start following modified file {}", path);
+                    log.info("Start following modified file {}", path);
                     chunkReaderScheduler.followFile(path);
                 } catch (IOException e) {
                     log.error("Cannot read modified file " + path, e);
@@ -166,8 +150,10 @@ public class FileReaderService extends AbstractService {
         }
 
         @Override
-        public void cannotObservePath(Path path) {
-            // TODO directory was removed, can't observe anymore
+        public void pathRemoved(Path path) {
+            // File got removed, stop following it.
+            log.info("Cancel file {}", path);
+            chunkReaderScheduler.cancelFile(path);
         }
     }
 }

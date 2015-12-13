@@ -411,8 +411,9 @@
                         <exclude>**/org/graylog/collector/cli/commands/Version.class</exclude>
                         <!-- Uses System.out.println to write the message to STDOU. -->
                         <exclude>**/org/graylog/collector/outputs/stdout/StdoutOutput.class</exclude>
-                        <!-- Uses com.sun.nio.file.SensitivityWatchEventModifier.HIGH for the file watcher -->
+                        <!-- Uses com.sun.nio.file.SensitivityWatchEventModifier.HIGH for the path observer/watcher -->
                         <exclude>**/org/graylog/collector/file/FileObserver.class</exclude>
+                        <exclude>**/org/graylog/collector/file/watcher/PathWatcher.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

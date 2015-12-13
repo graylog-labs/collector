@@ -23,7 +23,10 @@ import org.graylog.collector.Message;
 import org.graylog.collector.MessageBuilder;
 import org.graylog.collector.file.naming.NumberSuffixStrategy;
 import org.graylog.collector.file.splitters.NewlineChunkSplitter;
+import org.graylog.collector.file.watcher.PathEventListener;
+import org.graylog.collector.file.watcher.PathWatcher;
 import org.graylog.collector.inputs.file.FileInput;
+import org.joda.time.Duration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -47,7 +50,7 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anySetOf;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -60,27 +63,27 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    private FileObserver fileObserver;
+    private PathWatcher pathWatcher;
 
     @Before
     public void setUp() throws Exception {
-        fileObserver = new FileObserver(FileSystems.getDefault().newWatchService());
+        pathWatcher = new PathWatcher(FileSystems.getDefault().newWatchService(), Duration.millis(500));
 
-        fileObserver.startAsync();
-        fileObserver.awaitRunning(1, TimeUnit.MINUTES);
+        pathWatcher.startAsync();
+        pathWatcher.awaitRunning(1, TimeUnit.MINUTES);
     }
 
     @After
     public void shutDown() throws Exception {
-        fileObserver.stopAsync();
-        fileObserver.awaitTerminated(1, TimeUnit.MINUTES);
+        pathWatcher.stopAsync();
+        pathWatcher.awaitTerminated(1, TimeUnit.MINUTES);
     }
 
     @Test
     public void testObserverCallbacks() throws Exception {
         final Path path = temporaryFolder.newFile().toPath();
 
-        final FileObserver fileObserverSpy = spy(fileObserver);
+        final PathWatcher fileObserverSpy = spy(pathWatcher);
         final NumberSuffixStrategy namingStrategy = new NumberSuffixStrategy(path);
         final PathSet pathSet = new SinglePathSet(path.toString());
 
@@ -101,7 +104,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
 
         assertEquals("service should be running", Service.State.RUNNING, readerService.state());
 
-        verify(fileObserverSpy).observePathSet(eq(pathSet), any(FileObserver.Listener.class));
+        verify(fileObserverSpy).register(eq(pathSet.getRootPath()), anySetOf(PathEventListener.class));
 
         readerService.stopAsync();
         readerService.awaitTerminated(1, TimeUnit.MINUTES);
@@ -134,7 +137,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
                 buffer,
                 1024,
                 250L,
-                fileObserver);
+                pathWatcher);
 
         readerService.startAsync();
         readerService.awaitRunning();
@@ -175,7 +178,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
                 buffer,
                 1024,
                 250L,
-                fileObserver);
+                pathWatcher);
 
         readerService.startAsync();
         readerService.awaitRunning();
@@ -232,7 +235,7 @@ public class FileReaderServiceTest extends MultithreadedBaseTest {
                 buffer,
                 1024,
                 250L,
-                fileObserver);
+                pathWatcher);
 
         readerService.startAsync();
         readerService.awaitRunning();

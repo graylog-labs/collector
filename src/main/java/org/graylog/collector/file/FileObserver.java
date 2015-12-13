@@ -40,6 +40,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
+@Deprecated
 public class FileObserver extends AbstractExecutionThreadService {
     private static final Logger log = LoggerFactory.getLogger(FileObserver.class);
 
