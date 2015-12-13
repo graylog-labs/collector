@@ -29,6 +29,7 @@ import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+@Deprecated
 public class SinglePathSet implements PathSet {
     private final Path path;
 

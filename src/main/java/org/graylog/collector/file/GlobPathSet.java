@@ -35,6 +35,7 @@ import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+@Deprecated
 public class GlobPathSet implements PathSet {
     private static final Logger LOG = LoggerFactory.getLogger(GlobPathSet.class);
 

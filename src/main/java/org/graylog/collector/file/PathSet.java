@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Set;
 
+@Deprecated
 public interface PathSet {
     /**
      * Get the root path of the path set.
