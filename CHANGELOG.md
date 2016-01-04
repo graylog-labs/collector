@@ -1,6 +1,10 @@
 Graylog Collector ChangeLog
 ===========================
 
+## v0.4.2 (2016-01-04)
+
+* Fix concurrency issue in MessageBuilder/MessageFields.
+
 ## v0.4.1 (2015-09-07)
 
 * Fix file rotation detection on platforms with a slow watchservice
