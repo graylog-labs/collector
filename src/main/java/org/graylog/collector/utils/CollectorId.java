@@ -84,7 +84,7 @@ public class CollectorId {
             persist(generated, filename);
         } catch (IOException e1) {
             LOG.debug("Could not persist node ID: ", e1);
-            throw new RuntimeException("Unable to persist node ID", e1);
+            throw new RuntimeException("Unable to persist node ID to " + filename, e1);
         }
 
         return generated;
