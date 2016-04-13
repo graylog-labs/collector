@@ -16,12 +16,13 @@
  */
 package org.graylog.collector.utils;
 
-import java.util.Locale;
+import org.graylog.collector.annotations.CollectorHostName;
+import org.graylog.collector.guice.CollectorModule;
 
-public class Utils {
-    private static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase(Locale.US).startsWith("windows");
-
-    public static boolean isWindows() {
-        return IS_WINDOWS;
+public class CollectorHostNameModule extends CollectorModule {
+    @Override
+    protected void configure() {
+        bind(CollectorHostNameConfiguration.class);
+        bind(String.class).annotatedWith(CollectorHostName.class).toProvider(CollectorHostNameProvider.class);
     }
 }

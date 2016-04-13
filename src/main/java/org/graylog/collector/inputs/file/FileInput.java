@@ -18,6 +18,7 @@ package org.graylog.collector.inputs.file;
 
 import com.google.inject.assistedinject.Assisted;
 import org.graylog.collector.MessageBuilder;
+import org.graylog.collector.annotations.CollectorHostName;
 import org.graylog.collector.buffer.Buffer;
 import org.graylog.collector.config.ConfigurationUtils;
 import org.graylog.collector.file.ChunkReader;
@@ -25,7 +26,6 @@ import org.graylog.collector.file.FileObserver;
 import org.graylog.collector.file.FileReaderService;
 import org.graylog.collector.file.PathSet;
 import org.graylog.collector.inputs.InputService;
-import org.graylog.collector.utils.Utils;
 
 import javax.inject.Inject;
 import java.util.Set;
@@ -43,13 +43,16 @@ public class FileInput extends InputService {
     private final FileInputConfiguration configuration;
     private final Buffer buffer;
     private final FileObserver fileObserver;
+    private final String collectorHostName;
     private FileReaderService readerService;
 
     @Inject
-    public FileInput(@Assisted FileInputConfiguration inputConfiguration, Buffer buffer, FileObserver fileObserver) {
+    public FileInput(@Assisted FileInputConfiguration inputConfiguration, Buffer buffer, FileObserver fileObserver,
+                     @CollectorHostName String collectorHostName) {
         this.configuration = inputConfiguration;
         this.buffer = buffer;
         this.fileObserver = fileObserver;
+        this.collectorHostName = collectorHostName;
     }
 
     @Override
@@ -68,7 +71,7 @@ public class FileInput extends InputService {
         final MessageBuilder messageBuilder = new MessageBuilder()
                 .input(getId())
                 .outputs(getOutputs())
-                .source(Utils.getHostname())
+                .source(collectorHostName)
                 .fields(configuration.getMessageFields());
         final PathSet pathSet = configuration.getPathSet();
         readerService = new FileReaderService(

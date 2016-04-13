@@ -16,12 +16,23 @@
  */
 package org.graylog.collector.utils;
 
-import java.util.Locale;
+import com.typesafe.config.Config;
 
-public class Utils {
-    private static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase(Locale.US).startsWith("windows");
+import javax.annotation.Nullable;
+import javax.inject.Inject;
 
-    public static boolean isWindows() {
-        return IS_WINDOWS;
+public class CollectorHostNameConfiguration {
+    private static final String CONFIG_PATH = "host-name";
+    private final String hostName;
+
+    @Inject
+    public CollectorHostNameConfiguration(Config config) {
+        this.hostName = config.hasPath(CONFIG_PATH) ? config.getString(CONFIG_PATH) : null;
+    }
+
+    @Nullable
+    public String getHostName() {
+        return hostName;
     }
 }
+

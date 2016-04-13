@@ -13,6 +13,9 @@ server-url = "http://localhost:12900"
 // Defaults to "file:config/collector-id" if not specified.
 collector-id = "file:config/collector-id"
 
+// Override the detected local host name and send a custom host name
+//host-name = "my-custom-host-name"
+
 //inputs {
 //  // A simple file input that follows /var/log/syslog.
 //  local-syslog {

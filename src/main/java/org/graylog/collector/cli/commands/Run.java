@@ -34,6 +34,7 @@ import org.graylog.collector.outputs.OutputsModule;
 import org.graylog.collector.serverapi.ServerApiModule;
 import org.graylog.collector.services.CollectorServiceManager;
 import org.graylog.collector.services.ServicesModule;
+import org.graylog.collector.utils.CollectorHostNameModule;
 import org.graylog.collector.utils.CollectorIdModule;
 import org.graylog.collector.utils.MemoryReporterModule;
 import org.jsoftbiz.utils.OS;
@@ -103,7 +104,8 @@ public class Run implements CollectorCommand {
                     new MemoryReporterModule(),
                     new ServerApiModule(),
                     new HeartbeatModule(),
-                    new CollectorIdModule());
+                    new CollectorIdModule(),
+                    new CollectorHostNameModule());
         } catch (Exception e) {
             LOG.error("ERROR: {}", e.getMessage());
             LOG.debug("Detailed injection creation error", e);
