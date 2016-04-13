@@ -24,4 +24,7 @@ import retrofit.http.Path;
 public interface CollectorRegistrationService {
     @PUT("/plugins/org.graylog.plugins.collector/collectors/{collectorId}")
     Response register(@Path("collectorId") String collectorId, @Body CollectorRegistrationRequest request);
+
+    @PUT("/system/collectors/{collectorId}")
+    Response legacyRegister(@Path("collectorId") String collectorId, @Body CollectorRegistrationRequest request);
 }

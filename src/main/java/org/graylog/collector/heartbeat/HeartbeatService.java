@@ -54,13 +54,26 @@ public class HeartbeatService extends AbstractScheduledService {
         if (config.hasPath(enableRegistrationParameter) && !config.getBoolean(enableRegistrationParameter)) {
             return;
         }
+        register(false);
+    }
+
+    private void register(final boolean legacy) {
         try {
-            collectorRegistrationService.register(this.collectorId, this.collectorRegistrationRequest);
+            if (legacy) {
+                collectorRegistrationService.legacyRegister(this.collectorId, this.collectorRegistrationRequest);
+            } else {
+                collectorRegistrationService.register(this.collectorId, this.collectorRegistrationRequest);
+            }
         } catch (RetrofitError e) {
             final Response response = e.getResponse();
-            if (response != null)
-                LOG.warn("Unable to send heartbeat to Graylog server, result was: {} - {}", response.getStatus(), response.getReason());
-            else {
+            if (response != null) {
+                if (!legacy && response.getStatus() == 404) {
+                    // Try again with the Graylog 1.x URL if we didn't try yet.
+                    register(true);
+                } else {
+                    LOG.warn("Unable to send heartbeat to Graylog server, result was: {} - {}", response.getStatus(), response.getReason());
+                }
+            } else {
                 final String message;
                 if (e.getCause() != null) {
                     message = e.getCause().getClass().getSimpleName() + ": " + e.getCause().getMessage();
