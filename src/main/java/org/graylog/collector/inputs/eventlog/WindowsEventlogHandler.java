@@ -50,7 +50,6 @@ public class WindowsEventlogHandler implements EventLogNotification {
 
         final MessageBuilder builder = messageBuilder
                 .copy()
-                .source(record.getComputerName())
                 .message(isNullOrEmpty(record.getMessage()) ? "empty" : record.getMessage().trim())
                 .timestamp(getDateTime(record.getTimeGenerated()))
                 .level(getMessageLevel(record));

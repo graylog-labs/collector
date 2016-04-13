@@ -74,6 +74,7 @@ public class WindowsEventlogHandlerTest {
 
         messageBuilder.input("input-id");
         messageBuilder.outputs(Sets.newHashSet("output-id"));
+        messageBuilder.source("foobar.example.net");
 
         return messageBuilder;
     }
@@ -109,7 +110,7 @@ public class WindowsEventlogHandlerTest {
         final Message message = buffer.getMessages().get(0);
 
         assertEquals("The log message", message.getMessage());
-        assertEquals("IE10Win7", message.getSource());
+        assertEquals("foobar.example.net", message.getSource());
         assertEquals(Message.Level.INFO, message.getLevel());
         assertEquals(new DateTime(0L).withZone(DateTimeZone.UTC), message.getTimestamp());
 

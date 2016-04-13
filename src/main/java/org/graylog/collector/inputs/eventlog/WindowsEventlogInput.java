@@ -18,6 +18,7 @@ package org.graylog.collector.inputs.eventlog;
 
 import com.google.inject.assistedinject.Assisted;
 import org.graylog.collector.MessageBuilder;
+import org.graylog.collector.annotations.CollectorHostName;
 import org.graylog.collector.buffer.Buffer;
 import org.graylog.collector.config.ConfigurationUtils;
 import org.graylog.collector.file.ChunkReader;
@@ -31,16 +32,19 @@ public class WindowsEventlogInput extends InputService {
     private final WindowsEventlogInputConfiguration configuration;
     private final Buffer buffer;
     private final EventLogThread logThread;
+    private final String collectorHostName;
 
     public interface Factory extends InputService.Factory<WindowsEventlogInput, WindowsEventlogInputConfiguration> {
         WindowsEventlogInput create(WindowsEventlogInputConfiguration configuration);
     }
 
     @Inject
-    public WindowsEventlogInput(@Assisted WindowsEventlogInputConfiguration configuration, Buffer buffer) {
+    public WindowsEventlogInput(@Assisted WindowsEventlogInputConfiguration configuration, Buffer buffer,
+                                @CollectorHostName String collectorHostName) {
         this.configuration = configuration;
         this.buffer = buffer;
         this.logThread = EventLogThread.getInstance(configuration.getSourceName());
+        this.collectorHostName = collectorHostName;
     }
 
     @Override
@@ -48,6 +52,7 @@ public class WindowsEventlogInput extends InputService {
         final MessageBuilder messageBuilder = new MessageBuilder()
                 .input(getId())
                 .outputs(getOutputs())
+                .source(collectorHostName)
                 .fields(configuration.getMessageFields());
 
         logThread.add(new WindowsEventlogHandler(messageBuilder, buffer));
