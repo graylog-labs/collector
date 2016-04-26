@@ -1,6 +1,8 @@
 Graylog Collector
 =================
 
+# WARNING: The Graylog Collector is deprecated and can be replaced with the [Graylog Collector Sidecar](https://github.com/Graylog2/collector-sidecar).
+
 [![Build Status](https://travis-ci.org/Graylog2/collector.svg?branch=master)](https://travis-ci.org/Graylog2/collector)
 
 This is the Graylog Collector.
