@@ -1,9 +1,13 @@
 Graylog Collector ChangeLog
 ===========================
 
-## v0.5.0 (unreleased)
+## v0.5.0 (2016-05-03)
 
 * Add UDP support to GELF output. (#59)
+* Allow to override reported host name (#71)
+* Use canonical host name as message source in WindowsEventlogInput (#72)
+* Add compatiblity with Graylog 2.x (#85)
+* Improve error message if node ID could not be persisted
 
 ## v0.4.2 (2016-01-04)
 

@@ -1,7 +1,7 @@
+## WARNING: The Graylog Collector has been deprecated and replaced with the [Graylog Collector Sidecar](https://github.com/Graylog2/collector-sidecar).
+
 Graylog Collector
 =================
-
-# WARNING: The Graylog Collector is deprecated and can be replaced with the [Graylog Collector Sidecar](https://github.com/Graylog2/collector-sidecar).
 
 [![Build Status](https://travis-ci.org/Graylog2/collector.svg?branch=master)](https://travis-ci.org/Graylog2/collector)
 
@@ -9,7 +9,12 @@ This is the Graylog Collector.
 
 ## Binary Download
 
-Running the Collector requires at least **Java 7**.
+Running the Collector requires at least **Java 7** and **Graylog 2.0.0** or higher.
+
+* [v0.5.0 TGZ](https://packages.graylog2.org/releases/graylog-collector/graylog-collector-0.5.0.tgz)
+* [v0.5.0 ZIP](https://packages.graylog2.org/releases/graylog-collector/graylog-collector-0.5.0.zip)
+
+If you're still running Graylog 1.x, please download these archives:
 
 * [v0.4.2 TGZ](https://packages.graylog2.org/releases/graylog-collector/graylog-collector-0.4.2.tgz)
 * [v0.4.2 ZIP](https://packages.graylog2.org/releases/graylog-collector/graylog-collector-0.4.2.zip)
@@ -96,4 +101,4 @@ Find the artifacts in the following places.
 
 * JAR `target/graylog-collector-*.jar`
 * TAR `target/assembly/graylog-collector-*.tar.gz`
-* TAR `target/assembly/graylog-collector-*.zip`
+* ZIP `target/assembly/graylog-collector-*.zip`
