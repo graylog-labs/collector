@@ -48,7 +48,7 @@
         <collector.jvm-opts>-Xms12m -Xmx64m</collector.jvm-opts>
 
         <sigar.version>1.6.4</sigar.version>
-        <jackson.version>2.7.3</jackson.version>
+        <jackson.version>2.7.4</jackson.version>
         <retrofit.version>1.9.0</retrofit.version>
         <guice.version>4.0</guice.version>
         <slf4j.version>1.7.21</slf4j.version>
