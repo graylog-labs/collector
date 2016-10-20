@@ -5,6 +5,18 @@ Graylog Collector
 
 [![Build Status](https://travis-ci.org/Graylog2/collector.svg?branch=master)](https://travis-ci.org/Graylog2/collector)
 
+## SECURITY WARNING: The way we install the Collector as a service in Windows is not secure
+
+If the path to the `graylog-collector-service-x86.exe` contains a space, the installed server is vulnerable to privilege escalation. For details see: https://www.exploit-db.com/exploits/40538/
+
+Since we are using the Apache procrun program to install the service on Windows, we don't have any influence on the path quoting, unfortunately.
+
+There is a workaround documented in [#93](https://github.com/Graylog2/collector/issues/93).
+
+As noted above, the Collector is deprecated and we are not putting out another release.
+
+---
+
 This is the Graylog Collector.
 
 ## Binary Download
